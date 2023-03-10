@@ -17,12 +17,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
 
+    // default table nya ada tunggal dan jamak dalam bahasa inggris makanya aku atur 
+    protected $table = 'users';
+    // agar aku bisa menggunakan User::find(1)
+    protected $primaryKey = 'user_id';
+    // agar aku bisa menggunakan create massal dan update massal
+    protected $guarded = [];
     /**
      * The attributes that should be hidden for serialization.
      *
