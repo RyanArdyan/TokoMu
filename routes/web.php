@@ -15,18 +15,21 @@ use App\Http\Controllers\ProdukPenyuplaiController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PembelianDetailController;
 
-// hanya tamu yang bisa mengakses url berikut
+// hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
 // middleware untuk guest, guest di dapatkan dari App/Http/Kernel.php
 Route::middleware(['guest'])->group(function() {
+    // url awal
     // jika user di url awal maka jalankan fungsi berikut
     Route::get('/', function () {
         // kembali alihkan route login
         return redirect()->route('login.index');
     });
 
+    // login
+    // route tipe dapatkan, ke url /login, ke AutentikasiController, ke method index, name nya adalah login.index
     Route::get('/login', [AutentikasiController::class, 'index'])
                 ->name('login.index');
-
+    // route tipe kirim, ke url /login, ke AutentikasiController, ke method store, name nya adalah login.store
     Route::post('/login', [AutentikasiController::class, 'store'])->name('login.store');
 });
 
@@ -49,7 +52,9 @@ Route::middleware(['auth'])->group(function() {
 });
 
 
-// middleware untuk admin yang sudah login, auth di dapatkan dari Kernel.php, is_admin di dapatkan dari AuthServiceProvider.php
+// middleware untuk admin yang sudah login
+// auth di dapatkan dari Kernel.php
+// is_admin di dapatkan dari App/Providers/AuthServiceProvider.php
 // hanya admin yang sudah login yang bisa mengakses url berikut
 Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // pengaturan
