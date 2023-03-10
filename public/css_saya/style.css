@@ -1,0 +1,4 @@
+/* agar teks biasa ketika di hover, kursor nya akan jadi anak panah */
+.jadikan_pointer {
+    cursor: pointer;
+};
