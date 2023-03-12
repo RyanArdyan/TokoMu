@@ -3,8 +3,12 @@
 
 {{-- dorong css lalu tangkap mengguakan $stack('css') --}}
 @push('css')
+{{-- buat element style --}}
 <style>
+    /* Jika tidak menulis kode di bawah ini maka table penyuplai yang berada di dalam modal, tidak akan full */
+    /* panggil #table_penyuplai */
     #table_penyuplai {
+        /* lebar: 100% tidak penting */
         width: 100% !important;
     }
 </style>
@@ -52,7 +56,47 @@
 <script>
 // untuk mengecilkan sidebar
 
-let table1;
+// lakukan ajax untuk mengecek apakah ada penyuplai dan produk_penyuplai jika tidak ada maka tampilkan notifikasi "Anda harus menambahkan minimal 1 penyuplai terlebih dahulu", lalu arahkan ke menu penyuplai
+$.ajax({
+    // panggil route pembelian.cek_pemyuplai_dan_produk_penyuplai
+    url: "{{ route('pembelian.cek_penyuplai_dan_produk_penyuplai') }}",
+    // panggil route tipe dapatkan
+    type: "GET"
+})
+    // jika selesai, maka jalankan fungsi berikut dan ambil tanggapan nya
+    .done(function(resp) {
+        // console.log(resp);
+        // jika tanggapan.pesan sama dengan pesan berikut
+        if (resp.message === 'Anda harus menambahkan minimal 1 penyuplai terlebih dahulu.') {
+            // tampilkan notifikasi menggunakan sweetalert
+            Swal.fire(
+                'Ada yang salah!',
+                'Anda harus menambahkan minimal 1 penyuplai terlebih dahulu!',
+                'error'
+            )
+            // jika user click oke maka kemudian jalankan fungsi berikut
+            .then(function() {
+                // arahkan ke route penyuplai.index
+                // windows.lokasi memanggil route penyuplai.index
+                window.location = "{{ route('penyuplai.index') }}";
+            });
+        };
+        // // lain jika tanggapan.pesan sama dengan pesan berikut
+        if (resp.pesan === 'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu.') {
+            // tampilkan notifikasi menggunakan sweetalert
+            Swal.fire(
+                'Ada yang salah!',
+                'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu!',
+                'error'
+            )
+            // jika user click oke maka kemudian jalankan fungsi berikut
+            .then(function() {
+                // ke route produk_penyuplai.index
+                // window.lokasi memanggil route poduk_penyuplai.index
+                window.location = "{{ route('produk_penyuplai.index') }}";
+            });
+        };
+    });
 
 let table = $("#table-pembelian").DataTable({
     processing: true,
@@ -77,7 +121,7 @@ let table = $("#table-pembelian").DataTable({
 });
 
 // table detail
-table1 = $(".table-detail").DataTable({
+let table1 = $(".table-detail").DataTable({
     processing: true,
     bsort: false,
     dom: 'Brt',

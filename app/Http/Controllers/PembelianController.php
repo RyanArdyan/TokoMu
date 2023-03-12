@@ -7,6 +7,7 @@ use App\Models\Pembelian;
 use App\Models\Penyuplai;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
+use App\Models\ProdukPenyuplai;
 // gunakan package datatable
 use DataTables;
 
@@ -75,13 +76,42 @@ class PembelianController extends Controller
             ->make(true);
     }
 
+    // untuk mengecek apakah ada penyuplai dan produk_penyuplai, jika tidak ada maka tampilkan notifikasi menggunakan sweetalert yang menyatakan "kamu harus menambahkan minimal 1 penyuplai terlebih dahulu" lalu arahkan ke menu penyuplai
+    public function cek_penyuplai_dan_produk_penyuplai()
+    {
+        // ambil detail_penyuplai_pertama agar jika penyuplai pertama tidak ada maka kasi tau user, bahwa mereka harus menambahkan minimal 1 penyuplai terlebih dahulu
+        // berisi ambil detail penyuplai pertama
+        $detail_penyuplai_pertama = Penyuplai::first();
+
+        // jika detail_penyuplai_pertama tidak ada atau NULL
+        if ($detail_penyuplai_pertama === null) {
+            // kembalikkan tanggapan berupa json lalu kirimkan data
+            return response()->json([
+                // key message berisi value atau pesan berikut
+                'message' => 'Anda harus menambahkan minimal 1 penyuplai terlebih dahulu.'
+            ]);
+        };
+
+        // ambil detail_produk_penyuplai yang pertama
+        $detail_produk_penyuplai_pertama = ProdukPenyuplai::first();
+        // lain jika detail_produk_penyuplai_pertama tidak ada atau null maka
+        if ($detail_produk_penyuplai_pertama === null) {
+            // kembalikkan tanggapan berupa json lalu kirimkan data
+            return response()->json([
+                // key message berisi value atau pesan berikut
+                'pesan' => 'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu.'
+            ]);
+        };
+    }
+
     /**
      * Setelah user memilih penyuplai maka simpan satu baris data ke table pembelian
+     * $penyuplai_id berisi value column penyuplai_id yang didapatkan dari url
      */
     public function create($penyuplai_id)
     {
         // Simpan Pembelian secara sementara
-        // pembelian buat
+        // berisi pembelian buat
         $detail_pembelian = Pembelian::create([
             // column penyuplai_id berisi penyuplai_id yang di kirimkan lewat url
             'penyuplai_id' => $penyuplai_id,
@@ -153,13 +183,13 @@ class PembelianController extends Controller
         // untuk pengulangan nomor
         // tambah index column
         ->addIndexColumn()
-        // ulang detail penyuplai
-        // buat tombol  pilih
+        // $penyuplai berarti ulang detail penyuplai
+        // buat tombol pilih
         // tambah column action, jalankan fungsi, ambil semua detail_penyuplai
         ->addColumn('action', function(Penyuplai $penyuplai) {
-            // ke route pembelian.create lalu kirimkan value column penyuplai_id agar aku bisa mengambil beberapa produk_penyuplai berdasarkan column foreign key penyuplai_id
+            // ke route pembelian.create lalu kirimkan value column penyuplai_id agar aku bisa mengambil semua produk yang dijual oleh suatu penyuplai atau mengambil beberapa produk_penyuplai berdasarkan column foreign key penyuplai_id
             return '
-                <a href="{{ route(`pembelian.create`, $penyuplai->penyuplai_id) }}" class="btn btn-primary btn-sm"><i class="fa fa-truck"></i> Pilih</a>
+                <a href="/pembelian/create/' . $penyuplai->penyuplai_id . '" class="btn btn-primary btn-sm"><i class="fa fa-truck"></i> Pilih</a>
             ';
         })
         // jika column, membuat elemnt html maka harus dimasukkan ke rawColumns

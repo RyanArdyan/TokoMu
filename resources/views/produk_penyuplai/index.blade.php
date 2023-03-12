@@ -53,14 +53,14 @@
     <script>
         // lakukan ajax untuk mengecek apakah ada kategori dan penyuplai jika tidak ada maka tampilkan notifikasi "Anda harus membuat kategori terlebih dahulu", lalu arahkan ke menu kategori
         $.ajax({
-            // panggil route produk.cek_data
+            // panggil route produk_penyuplai.cek_kategori_dan_penyuplai
             url: "{{ route('produk_penyuplai.cek_kategori_dan_penyuplai') }}",
-            // panggil rout tipe dapatkan
+            // panggil route tipe dapatkan
             type: "GET"
         })
             // jika selesai, maka jalankan fungsi berikut dan ambil tanggapan nya
             .done(function(resp) {
-                console.log(resp);
+                // console.log(resp);
                 // jika tanggapan.pesan sama dengan pesan berikut
                 if (resp.message === 'Anda belum membuat satu pun kategori.') {
                     // tampilkan notifikasi menggunakan sweetalert

@@ -16,8 +16,6 @@ return new class extends Migration
             // lakukan auto increment dan big integer
             $table->bigIncrements('produk_id');
             // foreign key atau kunci asing, relasinya adalah 1 produk milik 1 kategori
-            // $table->unsignedBigInteger('kategori_id');
-
             // buat foreign key column di table produk yaitu kategori_id yang berelasi dengean column kategori_id milik table kategori
             $table->foreignId('kategori_id')->constrained('kategori')
                 ->references('kategori_id')

@@ -23,7 +23,7 @@ class ProdukPenyuplaiController extends Controller
         return view('produk_penyuplai.index');
     }
 
-    // untuk mengecek apakah ada kategori, jika tidak ada maka arahkan ke menu kategori
+    // untuk mengecek apakah ada kategori dan penyuplai, jika tidak ada maka tampilkan notifikasi menggunakan sweetalert yang menyatakan "kamu harus membuat minimal 1 kategori terlebih dahulu" lalu arahkan ke menu kategori
     public function cek_kategori_dan_penyuplai()
     {
         // ambil detail_kategori_pertama agar jika kategori pertama tidak ada maka kasi tau user, bahwa mereka harus membuat kategori terlebih dahulu
@@ -32,17 +32,18 @@ class ProdukPenyuplaiController extends Controller
 
         // jika detail_kategori_pertama tidak ada atau NULL
         if ($detail_kategori_pertama === null) {
-            // kembalikkan tanggapan berupa json
+            // kembalikkan tanggapan berupa json lalu kirimkan data
             return response()->json([
-                // key message 
+                // key message berisi pesan berikut
                 'message' => 'Anda belum membuat satu pun kategori.'
             ]);
         };
 
+        // ambil detail_penyuplai yang pertama
         $detail_penyuplai_pertama = Penyuplai::first();
         // lain jika detail_penyuplai_pertama tidak ada atau null maka
         if ($detail_penyuplai_pertama === null) {
-            // kembalikkan tanggapan berupa json
+            // kembalikkan tanggapan berupa json lalu kirimkan data
             return response()->json([
                 // key message berisi pesan berikut
                 'pesan' => 'Anda belum membuat satu pun penyuplai.'

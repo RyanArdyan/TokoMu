@@ -73,25 +73,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Locale Configuration
+    | Konfigurasi Lokal Aplikasi
     |--------------------------------------------------------------------------
     |
-    | The application locale determines the default locale that will be used
-    | by the translation service provider. You are free to set this value
-    | to any of the locales which will be supported by the application.
+    | Lokal aplikasi menentukan lokal default yang akan digunakan
+    | oleh penyedia layanan terjemahan. Anda bebas menetapkan nilai ini
+     | ke salah satu lokal yang akan didukung oleh aplikasi.
     |
     */
 
-    'locale' => 'en',
+    // ini akan memanggil folder lang/id untuk validasi formulir dan lain-lain
+    'locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
     |--------------------------------------------------------------------------
     |
-    | The fallback locale determines the locale to use when the current one
-    | is not available. You may change the value to correspond to any of
-    | the language folders that are provided through your application.
+    | Lokal fallback menentukan lokal yang akan digunakan saat ini
+     | tidak tersedia. Anda dapat mengubah nilainya agar sesuai dengan salah satu dari
+     | folder bahasa yang disediakan melalui aplikasi Anda.
     |
     */
 
@@ -102,13 +103,13 @@ return [
     | Faker Locale
     |--------------------------------------------------------------------------
     |
-    | This locale will be used by the Faker PHP library when generating fake
-    | data for your database seeds. For example, this will be used to get
-    | localized telephone numbers, street address information and more.
+    | Lokal ini akan digunakan oleh pustaka PHP Faker saat membuat palsu
+     | data untuk seed database Anda. Misalnya, ini akan digunakan untuk mendapatkan
+     | nomor telepon lokal, informasi alamat jalan dan banyak lagi.
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'id_ID',
 
     /*
     |--------------------------------------------------------------------------
@@ -185,6 +186,12 @@ return [
         /*
          * Package Service Providers...
          */
+        // package riskihajar/terbilang untuk mengubah 1000 menjadi seribu
+        Riskihajar\Terbilang\TerbilangServiceProvider::class,
+        // package laravel-datatables untuk memberikan data secara server side
+        Yajra\DataTables\DataTablesServiceProvider::class,
+        // package milon/barcode untuk mencetak barcode produk yang di jual
+        Milon\Barcode\BarcodeServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -194,8 +201,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        // package laravel-datatables
-        Yajra\DataTables\DataTablesServiceProvider::class,
     ],
 
     /*
@@ -210,6 +215,11 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        // alias package milon/barcode untuk mencetak barcode produk yang dijual
+        'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+        // alias package riskihajar untuk mengubah 1000 menjadi seribu
+        'Terbilang' => Riskihajar\Terbilang\Facades\Terbilang::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 

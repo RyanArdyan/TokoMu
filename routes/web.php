@@ -113,7 +113,7 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::post('/penyuplai/destroy', [PenyuplaiController::class, 'destroy'])->name('penyuplai.destroy');
 
     // produk penyuplai
-    // route tipe dapatkan ke url /produk-penyupalai, ke ProdukPenyuplaiController, ke method index, name nya adalah produk_penyuplai.index
+    // route tipe dapatkan ke url /produk-penyuplai, ke ProdukPenyuplaiController, ke method index, name nya adalah produk_penyuplai.index
     Route::get('/produk-penyuplai', [ProdukPenyuplaiController::class, 'index'])->name('produk_penyuplai.index');
     // route tipe dapatkan, ke url /produk-penyupalai/read, ke ProdukPenyuplaiController, ke method read, name nya adalah produk_penyuplai.read
     Route::get('/produk-penyuplai/read', [ProdukPenyuplaiController::class, 'read'])->name('produk_penyuplai.read');
@@ -122,8 +122,8 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::get('/produk-penyuplai/data-relasinya', [ProdukPenyuplaiController::class, 'data_relasinya'])->name('produk_penyuplai.data_relasinya');
     // route tipe kirim, ke url produk-penyuplai, ke ProdukPenyuplaiController, ke method store, name nya adalah produk_penyuplai_store
     Route::post('/produk-penyuplai', [ProdukPenyuplaiController::class, 'store'])->name('produk_penyuplai.store');
-    // jangan simpan route ini di bawah route produk_penyuplai.show karena nanti route itu sialan itu akan menimopa route di bawah ini
-    // route tipe dapaatkan, ke url /produk-penyuplai/cek-kategori-dan-penyuplai, ke ProdukPenyuplaiController, ke method cek_kategori_dan_penyuplai, name nya adalah cek_kategori_dan_penyuplai
+    // jangan simpan route ini di bawah route produk_penyuplai.show karena nanti route sialan itu akan menimopa route di bawah ini
+    // route tipe dapaatkan, ke url /produk-penyuplai/cek-kategori-dan-penyuplai, ke ProdukPenyuplaiController, ke method cek_kategori_dan_penyuplai, name nya adalah produk_penyuplai.cek_kategori_dan_penyuplai
     Route::get('/produk-penyuplai/cek-kategori-dan-penyuplai', [ProdukPenyuplaiController::class, 'cek_kategori_dan_penyuplai'])->name('produk_penyuplai.cek_kategori_dan_penyuplai');
     // route tipe dapatkan, ke url /produk-penyuplai/ kirimkan produk_id, ke ProdukPenyuplaiController, ke method show, name nya adalah produk_penyuplai.show
     Route::get('/produk-penyuplai/{produk_penyuplai_id}', [ProdukPenyuplaiController::class, 'show'])->name('produk_penyuplai.show');
@@ -161,11 +161,13 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // route tipe letakkan, ke url /pengeluarn/ kirimkan pengeluaran_id anggaplah 1, ke PengeluaranController, ke method update, name nya adalah pengeluaran.update
     Route::put('/pengeluaran/{pengeluaran_id}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
     // Route tipe kirim, ke url /pengeluaran/destroy, ke PengeluaranController, ke method destroy, namenya adalah pengeluaran.destroy
-    Route::post('/pengeluaran/destroy', [PengeluaranController::class, 'destroy'])->name('pengeluarn.destroy');
+    Route::post('/pengeluaran/destroy', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
 
     // pembelianz
     // route tipe dapatkan, ke url /pembelian, ke PembelianController, ke method index, name nya adalah pembelian.index
     Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+    // route tipe dapatkan, ke url /pembelian/cek-penyuplai-dan-produk-penyuplai ke PembelianController, ke method cek_penyuplai_dan_produk_penyuplai, name nya adalah cek_penyuplai_dan_produk_penyuplai
+    Route::get('/pembelian/cek-penyuplai-dan-produk-penyuplai', [PembelianController::class, 'cek_penyuplai_dan_produk_penyuplai'])->name('pembelian.cek_penyuplai_dan_produk_penyuplai');
     // route tipe dapatkan, ke url /pembelian/penyuplai, ke PembelianController, ke method penyuplai, name nya adalah pembelian.penyuplai
     Route::get('/pembelian/penyuplai', [PembelianController::class, 'penyuplai'])->name('pembelian.penyuplai');
     // route tipe store, ke url /pembelian, ke PembelianController, ke method store, name nya adalah pembelian.store
@@ -174,8 +176,13 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // route tipe dapatkan, ke url /pembelian/create/ lalu kirimkan penyuplai_id, ke PembelianContoller, ke method create, name nya adalah pembelian.create
     Route::get('/pembelian/create/{penyuplai_id}', [PembelianController::class, 'create'])->name('pembelian.create');
     // pembelian detail
+    // route tipe dapatkan, ke url /pembelian-deteail/data/ kirimkan pembelian_id, ke PembelianDetailController, ke method data, name nya adalah pembelian_detail.data
 	Route::get('/pembelian-detail/data/{pembelian_id}', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
     // route tipe dapatkan, ke url /pembelian-detail, ke PembelianDetailController, ke method index, name nya adalah pembelian_detail.index
     Route::get('/pembelian-detail', [PembelianDetailController::class, 'index'])->name('pembelian_detail.index');
-    Route::get('/pembelian-detail/loadform/{diskon}/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.load_form');
+    // route tipe dapatkan, ke url /pembelian-detail/produk-penyuplai lalu kirimkan penyuplai_id, ke PembelianDetailController, ke method produk_penyuplai, name nya adalah pembelian_detail.produk_penyuplai
+    Route::get('/pembelian-detail/produk-penyuplai/{penyuplai_id}', [PembelianDetailController::class, 'produk_penyuplai'])->name('pembelian_detail.produk_penyuplai');
+    // route tipe kirim, ke url /pembelian-detail, ke PembelianDetailController, ke method store, name nya adalah pembelian_detail.store
+    Route::post('/pembelian-detail', [PembelianDetailController::class, 'store'])->name('pembelian_detail.store');
+    Route::get('/pembelian-detail/reload-form/{total}', [PembelianDetailController::class, 'reload_form'])->name('pembelian_detail.reload_form');
 });
