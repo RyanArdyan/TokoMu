@@ -64,15 +64,16 @@ class PembelianDetailController extends Controller
 	// misalnya $pembelian_id berisi angka 1 maka ambil semua pembelian_detail yang column pembelian_id nya berisi angka 1
 	public function data($pembelian_id)
 	{
-        // :with() berarti pemuatan bersemangat, aku melakukan itu karena 1 pembelian detail memiliki 1 pembelian atau 1 pembelian deteil milik 1 pembelian
+        // :with() berarti pemuatan bersemangat, aku melakukan itu karena 1 pembelian detail milik 1 pembelian
 		// misalnya $pembelian_id berisi angka 1 maka ambil semua pembelian_detail yang column pembelian_id nya berisi angka 1
-		// berisi table pembelian_detail berelasi dengan table produk_penyuplai
+		// berisi table pembelian_detail berelasi dengan table produk_penyuplai, dimana value column pembelian_id sama dengan value $pembelian_id, lalu dapatkan semua data nya
 		$beberapa_pembelian_detail = PembelianDetail::with(['produk_penyuplai'])->where('pembelian_id', $pembelian_id)->get();
 
         // $data = [];
 		// buat array kosong
 		$data = array();
 		// columns berikut milik table pembelian
+		// $total_barang berisi value 0
 		$total_barang = 0;
 		$total_harga = 0;
 
@@ -82,18 +83,19 @@ class PembelianDetailController extends Controller
 			// $row = []
 			// $row nantinya akan menjadi array assosiatif
 			$row = array();
-			// table pembelian_detail berelasi dengan table produk
-			// contoh $row = ['nama_produk' => '...', 'harga_beli' => '...']
+			// table pembelian_detail berelasi dengan table produk_penyuplai
+			// contoh $row = ['nama_produk' => '...', 'harga' => '...']
 			// membuat dan menambah array assosiatif
-			// berisi pembelian_detail memanggil relasi nya yaitu produk_penyuplai
+			// berisi pembelian_detail memanggil relasi nya yaitu produk_penyuplai lalu value column nama_produk
 			$row['nama_produk'] = $pembelian_detail->produk_penyuplai['nama_produk'];
 			$row['harga'] = rupiah_bentuk($pembelian_detail->harga);
 			$row['jumlah'] = '
 				<input type="number" class="form-control input-sm quantity" data-id="' . $pembelian_detail->pembelian_detail_id . '" value="' . $pembelian_detail->jumlah . '">';
 			$row['subtotal'] = rupiah_bentuk($pembelian_detail->subtotal);
+			// buat attribute data-pembelian-detail-id yang menyimpan value column pembelian_detail_id
 			$row['action'] = '
 			<div class="btn btn-group">
-				<button onclick="deleteData(`'. route('pembelian-detail.destroy', $pembelian_detail->pembelian_detail_id) . '`)" class="btn btn-sm btn-danger">Delete</button>
+				<button data-pembelian-detail-id="' . $pembelian_detail->pembelian_detail_id . '" class="tombol_hapus btn btn-sm btn-danger">Delete</button>
 			</div>';
 			// $data adalah array yang berisi array
 			// $data = [
@@ -119,7 +121,7 @@ class PembelianDetailController extends Controller
 			',
 			// simpan total_harga misalnya Rp 1.000.000 di column total_harga
 			'subtotal' => '
-				<div class="total hide">' . $total_harga . '</div>
+				<div class="total_harga hide">' . $total_harga . '</div>
 			',
 			'action' => ''
 		];
@@ -232,13 +234,13 @@ class PembelianDetailController extends Controller
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $pembelian_id_detail)
+	public function update(Request $request, $pembelian_detail_id)
 	{
         // copas
         // Detail PembelianDetail
-        $detail = PembelianDetail::where('pembelian_id_detail', $pembelian_id_detail)->first();
+        $detail = PembelianDetail::where('pembelian_detail_id', $pembelian_detail_id)->first();
         // Update
-        PembelianDetail::where('pembelian_id_detail', $pembelian_id_detail)->update([
+        PembelianDetail::where('pembelian_detail_id', $pembelian_detail_id)->update([
         	'jumlah' => $request->jumlah,
         	'subtotal' => $detail->harga_beli * $request->jumlah
         ]);
@@ -250,35 +252,44 @@ class PembelianDetailController extends Controller
 	}
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Menghapus 1 baris data pembelian_detail
 	 *
-	 * @param  int  $id
+	 * @param  int  $pembelian_detail_id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id)
+	public function destroy($pembelian_detail_id)
     {
-        $detail = PembelianDetail::where('pembelian_id_detail', $id)->first();
-        $detail->delete();
-        return response()->json(null, 204);
+		// ambil detail_pembelian_detail berdasarkan pembelian_detail_id
+		// berisi PembelianDetail dimana value column pembelian_detail_id sama dengan value parameter $pembelian_detail_id, baris data pertama
+        $detail_pembelian_detail = PembelianDetail::where('pembelian_detail_id', $pembelian_detail_id)->first();
+		// hapus detail_pembelian_detail yang dipilih
+		// detail_pembelian_detail dihapus
+        $detail_pembelian_detail->delete();
+        return response()->json([
+			// key status berisi value 200, ini akan di pakai script
+			'status' => 200,
+			// key message akan memberi tau backend developer yang sedang menguji API bahwa pembelian detail berhasil dihapus.
+			'message' => 'Detail Pembelian Berhasil Dihapus.'
+		]);
     }
 
-    public function reload_form($total)
+    public function reload_form($total_harga)
 	{	
 		// misalnya, 300.000 - (100 * 300.000)
-		$bayar = $total - (100 * $total);
+		$bayar = $total_harga - (100 * $total_harga);
 
 		// kembalikkan tanggapan berupa json lalu kirimkan data
 		return response()->json([
             // helpers rupiah_bentuk
-			// key total_rp berisi panggil fungsi rupiah_bentuk di helpers.php lalu kirimkan $total seagai argumen
+			// key total_rp berisi panggil fungsi rupiah_bentuk di helpers.php lalu kirimkan $total_harga seagai argumen
 			// anggalpah berisi Rp 300.000
-			'total_rp' => rupiah_bentuk($total),
+			'total_rp' => rupiah_bentuk($total_harga),
 			// anggaplah berisi 300000
-			'bayar' => $bayar,
+			'bayar' => $total_harga,
 			// anggaplah berisi Rp 300.000
-			'bayar_rp' => rupiah_bentuk($bayar),
+			'bayar_rp' => rupiah_bentuk($total_harga),
 			// anggaplah berisi Senilai tiga ratus ribu rupiah 
-			'terbilang' => ucwords(terbilang($bayar)),
+			'terbilang' => ucwords(terbilang($total_harga)),
 		]);
 	}
 }

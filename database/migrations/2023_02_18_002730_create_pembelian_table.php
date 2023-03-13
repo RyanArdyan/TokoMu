@@ -25,7 +25,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->integer('total_barang');
             $table->bigInteger('total_harga');
-            $table->bigInteger('bayar');
             $table->timestamps();
         });
     }

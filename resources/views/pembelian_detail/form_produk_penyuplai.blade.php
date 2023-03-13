@@ -9,7 +9,7 @@
 
     <div class="form-group">
         <label for="produk_penyuplai_id">produk_penyuplai_id</label>
-        <input name="produk_penyuplai_id" id="produk_penyuplai_id" type="text" placeholder="Input ini akan diisi jika aku sudah click tombol pilih di modal pilih produk penyuplai" readonly>
+        <input name="produk_penyuplai_id" id="produk_penyuplai_id" type="text" placeholder="Input ini akan diisi jika aku sudah click tombol pilih di modal pilih produk penyuplai" readonly size="100%">
     </div>
 </form>
 {{-- akhir form yang hidden / disembunyikan --}}

@@ -7,7 +7,6 @@
                 <th scope="col">Penyuplai</th>
                 <th scope="col">Total Barang</th>
                 <th scope="col">Total Harga</th>
-                <th scope="col">Total Bayar</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>

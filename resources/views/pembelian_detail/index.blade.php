@@ -272,7 +272,7 @@
             url: "{{ route('pembelian_detail.store') }}",
             // panggil route tipe POST
             type: "POST",
-            // laravel mewajibkan keamanan csrf
+            // laravel mewajibkan keamanan dari serangan csrf
             // tajuk-tajuk berisi object
             headers: {
                 // berisi panggil element meta, attribute name="csrf_token", value attribute content
@@ -299,8 +299,13 @@
     });
 
 
-    // hapus
-    function deleteData(url) {
+    
+
+    // jika document di click, yang class adalah .tombol_hapus maka jalankan fungsi berikut
+    $(document).on("click", ".tombol_hapus", function() {
+        // berisi panggil .tombol_hapus lalu ambil value atribute data-pebelian-detail-id
+        let pembelian_detail_id = $(this).data("pembelian-detail-id");
+        // tampilkan notifikasi penghapusan menggunakan sweetalert
         Swal.fire({
             title: 'Apakah anda yakin?',
             text: "Anda tidak akan dapat mengembalikan ini!",
@@ -309,25 +314,43 @@
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Ya, hapus!'
-        }).then((result) => {
+        })
+        // kemudian, jalankan fungsi berikut dam ambil hasil pilihan user yaitu ya atau tidak
+        .then((result) => {
+            // jika user pilih tombol ya
+            // jika hasil adalah konfirmasi
             if (result.isConfirmed) {
-                $.post(url, {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),
-                        '_method': 'delete'
-                    })
+                // jquery lakukan ajax
+                $.ajax({
+                    // url memanggil /pembelian/destroy lalu kirimkan value variable pembelian_detail_id
+                    url: `/pembelian-detail/destroy/${pembelian_detail_id}`,
+                    // route tipe kirim
+                    type: "POST",
+                    // laravel mewajibkan keamanan dari serangan csrf
+                    // tajuk-tajuk berisi object
+                    headers: {
+                        // berisi panggil element meta, attribute name="csrf_token", value attribute content
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                })
+                    // jika selesai dan berhasil maka jalankan fungsi berikut lalu ambil tanggapan nya
                     .done(function(resp) {
-                        // notifkasi
-                        Swal.fire(
-                            'Dihapus!',
-                            'Berhasil menghapus transaksi pembelian.',
-                            'success'
-                        );
-                        // reload ajax table
-                        table_pembelian_detail.ajax.reload();
+                        // jika value tangapan.status sama dengan 200 maka
+                        if (resp.status === 200) {
+                            // tampilkan notifikasi menggunakan sweetalert
+                            Swal.fire(
+                                'Dihapus!',
+                                'Detail Pembelian Berhasil Dihapus.',
+                                'success'
+                            );
+                            // karena data yang dipilih sudah hapus maka ambil lagi semua data table pembelian_detail
+                            // panggil variable table_pembelian_detail, lalu ajax nya di muat ulang
+                            table_pembelian_detail.ajax.reload();
+                        };
                     });
             };
         });
-    };
+    });
 
     // jika aku memasukkan diskon
     // diskon
@@ -344,13 +367,17 @@
 
     // fungsi reload_form
     function reload_form() {
-        // panggil #total_harga di form_pembelian.blade lalu diisi dengan text .total yang di buat di PembelianDetailController, method data
-        $("#total_harga").val($('.total').text());
+        // berisi text milik .total_harga yang di buat di PembelianDetailController, method data
+        let total_harga = $('.total_harga').text();
+        // panggil #total_harga di form_pembelian.blade lalu diisi dengan value variable total_harga
+        $("#total_harga").val(total_harga);
         // panggil #total_barang di form_pembelian.blade lalu diisi dengan text dari .total_item yang di buat di PembelianDetailController, method data
         $("#total_barang").val($('.total_barang').text());
+        // panggil #show_total_barang lalu diisi dengan text milik .total_barang
+        $("#show_total_barang").val($('.total_barang').text());
 
-        // panggil ajax tipe dapatkan, panggil url /pembelian-detail/reload-form/ lalu kirimkan text .total yang di dapatkan dari PembelianDetailController, ke method data
-        $.get(`{{ url('/pembelian-detail/reload-form') }}/${$('.total').text()}`)
+        // panggil ajax tipe dapatkan, panggil url /pembelian-detail/reload-form/ lalu kirimkan value variable total_harga
+        $.get(`{{ url('/pembelian-detail/reload-form') }}/${total_harga}`)
             // jika berhasil maka jalankan fungsi berikut lalu ambil tanggapan
             .done(response => {
                 // #total_rp di form_pembelian.blade lalu diisi dengan response.total_rp

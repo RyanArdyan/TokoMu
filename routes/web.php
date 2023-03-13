@@ -184,5 +184,7 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::get('/pembelian-detail/produk-penyuplai/{penyuplai_id}', [PembelianDetailController::class, 'produk_penyuplai'])->name('pembelian_detail.produk_penyuplai');
     // route tipe kirim, ke url /pembelian-detail, ke PembelianDetailController, ke method store, name nya adalah pembelian_detail.store
     Route::post('/pembelian-detail', [PembelianDetailController::class, 'store'])->name('pembelian_detail.store');
-    Route::get('/pembelian-detail/reload-form/{total}', [PembelianDetailController::class, 'reload_form'])->name('pembelian_detail.reload_form');
+    Route::get('/pembelian-detail/reload-form/{total_harga}', [PembelianDetailController::class, 'reload_form'])->name('pembelian_detail.reload_form');
+    // route tipe kirim, ke url /pembelian-detail/destroy/ lalu kirimkan pembelian_detail_id ke PembelianDetailController, ke method destroy, name nya adalah pembelian_detail.destroy
+    Route::post('/pembelian-detail/destroy/{pembelian_detail_id}', [PembelianDetailController::class, 'destroy'])->name('pembelian_detail.destroy');
 });

@@ -56,9 +56,6 @@ class PembelianController extends Controller
             ->addColumn('diskon', function ($pembelian) {
                 return $pembelian->diskon . "%";
             })
-            ->addColumn('bayar', function ($pembelian) {
-                return rupiah_bentuk($pembelian->bayar);
-            })
             ->addColumn('action', function ($pembelian) {
                 $btn = '
                 <div class="btn-group">
@@ -118,9 +115,7 @@ class PembelianController extends Controller
             // total_barang diisi 0 secara sementara 
             'total_barang' => 0,
             // total_harga diisi 0 secara sementara
-            'total_harga' => 0,
-            // bayar diisi 0 secara sementara
-            'bayar' => 0
+            'total_harga' => 0
         ]);
 
         // Membuat Session
@@ -149,7 +144,6 @@ class PembelianController extends Controller
             'total_item' => $request->total_item,
             'total_harga' => $request->total_harga,
             'diskon' => $request->diskon,
-            'bayar' => $request->bayar
         ]);
 
         // detail pembelian

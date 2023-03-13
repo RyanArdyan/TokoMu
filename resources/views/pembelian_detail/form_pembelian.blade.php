@@ -12,25 +12,22 @@
     {{-- total barang --}}
     <label for="total_barang">Total Barang</label>
     <input type="text" name="total_barang" id="total_barang" placeholder="total barang" readonly><br>
-
-    <label for="bayar">Bayar</label>
-    {{-- bayar --}}
-    <input type="text" name="bayar" id="bayar" placeholder="bayar" readonly>
     {{-- akhir input yang hidden --}}
 
     {{-- input yang show --}}
     <div class="card-body">
+        {{-- total barang --}}
         <div class="form-group">
-            {{-- total harga --}}
+            <label for="total_barang">Total Barang</label>
+            <input id="show_total_barang" name="total_barang" type="text" class="form-control"
+                readonly>
+        </div>
+        {{-- total harga --}}
+        <div class="form-group">
             <label for="total_harga">Total Harga</label>
             <input id="total_rp" name="total_rp" type="text" class="form-control"
                 readonly>
         </div>
-        {{-- bayar --}}
-        <div class="form-group">
-            <label for="bayar">Bayar</label>
-            <input id="bayar_rp" name="bayar_rp" type="text" class="form-control"
-                readonly>
         </div>
     </div>
     <!-- /.card-body -->
