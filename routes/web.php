@@ -172,9 +172,14 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::get('/pembelian/penyuplai', [PembelianController::class, 'penyuplai'])->name('pembelian.penyuplai');
     // route tipe store, ke url /pembelian, ke PembelianController, ke method store, name nya adalah pembelian.store
     Route::post('/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
+    // route tipe dapatkan, ke url /pembelian/data ke PembelianController, ke method data, name nya adalah pemeblian.data
     Route::get('/pembelian/data', [PembelianController::class, 'data'])->name('pembelian.data');
     // route tipe dapatkan, ke url /pembelian/create/ lalu kirimkan penyuplai_id, ke PembelianContoller, ke method create, name nya adalah pembelian.create
     Route::get('/pembelian/create/{penyuplai_id}', [PembelianController::class, 'create'])->name('pembelian.create');
+    // route tipe dapatkan ke url /pembelian/ kirimkan pembelian_id, ke PembelianContoller, method show, name nya adalah pembelian.show
+    Route::get('/pembelian/{pembelian_id}', [PembelianController::class, 'show'])->name('pembelian.show');
+    // route tipe hapus, ke url /pembelian/ kirimkan pembelian_id, ke PembelianController, ke method destroy, name nya adalah pembelian.destroy
+    Route::delete('/pembelian/{pembelian_id}', [PembelianController::class, 'hapus'])->name('pembelian.hapus');
     // pembelian detail
     // route tipe dapatkan, ke url /pembelian-deteail/data/ kirimkan pembelian_id, ke PembelianDetailController, ke method data, name nya adalah pembelian_detail.data
 	Route::get('/pembelian-detail/data/{pembelian_id}', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
@@ -186,5 +191,6 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::post('/pembelian-detail', [PembelianDetailController::class, 'store'])->name('pembelian_detail.store');
     Route::get('/pembelian-detail/reload-form/{total_harga}', [PembelianDetailController::class, 'reload_form'])->name('pembelian_detail.reload_form');
     // route tipe kirim, ke url /pembelian-detail/destroy/ lalu kirimkan pembelian_detail_id ke PembelianDetailController, ke method destroy, name nya adalah pembelian_detail.destroy
+    Route::put('/pembelian-detail/{pembelian_detail_id}', [PembelianDetailController::class, 'update'])->name('pembelian_detail.update');
     Route::post('/pembelian-detail/destroy/{pembelian_detail_id}', [PembelianDetailController::class, 'destroy'])->name('pembelian_detail.destroy');
 });

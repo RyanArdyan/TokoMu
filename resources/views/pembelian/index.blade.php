@@ -39,14 +39,9 @@
             {{-- termasuk element table dan form --}}
             @include('pembelian.table')
 
-            <div class="mt-2">
-                {{-- Fitur hapus beberapa pembelian berdasarkan kotak centang yang di checklist --}}
-                <button id="tombol_hapus" type="button" class="btn btn-danger btn-flat btn-sm">
-                    <i class="mdi mdi-delete"></i>
-                    Hapus
-                </button>
-            </div>
-
+            {{-- jika tombol lihat detail pembelian di click maka panggil views/pembelian/modal_detail --}}
+            {{-- termasuk jika pembelian.detail --}}
+            @includeIf('pembelian.modal_detail')
         </div>
     </div>
 @endsection
@@ -98,39 +93,51 @@ $.ajax({
         };
     });
 
-let table = $("#table-pembelian").DataTable({
+// berisi panggil #table_pembelian lalu gunakan datatable
+let table = $("#table_pembelian").DataTable({
+    // ketika data masih dimuat maka tampilkan animasi processing
+    // proses: benar
     processing: true,
+    // autoLebar: mati
     autoWidth: false,
+    // gunakan serverSide agar ketika data sudah diatas 10.000 maka tidak akan lemot dalam menampilkan data
+    // serverSisi: benar
     serverSide: true,
+    // lakukan ajax
+    // ajax berisi object
     ajax: {
+        // url panggil route pembelian.data
         url: "{{ route('pembelian.data') }}"
     },
+    // gunakan bahasa indonesia di package datatable
     language: {
-            url: "/terjemahanDatatable/indonesia.json"
+        // url memamnggil folder public/terjemahkanDatatable/indonesia.json
+        url: "/terjemahan_datatable/indonesia.json"
     },
-    columns: [
+    // buat tbody, tr dan td lalu masukkan data ke dalamnya
+    columns: 
+    [
+        // lakukan pengulangan nomor, searchable agar tidak bisa dicari, sortable agar menghilangkan icon anak panah agar datanya tidak bisa dibalik
         {data: 'DT_RowIndex', searchable: false, sortable: false},
         {data: 'tanggal'},
         {data: 'penyuplai'},
-        {data: 'total_item'},
+        {data: 'total_barang'},
         {data: 'total_harga'},
-        {data: 'diskon'},
-        {data: 'bayar'},
         {data: 'action', searchable: false, sortable: false}
     ],
 });
 
 // table detail
-let table1 = $(".table-detail").DataTable({
+// berisi #table_detail gunakan datatable
+let table_detail = $("#table_detail").DataTable({
     processing: true,
     bsort: false,
     dom: 'Brt',
     columns: [
         // nomor
         {data: 'DT_RowIndex', searchable: false, sortable: false},
-        {data: 'kode_produk'},
         {data: 'nama_produk'},
-        {data: 'harga_beli'},
+        {data: 'harga'},
         {data: 'jumlah'},
         {data: 'subtotal'},
     ]
@@ -173,7 +180,9 @@ $("#table_penyuplai").DataTable({
             searchable: false
         }
     ],
+    // gunakan bahasa indonesia di package datatable
     language: {
+        // panggil folder public/terjemahan_datatable
         url: "/terjemahan_datatable/indonesia.json"
     }
 });
@@ -184,7 +193,7 @@ function pilih_penyuplai() {
 
 // Jika #tombol_pembelian_baru di click maka jalankan fungsi berikut
 $("#tombol_pembelian_baru").on("click", function() {
-    // apnggil #modal_penyuplai lalu modal nya di munculkan
+    // panggil #modal_penyuplai lalu modal nya di munculkan
     $("#modal_penyuplai").modal("show");
 })
 
@@ -226,60 +235,46 @@ $("#form_tambah").on("submit", function(e) {
 });
 
 // detail pembelian
-function showDetail(url) {
+// fungsi show_detail, parameter berisi url
+function show_detail(url) {
+    // #modal_detail modalnya di tampilkan
     $("#modal_detail").modal("show");
-    table1.ajax.url(url);
-    table1.ajax.reload();
+    // table_detail panggil ajax url berisi url
+    table_detail.ajax.url(url);
+    // table_detail, ajax nya, di muat ulang
+    table_detail.ajax.reload();
 };
 
-function deleteData(url) {
-    if (confirm('Yakin Ingin Menghapus Data Terpilih?')) {
-        $.post(url, {
-            '_token': $('[name=csrf-token]').attr('content'),
-            '_method': 'delete'
-        })
+// hapus satu baris 
+// parameter url berisi route
+function hapus_data(url) {
+    // tampilkan konfirmasi penghapusan
+    Swal.fire({
+        title: 'Apakah anda yakin?',
+        text: "Anda tidak akan dapat mengembalikan ini!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!'
+    })
+    // kemudian hasilnya
+    .then((result) => {
+        // jika hasilnya dikonfirmasi
+        if (result.isConfirmed) {
+            // lakukan ajax tipe kirim, kirim url
+            $.post(url, {
+                // laravel mewajibkan keamanan dari serangan csrf
+                '_token': $('[name=csrf-token]').attr('content'),
+                // panggil route tipe hapus
+                '_method': 'delete'
+            })
+            // jika selesai dan berhasil maka
             .done((response) => {
                 table.ajax.reload();
             })
-            .fail((errors) => {
-                alert('Tidak Dapat Menghapus Data');
-                return;
-            })
-    }
+        };
+    });
 }
-
-
-// Delete
-$("#tombol_hapus").on("click", function(e) {
-    if ($("input:checked").length > 0) {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // alasan menggunakan syntax ini adalah karena input name berisi id[]
-                // .serialize akan mengirimkan semua data pada table karena table disimpan di dalam form
-                $.post('/pembelian/hapus-terpilih', $('.form-pembelian').serialize())
-                    .done(function(resp) {
-                        // notifkasi
-                        Swal.fire(
-                            'Dihapus!',
-                            'Berhasil menghapus pembelian yang dipilih.',
-                            'success'
-                        );
-                        // reload ajax table
-                        table.ajax.reload();
-                    });
-            };
-        });
-    } else {
-        Swal.fire('Anda belum memilih baris data');
-    };
-});
 </script>
 @endpush

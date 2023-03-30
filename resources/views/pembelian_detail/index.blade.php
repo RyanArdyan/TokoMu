@@ -7,9 +7,10 @@
     <style>
         /* menyembunyikan baris table / tr terakhir */
         /* panggil #table_pembelian_detail, tbody, tr, anak terakhir */
-        /* #table_pembelian_detail tbody tr:last-child {
+        /* tr terakhir berfungsi untuk diambil value jumlah dan subtotal nya lalu disimpan dalam input total_harga dan total_barang */
+        #table_pembelian_detail tbody tr:last-child {
             display: none;
-        }; */
+        };
         /* tampilan: tidak ada */
     </style>
 @endpush
@@ -27,9 +28,6 @@
 
                     {{-- termasuk ada jika modal pembelian_detail.modal_produk_penyuplai di panggil --}}
                     @include('pembelian_detail.modal_produk_penyuplai')
-
-                    {{-- termasuk view pembelian_detail.form_produk_penyuplai --}}
-                    @include('pembelian_detail.form_produk_penyuplai')
 
                     <div class="row mb-2">
                         <div class="col-sm-6">
@@ -63,11 +61,11 @@
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <div class="callout callout-danger">
-                                        {{-- <h1 id="total_pembayaran">{{ rupiah_bentuk($detail_total_harga_pembelian) }}</h1> --}}
-                                        <h1 id="total_pembayaran">{{ rupiah_bentuk($detail_total_harga_pembelian) }}</h1>
+                                        {{-- attribute data-inputmask adalah attribute milik package input mask, jadi 1000 akan menjadi Rp 1.000 --}}
+                                        <h1  data-inputmask="'alias': 'decimal', 'prefix': 'Rp ', 'groupSeparator':  '.',  'removeMaskOnSubmit': true, 'autoUnMask': true, 'rightAlign': false, 'radixPoint': ','" id="total_pembayaran">{{ $detail_total_harga_pembelian }}</h1>
 
                                         <p id="total_pembayaran_format_terbilang">
-                                            {{ terbilang($detail_total_harga_pembelian) }}</p>
+                                            {{ terbilang($detail_total_harga_pembelian) }}</p>  
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
@@ -75,6 +73,7 @@
                             <!-- /.card -->
                         </div>
 
+                        {{-- col-md-6 akan membuat 2 column --}}
                         <div class="col-md-6">
                             <div class="card card-primary">
                                 <!-- /.card-header -->
@@ -82,13 +81,13 @@
                                 @include('pembelian_detail.form_pembelian')
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-check mt-1">
-                        {{-- Hapus --}}
-                        <button id="tombol_hapus" type="button" class="btn btn-danger btn-flat btn-sm"><i
-                                class="fa fa-trash"></i>
-                            Hapus</button>
+                        <button class="btn btn-sm btn-danger">
+                            <i class="fas fa-arrow-left"></i> 
+                            Kembali
+                        </button> 
+                        <button id="simpan_transaksi" type="submit" class="btn btn-sm btn-primary"><i
+                                class="fa fa-save"></i> Simpan Transaksi</button>
                     </div>
                 </div>
             </div>
@@ -105,10 +104,10 @@
     $("#table_produk_penyuplai").DataTable({
         // Jika data produk_penyuplai sedang dimuat maka tampilkan processing nya dulu
         processing: true,
-        // Jika data sudah lebih dari 10.000 maka tidak lemot karena serverSide nya true
+        // Jika data sudah lebih dari 10.000 maka tidak akan ngelag karena serverSide nya true
         // sisi server: benar
         serverSide: true,
-        // lakukan ajax, dan panggil route pembelian_detail.produk
+        // lakukan ajax, dan panggil route pembelian_detail.produk lalu kirimkan penyuplai_id
         ajax: "{{ route('pembelian_detail.produk_penyuplai', $detail_penyuplai->penyuplai_id) }}",
         // buat tbody, tr dan td lalu isi datanya
         columns: [
@@ -190,8 +189,8 @@
                 {
                     data: 'action',
                     name: 'action',
-                    sortable: false,
                     // menghilangkan icon anak panah atau mematikan fitur balik data dari Z ke A
+                    sortable: false,
                     // tombol hapus tidak akan bisa di cari
                     searchable: false
                 }
@@ -207,6 +206,7 @@
             }
         })
         // pada draw.dt, jalankan fungsi berikut
+        // agar input produk_penyuplai_id yang hidden sampai input total_harga di update value nya dan component dikiri juga diupdate
         .on("draw.dt", function() {
             // panggil fungsi reload_form
             reload_form();
@@ -216,7 +216,7 @@
     // Update Jumlah Dan Subtotal
     // jika #jumlah diubah inputnya maka
     $(document).on("input", "#jumlah", function() {
-        let id_pembelian_detail = $(this).data("id");
+        let pembelian_detail_id = $(this).data("id");
         let jumlah = $(this).val();
         // jika input jumlah < 1
         if ($(this).val() < 1) {
@@ -228,7 +228,7 @@
         } else {
             // setelah waktu selesai maka lakukan ajax
             setTimeout(() => {
-                $.post(`/pembelian-detail/${id_pembelian_detail}`, {
+                $.post(`/pembelian-detail/${pembelian_detail_id}`, {
                         _method: 'PUT',
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         jumlah: $(this).val()
@@ -254,10 +254,8 @@
         let produk_penyuplai_id = $(this).data('produk-penyuplai-id');
         // berisi panggil value dari .pilih_produk_penyuplai, attribute data-harga
         let harga = $(this).data('harga');
-        // cetak value produk_penyuplai_id di menu console
-        // console.log(produk_penyuplai_id, harga);
 
-        // berisi ambil nilai input #pembelian_id yang disimpan dalam form_produk_penyuplai.blade
+        // berisi ambil nilai input #pembelian_id yang disimpan dalam form_pembelian.blade
         let pembelian_id = $("#pembelian_id").val();
         // panggil #produk_penyuplai_id yang disimpan di form_produk_penyuplai.blade diisi dengan variable produk_penyuplai_id
         $('#produk_penyuplai_id').val(produk_penyuplai_id);
@@ -292,8 +290,8 @@
                 // jika tanggapan.status sama dengan 200 maka
                 if (resp.status === 200) {
                     // Tampilkan pembelian_detail yang baru di views pembelian_detail.index
+                    // table_pembelian_detail, ajax nya di reload
                     table_pembelian_detail.ajax.reload();
-                    console.log(resp.pesan);
                 };
             });
     });
@@ -365,76 +363,79 @@
         };
     });
 
-    // fungsi reload_form
+    // fungsi reload_form agar input produk_penyuplai_id yang hidden sampai input total_harga di update value nya dan component dikiri juga diupdate
     function reload_form() {
-        // berisi text milik .total_harga yang di buat di PembelianDetailController, method data
-        let total_harga = $('.total_harga').text();
-        // panggil #total_harga di form_pembelian.blade lalu diisi dengan value variable total_harga
-        $("#total_harga").val(total_harga);
         // panggil #total_barang di form_pembelian.blade lalu diisi dengan text dari .total_item yang di buat di PembelianDetailController, method data
         $("#total_barang").val($('.total_barang').text());
-        // panggil #show_total_barang lalu diisi dengan text milik .total_barang
-        $("#show_total_barang").val($('.total_barang').text());
+        // berisi text milik .total_harga yang di buat di PembelianDetailController, method data
+        let total_harga = $('.total_harga').text();
+        // panggil #total_harga di form_pembelian.blade lalu value nya diisi dengan value variable total_harga
+        $("#total_harga").val(total_harga);
+        // panggil #total_pembayaran lalu kasi value variable total_harga, jangan gunakan .text() karena itu akan menimpa package input mask
+        $("#total_pembayaran").val(total_harga);
 
-        // panggil ajax tipe dapatkan, panggil url /pembelian-detail/reload-form/ lalu kirimkan value variable total_harga
-        $.get(`{{ url('/pembelian-detail/reload-form') }}/${total_harga}`)
-            // jika berhasil maka jalankan fungsi berikut lalu ambil tanggapan
-            .done(response => {
-                // #total_rp di form_pembelian.blade lalu diisi dengan response.total_rp
-                $("#total_rp").val(response.total_rp);
-                $("#bayar_rp").val(response.bayar_rp);
-                $("#bayar").val(response.bayar);
-                // panggil #total_pembayaran di pembelian_detail.index lalu text nya diisi dengan response.bayar_rp
-                $("#total_pembayaran").text(response.bayar_rp);
-                $("#total_pembayaran_format_terbilang").text(response.terbilang);
-            })
-            // jika gagal maka jalankan fungsi berikut lalu ambil errorsnya
-            .fail(errors => {
-                // tampilkan alert yang berisi pesan berikut
-                alert('Tidak Dapat Menampilkan Data karena kode error.');
-                // selesai
-                return;
-            });
+
+
+        
     };
 
-    // Jika jumlah di input atau dimasukkan maka jalankan fungsi berikut
-    $(document).on("input", ".quantity", function(e) {
-        // ambil nilai attribute data-id
-        let id_pembelian_detail = $(this).data("id");
-        // konversi string ke integer
+    // jika jumlah di masukkan value maka jalankan fungsi beikut
+    // Jika document di masukkan value yang class nya adalah .jumlah maka jalankan fungsi berikut
+    $(document).on("input", ".jumlah", function() {
+        // ambil nilai attribute data-pembelian-detail-id
+        let pembelian_detail_id = $(this).data("pembelian-detail-id");
+        // konversi value milik .jumlah yang tipe nya string ke integer
+        // berisi ubah string ke integer panggil .jumlah lalu amil value nya maksudnya ambil value dari attribute value=""
         let jumlah = parseInt($(this).val());
-        // jika jumlah lebih kecil dari satu atau tidak ada jumlah
+        // jika jumlah lebih kecil dari 1 berarti 0 atau tidak ada jumlah
         if (jumlah < 1 || !jumlah) {
+            // value dari .jumlah disetel ke 1
+            // panggil .jumlah lalu value nya diisi 1
             $(this).val(1);
+            // tampilkan notifikasi menggunakan sweetalert
             Swal.fire("Jumlah Tidak Boleh Lebih Kecil Dari 1");
-            return;
-        };
-        if (jumlah > 10000) {
-            $(this).val(10000);
-            Swal.fire("Jumlah Tidak Boleh Lebih Besar Dari 10.000");
-            return;
-        };
-        setTimeout(function() {
-            // ajax type kirim
-            // ke method update karena methodnya adalah put
-            $.post(`/pembelian-detail/${id_pembelian_detail}`, {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                _method: "PUT",
-                // kirimkan jumlah
-                jumlah: jumlah,
-            })
-            .done(response => {
+        }
+        // jumlah produk yang dibeli tidak boleh lebih besar dari 1000 berarti dimulai dari 1001
+        // lain jika jumlah lebih besar dari 1000 berarti dimulai dari 1001
+        else if (jumlah > 1000) {
+            // panggil .jumlah lalu value nya di setel ke 1000
+            // panggil .jumlah lalu value nya diisi 1000
+            $(this).val(1000);
+            // panggil notifikasi menggunakan sweetalert
+            Swal.fire("Jumlah Tidak Boleh Lebih Besar Dari 1.000");
+        }
+        // && berarti semua pengecekan harus bernilai true
+        // misalnya user memasukkan jumlah yang bernilai 900 maka cek apakah 900 lebih besar dari 0? jawaban nya adalah true lalu apakah 900 lebih kecil dari 1001? jawabannya true, maka kode akan di eksekusi
+        // jumlah minimal 1 dan maksimal 1000
+        // lain jika jumlah lebih besar dari 0 berart 1 dan jumlah lebih kecil dari 1001 berarti 1000
+        else if (jumlah > 0 && jumlah < 1001) {
+            // setelah 3 detik maka eksekusi kode
+            setTimeout(function() {
+                // ajax type kirim
+                // ke method update karena methodnya adalah put
+                $.post(`/pembelian-detail/${pembelian_detail_id}`, {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    _method: "PUT",
+                    // kirimkan jumlah agar bisa ditangkap oleh variable $request di method update
+                    jumlah: jumlah,
+                })
+                .done(response => {
                     table_pembelian_detail.ajax.reload();
-            })
+                })
                 // .fail diperlukan ketika debug
                 .fail(errors => {
+                    // tampilkan notifikasi error menggunakan sweetalert
                     Swal.fire("Tidak Dapat Menyimpan Data Karena Code Error");
                     return;
-                });
-        }, 2000);
+                });                
+            }, 3000);
+        };
+        
     });
 
+    // jika tombol #simpan_transaksi di click maka jalankan fungsi berikut
     $("button#simpan_transaksi").on("click", function() {
+        // panggil #form_pembelian lalu di kirim
         $("#form_pembelian").submit();
     });
 </script>

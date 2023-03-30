@@ -18,7 +18,7 @@ class PembelianDetail extends Model
     protected $guarded = [];
 
     // relasi
-	//  1 pembelian_detail milik 1 produk_penyuplai atau 1 pembelian detail membeli 1 produk penyupalai atau 1 produk_penyuplai bisa banyak di beli pembelian_detail
+	//  1 pembelian_detail milik 1 produk_penyuplai atau 1 pembelian detail hanya bisa membeli 1 produk penyupalai atau 1 produk_penyuplai bisa banyak di beli pembelian_detail
     // publik fungsi produk
     public function produk_penyuplai() 
 	{
