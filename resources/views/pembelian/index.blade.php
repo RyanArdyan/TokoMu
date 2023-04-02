@@ -65,7 +65,7 @@ $.ajax({
         if (resp.message === 'Anda harus menambahkan minimal 1 penyuplai terlebih dahulu.') {
             // tampilkan notifikasi menggunakan sweetalert
             Swal.fire(
-                'Ada yang salah!',
+                'Penyuplai Belum Ditambahkan!',
                 'Anda harus menambahkan minimal 1 penyuplai terlebih dahulu!',
                 'error'
             )
@@ -123,6 +123,7 @@ let table = $("#table_pembelian").DataTable({
         {data: 'penyuplai'},
         {data: 'total_barang'},
         {data: 'total_harga'},
+        {data: 'status'},
         {data: 'action', searchable: false, sortable: false}
     ],
 });
@@ -275,6 +276,11 @@ function hapus_data(url) {
             })
         };
     });
+}
+
+function retur_pembelian(route)
+{
+    console.log(route);
 }
 </script>
 @endpush

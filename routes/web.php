@@ -14,6 +14,7 @@ use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\ProdukPenyuplaiController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PembelianDetailController;
+use App\Http\Controllers\ReturPembelianController;
 
 // hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
 // middleware untuk guest, guest di dapatkan dari App/Http/Kernel.php
@@ -193,4 +194,8 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // route tipe kirim, ke url /pembelian-detail/destroy/ lalu kirimkan pembelian_detail_id ke PembelianDetailController, ke method destroy, name nya adalah pembelian_detail.destroy
     Route::put('/pembelian-detail/{pembelian_detail_id}', [PembelianDetailController::class, 'update'])->name('pembelian_detail.update');
     Route::post('/pembelian-detail/destroy/{pembelian_detail_id}', [PembelianDetailController::class, 'destroy'])->name('pembelian_detail.destroy');
+    // route tipe get, ke url /pembelian/ kirimkan pembelian_id, ke PembelianController, ke method kembali, name nya adalah pembelian.kembali
+    Route::get('/pembelian/kembali/{pembelian_id}', [PembelianController::class, 'kembali'])->name('pembelian.kembali');
+    // retur pembelian
+    Route::post('/retur-pembelian/create', [ReturPembelianController::class, 'createReturPembelian']);
 });

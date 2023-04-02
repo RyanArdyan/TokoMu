@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // buat table kategori
         Schema::create('kategori', function (Blueprint $table) {
-            // Metode ini bigIncrementsmembuat kolom setara penambahan otomatis UNSIGNED BIGINT(kunci utama):
+            // Metode ini bigIncrements membuat kolom setara penambahan otomatis UNSIGNED BIGINT(kunci utama):
             $table->bigIncrements('kategori_id');
             // Metode ini membuat VARCHAR kolom yang setara dengan panjang yang diberikan dan harus unique
             $table->string('nama_kategori')->unique();

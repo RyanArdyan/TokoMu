@@ -65,7 +65,7 @@
                 if (resp.message === 'Anda belum membuat satu pun kategori.') {
                     // tampilkan notifikasi menggunakan sweetalert
                     Swal.fire(
-                        'Ada yang salah!',
+                        'Kategori belum ditambahkan!',
                         'Anda harus membuat minimal satu kategori terlebih dahulu!',
                         'error'
                     )

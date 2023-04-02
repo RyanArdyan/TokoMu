@@ -82,10 +82,12 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-sm btn-danger">
+                        {{-- jika tombol kembali di click maka arahkan ke halaman pembelian dan hapus pembelian terkait atau hapus pembelian berdasarkan pembelian_id --}}
+                        {{-- ke route pembelian.kembali lalu kirimkan pembelian_id --}}
+                        <a href="{{ route('pembelian.kembali', $pembelian_id) }}" class="btn btn-sm btn-danger">
                             <i class="fas fa-arrow-left"></i> 
                             Kembali
-                        </button> 
+                        </a> 
                         <button id="simpan_transaksi" type="submit" class="btn btn-sm btn-primary"><i
                                 class="fa fa-save"></i> Simpan Transaksi</button>
                     </div>
@@ -158,7 +160,7 @@
             // Web tidak akan lemot ketika data table pembelian_eetail sudah lebih dari 10.000 karena serverSide nya true
             // server sisi: benar
             serverSide: true,
-            // ajax memanggil route pembelian_detail.data
+            // ajax memanggil route pembelian_detail.data, kirimkan value $pembelian_id, anggaplah berisi 1
             ajax: "{{ route('pembelian_detail.data', $pembelian_id) }}",
             // jika kemudian berhasil maka jalankan fungsi berikut
             // akan membuat elemnent tbody, tr dan td
@@ -372,11 +374,7 @@
         // panggil #total_harga di form_pembelian.blade lalu value nya diisi dengan value variable total_harga
         $("#total_harga").val(total_harga);
         // panggil #total_pembayaran lalu kasi value variable total_harga, jangan gunakan .text() karena itu akan menimpa package input mask
-        $("#total_pembayaran").val(total_harga);
-
-
-
-        
+        $("#total_pembayaran").val(total_harga);     
     };
 
     // jika jumlah di masukkan value maka jalankan fungsi beikut
@@ -435,8 +433,19 @@
 
     // jika tombol #simpan_transaksi di click maka jalankan fungsi berikut
     $("button#simpan_transaksi").on("click", function() {
-        // panggil #form_pembelian lalu di kirim
-        $("#form_pembelian").submit();
+        // berisi text dari .total_barang
+        let total_barang = $(".total_barang").text();
+        // jika total_barang sama dengan "0", tipe datanya string bukan integer
+        if (total_barang === "0") {
+            // tampilkan notifikasi berisi pesan berikut
+            Swal.fire('Silahkan pilih produk terlebih dahulu.');
+        } 
+        // lain jika total_barang tidak sama dengan "0" misalnya "3" maka
+        else if (total_barang !== "0") {
+            // panggil #form_pembelian lalu di kirim
+            $("#form_pembelian").submit();            
+        };
+
     });
 </script>
 @endpush

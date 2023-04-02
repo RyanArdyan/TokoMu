@@ -20,6 +20,11 @@ class PembelianController extends Controller
      */
     public function index()
     {
+        // Pembelian::whereRaw('DATEDIFF(NOW(), created_at) > 1')->where('total_barang', 0)->delete();
+        
+        // hapus beberapa baris dari table pembelian yang column total_barang nya sama dengan 0 dan sudah lebih dari 60 menit
+        Pembelian::where('total_barang', 0)->whereDate('created_at', '<=', now()->subMinute(60))->delete();
+
         // ambil semua penyuplai
         // berisi penyuplai di pesan oleh column nama_penyuplai, data nya dari A ke Z, lalu dapatkan semua data nya
         $semua_penyuplai = Penyuplai::orderBy('nama_penyuplai', 'asc')->get();
@@ -32,12 +37,12 @@ class PembelianController extends Controller
     // memanggil data milik table pembelian 
     public function data()
     {
-        // tampilkan semua pembelian dimulai dari yang paling baru
-        // berisi pembelian dipesan oleh colum updated_at, menurun, dapatkan semua data
-        $pembelian = Pembelian::orderBy('updated_at', 'desc')->get();
+        // tampilkan semua pembelian yang column total harga nya tidak sama dengan 0 lalu urutkan data dimulai dari yang paling baru
+        // berisi pembelian dimana value column total_harga tidak sama dengan 0, dipesan oleh colum updated_at, menurun, dapatkan semua data
+        $semua_pembelian = Pembelian::where('total_harga', '!=', 0)->orderBy('updated_at', 'desc')->get();
         // syntax punya yajra
         // disini aku melakukan pengulangan
-        return DataTables::of($pembelian)
+        return DataTables::of($semua_pembelian)
             // nomor
             ->addIndexColumn()
             ->addColumn('tanggal', function ($pembelian) {
@@ -55,22 +60,39 @@ class PembelianController extends Controller
             ->addColumn('total_harga', function ($pembelian) {
                 return rupiah_bentuk($pembelian->total_harga);
             })
+            ->addColumn('status', function($pembelian) {
+                // jika value $pembelian->status sama dengan "Oke"
+                if ($pembelian->status === "Oke") {
+                    // return element p
+                    return "<p>$pembelian->status</p>";
+                }
+                // lain jika value $pembelian->status sama dengan Retur
+                else if ($pembelian->status === "Retur") {
+                    // return element p
+                    return "<p class='text-danger'>$pembelian->status</p>";
+                }
+            })
             ->addColumn('action', function ($pembelian) {
-                $btn = '
+                // data-toggle="keterangan_alat" adalah
+                return '
                 <div class="btn-group">
-                    <button onclick="show_detail(`' . route('pembelian.show', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
+                    <button data-toggle="katerangan_alat" data-placement="top" title="Lihat semua pembelian detailnya" onclick="show_detail(`' . route('pembelian.show', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i>
                     </button>
-                    <button onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
+
+                    <button data-toggle="katerangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
                         <i class="fas fa-trash"></i>
+                    </button>
+
+                    <button data-toggle="katerangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(`' . route('pembelian.retur_pembelian', $pembelian->pembelian_id)  . '`)" class="btn btn-danger btn-sm ml-2">
+                        <i class="mdi mdi-credit-card-refund"></i>
                     </button>
                 </div>
 				  ';
-                return $btn;
             })
             // jika aku membuat sebuah element di dalam colum maka harus dimasukkan ke dalam rawColumns
             // mentah column-column action
-            ->rawColumns(['action'])
+            ->rawColumns(['status', 'action'])
             // buat nyata
             ->make(true);
     }
@@ -117,7 +139,9 @@ class PembelianController extends Controller
             // total_barang diisi 0 secara sementara 
             'total_barang' => 0,
             // total_harga diisi 0 secara sementara
-            'total_harga' => 0
+            'total_harga' => 0,
+            // column status pada table pembelian menggunakan tipe data enum yang berisi pilihan 'retur', 'oke'
+            'status' => 'Oke'
         ]);
 
         // Membuat Session
@@ -296,9 +320,25 @@ class PembelianController extends Controller
      */
     public function hapus($pembelian_id) 
 	{
+        // ambil detail pembelian
+        // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
         $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
+        // detail pembelian di hapus
 		$detail_pembelian->delete();
 
+        // 
 		return response()->json('Berhasil menghapus 1 baris di table pembelian dan beberapa baris data di table pembelian_detail');
 	 }
+
+     public function kembali($pembelian_id)
+     {
+        // ambil detail pembelian
+        // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
+        $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
+        // detail pembelian di hapus
+		$detail_pembelian->delete();
+
+        // kembalikan lalu alihkan ke route pembelian.index
+        return redirect()->route('pembelian.index');
+     }
 }

@@ -10,6 +10,7 @@
 
         <!-- App favicon -->
         {{-- logo web di sebelah title --}}
+        {{-- asset berarti memanggil folder public --}}
         <link rel="shortcut icon" href="{{ asset('storage/logo_web/logo.jpg') }}">
         <!-- Bootstrap -->
         <link href="{{ asset('adminto') }}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -98,5 +99,13 @@
         <script src="{{ asset('inputmask_5') }}/dist/bindings/inputmask.binding.js"></script>
         {{-- Script child akan di push kesini(parent) menggunakna @push('script') --}}
         @stack('script')
+        {{-- fitur tooltip atau misalnya aku hover tombol hapus maka muncul sebuah text box yang menyatakan hapus --}}
+        <script>
+            // jika document siap maka jalankan fungsi
+            $(document).ready(function () {
+                // panggil attribute data-toggle yang berisi keterangan_alat
+                $('[data-toggle="keterangan_alat"]').tooltip()
+            });
+        </script>
     </body>
 </html>

@@ -7,7 +7,8 @@
                 <th scope="col">Penyuplai</th>
                 <th scope="col">Total Barang</th>
                 <th scope="col">Total Harga</th>
-                <th scope="col">Action</th>
+                <th scope="col">Status</th>
+                <th scope="col" width="10%">Action</th>
             </tr>
         </thead>
     </table>

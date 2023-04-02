@@ -118,7 +118,7 @@ class ProdukController extends Controller
         // berisi valitator buat semua permintaan
         $validator = Validator::make($request->all(), [
             // input name="nama_produk" berisi atturan berikut
-            'nama_produk' => 'required|unique:produk|max:30|min:2',
+            'nama_produk' => 'required|unique:produk|max:255|min:2',
             'merk' => 'required|min:2|max:20',
             'harga_beli' => 'required',
             // diskon tidak harus diisi karena defaultnya adalah 0
@@ -244,10 +244,10 @@ class ProdukController extends Controller
         // jika nilai input name="nama_produk" sama dengan nilai column nama_produk milik table produk
         if ($request->nama_produk === $detail_produk->nama_produk) {
             // input name="nama_peroduk" berisi atruan berikut
-            $validasi_nama_produk = 'required|string|min:2|max:30';
+            $validasi_nama_produk = 'required|string|min:2|max:255';
         // lain jika iput name="nama_produk" tidak sama dengan detail_produk->nama_produk
         } else if ($request->nama_produk !== $detail_produk->nama_produk) {
-            $validasi_nama_produk = 'required|string|min:2|max:30|unique:produk';
+            $validasi_nama_produk = 'required|string|min:2|max:255|unique:produk';
         };
 
         // buat validasi untuk semua elemnt input yang memiliki attribute name
