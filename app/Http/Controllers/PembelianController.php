@@ -84,7 +84,7 @@ class PembelianController extends Controller
                         <i class="fas fa-trash"></i>
                     </button>
 
-                    <button data-toggle="katerangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(`' . route('pembelian.retur_pembelian', $pembelian->pembelian_id)  . '`)" class="btn btn-danger btn-sm ml-2">
+                    <button data-toggle="katerangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
                         <i class="mdi mdi-credit-card-refund"></i>
                     </button>
                 </div>

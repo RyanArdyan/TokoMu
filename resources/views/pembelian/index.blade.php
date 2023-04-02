@@ -278,9 +278,36 @@ function hapus_data(url) {
     });
 }
 
-function retur_pembelian(route)
+function retur_pembelian($pembelian_id)
 {
-    console.log(route);
+    // route('pembelian.retur_pembelian', $pembelian_id)
+    // tampilkan konfirmasi return
+    Swal.fire({
+        title: 'Apakah anda yakin?',
+        text: "Anda ingin retur pembelian?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!'
+    })
+    // kemudian hasilnya
+    .then((result) => {
+        // jika hasilnya dikonfirmasi
+        if (result.isConfirmed) {
+            // lakukan ajax tipe kirim, kirim url
+            $.post(url, {
+                // laravel mewajibkan keamanan dari serangan csrf
+                '_token': $('[name=csrf-token]').attr('content'),
+                // panggil route tipe hapus
+                '_method': 'delete'
+            })
+            // jika selesai dan berhasil maka
+            .done((response) => {
+                table.ajax.reload();
+            })
+        };
+    });
 }
 </script>
 @endpush

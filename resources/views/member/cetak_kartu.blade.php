@@ -59,7 +59,7 @@
     @foreach ($beberapa_data_member as $member)
         <div class="card red">
             {{-- public_path() akan memanggil folder public --}}
-            <img src="{{ public_path('storage/gambar_member/logo_perusahaan.png') }}" alt="Gambar Card">
+            <img src="{{ public_path('storage/logo_perusahaan.png') }}" alt="Gambar Card">
             {{-- aku menggunakan package milon/barcode --}}
             <img src='data:image/png;base64, {{ DNS2D::getBarcodePNG("$member->kode_member", 'QRCODE') }}'
                 alt="qrcode" height="45" width="45" style="float: right">
