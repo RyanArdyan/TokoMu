@@ -9,11 +9,16 @@ class ReturPembelian extends Model
 {
     use HasFactory;
 
+    // default table nya adalah jamak
+    // lindungi $table = 'return_pembelian'
     protected $table = 'retur_pembelian';
-    protected $primary_key = 'id';
-    protected $fillable = [];
 
-    
+    protected $primaryKey = 'retur_pembelian_id';
+    // agar bisa create data dan update secara massal
+    // lindungi $penjaga = []
+    protected $guarded = [];
+
+    // 1 retur pembelian milik 1 pembelian
     public function pembelian()
     {
         // argumen kedua adaah foreign key milik table return_pembelian

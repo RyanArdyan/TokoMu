@@ -82,7 +82,7 @@
                             </div>
                         </div>
 
-                        {{-- jika tombol kembali di click maka arahkan ke halaman pembelian dan hapus pembelian terkait atau hapus pembelian berdasarkan pembelian_id --}}
+                        {{-- jika tombol kembali di click maka arahkan ke halaman pembelian dan jika value column total milik detail pembelian masih 0 maka hapus pembelian terkait atau hapus pembelian berdasarkan pembelian_id --}}
                         {{-- ke route pembelian.kembali lalu kirimkan pembelian_id --}}
                         <a href="{{ route('pembelian.kembali', $pembelian_id) }}" class="btn btn-sm btn-danger">
                             <i class="fas fa-arrow-left"></i> 

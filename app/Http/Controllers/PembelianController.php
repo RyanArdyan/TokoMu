@@ -8,6 +8,7 @@ use App\Models\Penyuplai;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
 use App\Models\ProdukPenyuplai;
+use App\Models\ReturPembelian;
 // gunakan package datatable
 use DataTables;
 
@@ -21,7 +22,7 @@ class PembelianController extends Controller
     public function index()
     {
         // Pembelian::whereRaw('DATEDIFF(NOW(), created_at) > 1')->where('total_barang', 0)->delete();
-        
+
         // hapus beberapa baris dari table pembelian yang column total_barang nya sama dengan 0 dan sudah lebih dari 60 menit
         Pembelian::where('total_barang', 0)->whereDate('created_at', '<=', now()->subMinute(60))->delete();
 
@@ -60,7 +61,7 @@ class PembelianController extends Controller
             ->addColumn('total_harga', function ($pembelian) {
                 return rupiah_bentuk($pembelian->total_harga);
             })
-            ->addColumn('status', function($pembelian) {
+            ->addColumn('status', function ($pembelian) {
                 // jika value $pembelian->status sama dengan "Oke"
                 if ($pembelian->status === "Oke") {
                     // return element p
@@ -76,15 +77,15 @@ class PembelianController extends Controller
                 // data-toggle="keterangan_alat" adalah
                 return '
                 <div class="btn-group">
-                    <button data-toggle="katerangan_alat" data-placement="top" title="Lihat semua pembelian detailnya" onclick="show_detail(`' . route('pembelian.show', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Lihat semua pembelian detailnya" onclick="show_detail(`' . route('pembelian.show', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i>
                     </button>
 
-                    <button data-toggle="katerangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
                         <i class="fas fa-trash"></i>
                     </button>
 
-                    <button data-toggle="katerangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
                         <i class="mdi mdi-credit-card-refund"></i>
                     </button>
                 </div>
@@ -198,7 +199,7 @@ class PembelianController extends Controller
                 // jika tidak ada baris data produk yang terakhir karena belum ada produk maka $kode_produk_yg_terakhir diisi 00001
                 if (!$baris_data_produk_yg_terakhir) {
                     $kode_produk = '00001';
-                } 
+                }
                 // lain jika ada baris data produk
                 else if ($baris_data_produk_yg_terakhir) {
                     // anggaplah berisi "P-00001"
@@ -216,7 +217,6 @@ class PembelianController extends Controller
                     // panggil fungsi helper kode_berurutan
                     // 5 berarti jumlah digit kode_produknya
                     $kode_produk = kode_berurutan($ubah_string_kode_produk_menjadi_integer, 5);
-                    
                 };
                 // Produk buat data baru 
                 Produk::create([
@@ -257,23 +257,23 @@ class PembelianController extends Controller
         // syntax punya yajra
         // kembalikkan datatable dari semua_penyuplai
         return DataTables::of($semua_penyuplai)
-        // untuk pengulangan nomor
-        // tambah index column
-        ->addIndexColumn()
-        // $penyuplai berarti ulang detail penyuplai
-        // buat tombol pilih
-        // tambah column action, jalankan fungsi, ambil semua detail_penyuplai
-        ->addColumn('action', function(Penyuplai $penyuplai) {
-            // ke route pembelian.create lalu kirimkan value column penyuplai_id agar aku bisa mengambil semua produk yang dijual oleh suatu penyuplai atau mengambil beberapa produk_penyuplai berdasarkan column foreign key penyuplai_id
-            // anggaplah penyuplai nya adalah PT Smartfren maka ambil semua produk yang di jual PT Smartfren
-            return '
+            // untuk pengulangan nomor
+            // tambah index column
+            ->addIndexColumn()
+            // $penyuplai berarti ulang detail penyuplai
+            // buat tombol pilih
+            // tambah column action, jalankan fungsi, ambil semua detail_penyuplai
+            ->addColumn('action', function (Penyuplai $penyuplai) {
+                // ke route pembelian.create lalu kirimkan value column penyuplai_id agar aku bisa mengambil semua produk yang dijual oleh suatu penyuplai atau mengambil beberapa produk_penyuplai berdasarkan column foreign key penyuplai_id
+                // anggaplah penyuplai nya adalah PT Smartfren maka ambil semua produk yang di jual PT Smartfren
+                return '
                 <a href="/pembelian/create/' . $penyuplai->penyuplai_id . '" class="btn btn-primary btn-sm"><i class="fa fa-truck"></i> Pilih</a>
             ';
-        })
-        // jika column, membuat elemnt html maka harus dimasukkan ke rawColumns
-        ->rawColumns(['action'])
-        // buat nyata
-        ->make(true);
+            })
+            // jika column, membuat elemnt html maka harus dimasukkan ke rawColumns
+            ->rawColumns(['action'])
+            // buat nyata
+            ->make(true);
     }
 
     /**
@@ -318,27 +318,75 @@ class PembelianController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function hapus($pembelian_id) 
-	{
+    public function hapus($pembelian_id)
+    {
         // ambil detail pembelian
         // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
         $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
         // detail pembelian di hapus
-		$detail_pembelian->delete();
+        $detail_pembelian->delete();
 
         // 
-		return response()->json('Berhasil menghapus 1 baris di table pembelian dan beberapa baris data di table pembelian_detail');
-	 }
+        return response()->json('Berhasil menghapus 1 baris di table pembelian dan beberapa baris data di table pembelian_detail');
+    }
 
-     public function kembali($pembelian_id)
-     {
+    public function kembali($pembelian_id)
+    {
         // ambil detail pembelian
         // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
         $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
-        // detail pembelian di hapus
-		$detail_pembelian->delete();
+
+        // jika value detail_pembelian, column total_harga sama dengan - maka
+        if ($detail_pembelian->total_harga === 0) {
+            // detail_pembelian dihapus
+            $detail_pembelian->delete();
+        };
 
         // kembalikan lalu alihkan ke route pembelian.index
         return redirect()->route('pembelian.index');
-     }
+    }
+
+    // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
+    public function retur_pembelian(Request $request)
+    {
+        // kembalikkan tanggapan berupa json yang berisi semua value dari semua permintaan
+        // return response()->json($request->all());
+
+        // ambil detail pembelian
+        // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
+        $detail_pembelian = Pembelian::where('pembelian_id', $request->pembelian_id)->first();
+        // panggil detail_pembelian, value column status, ditimpa dengan "Retur"
+        $detail_pembelian->status = "Retur";
+        // detail_pembelian di perbarui
+        $detail_pembelian->update();
+
+        // buat data ke tabel ReturPembelian
+        // ReturPembelian::buat
+        ReturPembelian::create([
+            // column pembelian_id diisi dengan value input name="pembelian_id"
+            'pembelian_id' => $request->pembelian_id,
+            'tanggal_retur' => now(),
+            'keterangan' => $request->keterangan
+        ]);
+
+        // misalnya $request->pembelian_id berisi angka 1 maka ambil semua PembelianDetail yang column pembelian_id berisi 1
+        $semua_pembelian_detail_terkait = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
+
+        // lakukan pengulangan terhadap semua_pembelian_detail_terkait
+        foreach ($semua_pembelian_detail_terkait as $pembelian_detail) {
+            // berisi ambil setiap data table ProdukPenyuplai dimana value column produk_penyuplai_id sama dengan value $pembelian_detail->produk_penyuplai_id
+            $setiap_produk_penyuplai = ProdukPenyuplai::where('produk_penyuplai_id', $pembelian_detail->produk_penyuplai_id)->first();
+            // produk dimana value column nama_produk sama dengan value $setiap_produk_penyuplai->nama_produk, pertama
+            $setiap_produk = Produk::where('nama_produk', $setiap_produk_penyuplai->nama_produk)->first();
+            $setiap_produk->stok -= $pembelian_detail->jumlah;
+            $setiap_produk->update();
+        };
+
+        // kembalikkan tanggapan berupa json lalu kirimkan data berupa object
+        return response()->json([
+            // key status berisi value 200
+            'status' => 200,
+            'message' => 'Berhasil retur pembelian'
+        ]);
+    }
 }
