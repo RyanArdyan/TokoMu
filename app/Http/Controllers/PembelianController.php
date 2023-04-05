@@ -73,7 +73,24 @@ class PembelianController extends Controller
                     return "<p class='text-danger'>$pembelian->status</p>";
                 }
             })
+            // Buat tombol lihat pembelian detail, hapus dan retur pembelian
+            // tambahColumn action, jalankan fungsi, parameter pembelian berisi semua pembelian detail
             ->addColumn('action', function ($pembelian) {
+                // jika value $pembelian->status sama dengan 'Retur' maka kasi attribute disabled agar tidak bisa di click
+                if ($pembelian->status === 'Retur') {
+                    $tombol_retur = '
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2" disabled>
+                    <i class="mdi mdi-credit-card-refund"></i>
+                    </button>';
+                }
+                // jika value $pembelian->status sama dengan 'Oke' maka hapus attribute disabled agar tombol nya bisa di click
+                else if ($pembelian->status === 'Oke') {
+                    $tombol_retur = '
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
+                    <i class="mdi mdi-credit-card-refund"></i>
+                    </button>';
+                };
+
                 // data-toggle="keterangan_alat" adalah
                 return '
                 <div class="btn-group">
@@ -84,10 +101,8 @@ class PembelianController extends Controller
                     <button data-toggle="keterangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
                         <i class="fas fa-trash"></i>
                     </button>
-
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
-                        <i class="mdi mdi-credit-card-refund"></i>
-                    </button>
+                    
+                    ' . $tombol_retur . '
                 </div>
 				  ';
             })
