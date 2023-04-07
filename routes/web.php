@@ -197,6 +197,8 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // route tipe get, ke url /pembelian/ kirimkan pembelian_id, ke PembelianController, ke method kembali, name nya adalah pembelian.kembali
     Route::get('/pembelian/kembali/{pembelian_id}', [PembelianController::class, 'kembali'])->name('pembelian.kembali');
     // retur pembelian
-    // route tipe kirim, ke url /pembelian/retur, ke PembelianController, method retur_pembelian, name nya adalah pembelian.retur_pembelian
-    Route::post('/pembelian/retur', [PembelianController::class, 'retur_pembelian'])->name('pembelian.retur_pembelian');
+    Route::get('/pembelian/data-retur/{pembelian_id}', [PembelianController::class, 'data_retur'])->name('pembelian.data_retur');
+    // route tipe kirim, ke url /pembelian/retur/ lalu kirimkan pembelian_id ke PembelianController, method retur_pembelian, name nya adalah pembelian.retur_pembelian
+    Route::post('/pembelian/retur/{pembelian_id}', [PembelianController::class, 'retur_pembelian'])->name('pembelian.retur_pembelian');
+
 });

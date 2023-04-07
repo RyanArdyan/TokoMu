@@ -199,6 +199,7 @@ class PembelianDetailController extends Controller
         // Simpan Data Ke table pembelian_detail
 		// PembelianDetail buat
 		PembelianDetail::create([
+			'nama_produk' => $detail_produk_penyuplai->nama_produk,
 			// column pembelian_id diisi value $request->pembelian_id
 			'pembelian_id' => $request->pembelian_id,
 			'produk_penyuplai_id' => $request->produk_penyuplai_id,

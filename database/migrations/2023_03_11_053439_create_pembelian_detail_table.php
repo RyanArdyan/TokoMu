@@ -11,6 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // buat tble pembelian_detail
+        // skema buat table pembelian_detail, jalankan fungsi, Cetak Biru, $table
         Schema::create('pembelian_detail', function (Blueprint $table) {
             // buat column pembelian_detail_id yang tipe datanya big increment dan bigINteger
             $table->bigIncrements('pembelian_detail_id');
@@ -21,6 +23,8 @@ return new class extends Migration
             // onDelete('cascade') berarti jika suatu produk_penyuplai dihapus maka semua pembelian_detail terkait juga akan terhapus
             // anggaplah aku hapus produk_penyuplai smartfren unlimited maka semua pembelian_detail yang terkait dengan smartfren unlimited juga akan terhapus
             $table->foreignId('produk_penyuplai_id')->constrained('produk_penyuplai')->references('produk_penyuplai_id')->onDelete('cascade')->onUpdate('cascade');
+            // tipe data string, column nama_produk
+            $table->string('nama_produk');
             // buat tipe data big Integer
             $table->bigInteger('harga');
             $table->integer('jumlah');

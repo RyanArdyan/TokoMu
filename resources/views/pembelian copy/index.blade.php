@@ -43,8 +43,6 @@
             {{-- jika tombol lihat detail pembelian di click maka panggil views/pembelian/modal_detail --}}
             {{-- termasuk jika pembelian.detail --}}
             @includeIf('pembelian.modal_detail')
-            {{-- termasuk modal pembelian.modal_retur --}}
-            @include('pembelian.modal_retur')
         </div>
     </div>
 @endsection
@@ -309,84 +307,68 @@
                 });
         };
 
-        hasil_pembelian_id = '';
-
         // fungsi retur_pembelian agar aku bisa retur_pembelian atau mengembalikkan pembelian
         // function retur_pembelian berisi parameter pembelian_id yang menangkap pembelian_id dari controller
         function retur_pembelian(pembelian_id) {
-            // jquery lakukan ajax
-            $.ajax({
-                // url panggil /pembelian/data-retur/ kirimkan pembelian_id
-                url: `/pembelian/data-retur/${pembelian_id}`,
-                // panggil route tipe dapatkan
-                type: "GET",
+            // panggil sweetalert untuk menampilkan formulir untuk menyimpan input keterangan retur pembelian
+            Swal.fire({
+                // key judul berisi value berikut
+                title: 'Retur Pembelian',
+                // kunci html berisi tag input, aku butuh name="keterangan" agar masuk ke dalam table retur_pembelian, column keterangan
+                html: `<input name="keterangan" type="text" id="keterangan" class="swal2-input" placeholder="Keterangan Retur">`,
+                // textTombolKonfirmasi: 'Selesai'
+                confirmButtonText: 'Selesai',
+                // fokusKonfirmasi: false
+                focusConfirm: false,
+                // validasi input keterangan
+                // prakonfirmasi berisi fungsi jalankan fungsi berikut
+                preConfirm: () => {
+                    // variable keterangan berisi Swal.dapatkanMuncul, ambil value dari #keterangan misalnya "Pembelian di retur karena barang nya rusak"
+                    let keterangan = Swal.getPopup().querySelector('#keterangan').value;
+                    // jika tidak ada keterangan
+                    if (!keterangan) {
+                        // Swal.tampilkanValidasiPesan yang berisi pesan berikut
+                        Swal.showValidationMessage(`Tolong masukkan keterangan retur pembelian`);
+                    };
+                    // kembalikkan object
+                    return {
+                        // key keterangan berisi value variable keterangan
+                        keterangan: keterangan,
+                    };
+                }
             })
-                // jika selesai dan berhasil maka jalankan fungsi berikut lalu ambil tanggapan
-                // parameter response berisi semua pembelian detail terkait
-                // misalnya column pembelian_id berisi 1 maka ambil semua pembelian detail yang column pembelian_id berisi 1
-                .done(function(response) {
-                    // aku butuh variable hasil untuk menyimpan banyak tr, jadi pada awal nya variabel hasil berisi string kosong, setelah di looping maka variable hasil akan digabung dengan element tr
-                    let hasil = ``;
-
-                    // lakukan pengulangan terhadap response yang berisi semua pembelian detail terkait
-                    // tanggapan.untukSetiap(fungsi(barang, index))
-                    // parameter item berisi data table pembelian detail maksudnya semua detail pembelian_detail terkait
-                    // parameter index berisi index
-                    response.forEach(function(item, index) {
-                        // lakukan pengulangan terhadap tr atau table rows atau table baris
-                        // panggil variable hasil lalu tambahkan element tr berulang kali ke dalam variable hasil
-                        hasil += `
-                            <tr>
-                                <td>${index + 1}</td>    
-                                <td>${item.nama_produk}</td>    
-                                <td>
-                                    <input name="jumlah_retur" type="number" class="form-control" value="${item.jumlah}" max="${item.jumlah}" data-produk-penyuplai-id="${item.produk_penyuplai_id}">
-                                </td>    
-                            </tr>
-                        `;
-                    });
-                    
-                    // panggil #tbody_retur_pembelian lalu tambahkan value variable data_retur_pembelian_detail sebagai anak terakhir
-                    $("#tbody_retur_pembelian").append(hasil);
-
-                    // panggil #modal_retur lalu modal nya di tampilkan
-                    $("#modal_retur").modal('show');
-
-                    hasil_pembelian_id = pembelian_id;
-                });
-        };
-
-        // jika #tombol_tutup_retur_pembelian di click maka jalankan fungsi berikut
-        $(".tombol_tutup_retur_pembelian").on("click", function() {
-            // panggil #tbody_return_pembelian lalu kosongkan semua anaknya
-            $("#tbody_retur_pembelian").empty();
-        });
-
-        // jika #form_retur_pembelian dikirim maka jalankan fungsi berikut dan ambil event atau acara nya
-        $("#form_retur_pembelian").on("submit", function(e) {
-            // event cegah bawaan nya
-            e.preventDefault();
-
-            // console.log(hasil_pembel ian_id);
-            // lakukan ajax
-            $.ajax({
-                // url memanggil /pembelian/retur/ lalu kirimkan pembelian_id
-                url: `/pembelian/retur/${hasil_pembelian_id}`,
-                // panggil route tipe kirim
-                type: "POST",
-                // kirimkan data formulir dari #form_retur_pembelian
-                // data: baru FormulirData("#form_retur_pembelian")
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                cache: false
-            })
-                // jika selesai dan berhasil maka ambil tanggapannya
-                .done(function(response) {
-                    $("#modal_retur").modal('hide');
-                    // variabel table.ajax.muatuLANG
-                    table.ajax.reload();
+            // kemudian hasil, jalankan fungsi berikut dan ambil hasil nya 
+            .then((result) => {
+                // lakukan ajax
+                $.ajax({
+                    // url panggil route pembelian.retur_pembelian
+                    url: `{{ route('pembelian.retur_pembelian') }}`,
+                    // route tipe POST
+                    type: "POST",
+                    // laravel mewajibkan keamanan dari serangan csrf
+                    // tajuk-tajuk berisi object
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    // kirimkan data berupa object
+                    data: {
+                        // key pembelian_id berisi value dari parameter pembelian_id
+                        "pembelian_id": pembelian_id,
+                        // key keterangan berisi value dari input#keterangan
+                        "keterangan": $("#keterangan").val()
+                    }
                 })
-        });
+                // jika selesai dan berhasil maka ambil tanggapan nya
+                .done(function(resp) {
+                    // cetak semua tanggapan
+                    // console.log(resp);
+
+                    // muat ulang data table pembelian agar data table nya di update
+                    // table ajax nya di muat ulang
+                    table.ajax.reload();
+                });
+            });
+
+        };
     </script>
 @endpush

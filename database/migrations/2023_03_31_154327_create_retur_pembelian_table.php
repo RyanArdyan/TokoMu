@@ -24,7 +24,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             // Metode date membuat tanggal kolom yang setara:
-            $table->date('tanggal_retur');
+            $table->dateTime('tanggal_retur');
             $table->string('keterangan');
             // timestamps akan membuat column created_at dan updated_at
             $table->timestamps();

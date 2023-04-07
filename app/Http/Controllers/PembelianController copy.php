@@ -362,14 +362,15 @@ class PembelianController extends Controller
     }
 
     // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
-    public function retur_pembelian(Request $request)
+    // $request berisi semua input name="", $pembelian_id berisi pembelian_id di url 
+    public function retur_pembelian(Request $request, $pembelian_id)
     {
         // kembalikkan tanggapan berupa json yang berisi semua value dari semua permintaan
         // return response()->json($request->all());
 
         // ambil detail pembelian
         // pembelian dimana value column pembelian_id sama dengan value paramter $request->pembelian_id, baris data pertama
-        $detail_pembelian = Pembelian::where('pembelian_id', $request->pembelian_id)->first();
+        $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
         // panggil detail_pembelian, value column status, ditimpa dengan "Retur"
         $detail_pembelian->status = "Retur";
         // detail_pembelian di perbarui
@@ -404,13 +405,5 @@ class PembelianController extends Controller
             'message' => 'Berhasil retur pembelian'
         ]);
     }
-
-    // menampilkan semua pembelian detail terkait ketika tombol retur pembelian di click
-    public function data_retur($pembelian_id)
-    {
-        // ambil semua pembelian detail terkait
-        // berisi PembelianDetail dimana value column pembelian_id sama dengan nilai parameter $pembelian_id, dapatkan
-        $semua_pembelian_detail = PembelianDetail::where('pembelian_id', $pembelian_id)->get();
-        return response()->json($semua_pembelian_detail);
-    }
 }
+    
