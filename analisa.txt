@@ -1,2 +1,1 @@
-Jika value table produk, column nama_produk sama dengan value parameter nama_produk maka ambil semua baris nya, anggaplah ada 2 baris.
-Lalu ambil setiap value column stok nya lalu dikurangi jumlah retur yang sesuai
+pembelian_id akan di looping lalu Jika nama_produknya sama maka column stok milik table produk dikurangi value column jumlah_retur milik table retur_pembelian
