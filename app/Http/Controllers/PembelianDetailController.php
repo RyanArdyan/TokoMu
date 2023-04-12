@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProdukPenyuplai;
+use App\Models\Produk;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Penyuplai;
@@ -67,7 +68,7 @@ class PembelianDetailController extends Controller
         // :with() berarti pemuatan bersemangat, aku melakukan itu karena 1 pembelian detail milik 1 pembelian
 		// misalnya $pembelian_id berisi angka 1 maka ambil semua pembelian_detail yang column pembelian_id nya berisi angka 1
 		// berisi table pembelian_detail berelasi dengan table produk_penyuplai, dimana value column pembelian_id sama dengan value $pembelian_id, lalu dapatkan semua data nya
-		$beberapa_pembelian_detail = PembelianDetail::with(['produk_penyuplai'])->where('pembelian_id', $pembelian_id)->get();
+		$beberapa_pembelian_detail = PembelianDetail::with(['produk'])->where('pembelian_id', $pembelian_id)->get();
 
         // $data = [];
 		// buat array kosong
@@ -83,12 +84,12 @@ class PembelianDetailController extends Controller
 			// $row = []
 			// $row nantinya akan menjadi array assosiatif
 			$row = array();
-			// table pembelian_detail berelasi dengan table produk_penyuplai
+			// table pembelian_detail berelasi dengan table produk
 			// contoh $row = ['nama_produk' => '...', 'harga' => '...']
 			// membuat dan menambah array assosiatif
-			// berisi pembelian_detail memanggil relasi nya yaitu produk_penyuplai lalu value column nama_produk
-			$row['nama_produk'] = $pembelian_detail->produk_penyuplai->nama_produk;
-			$row['harga'] = rupiah_bentuk($pembelian_detail->harga);
+			// berisi pembelian_detail memanggil relasi nya yaitu produk lalu value column nama_produk
+			$row['nama_produk'] = $pembelian_detail->produk->nama_produk;
+			$row['harga'] = rupiah_bentuk($pembelian_detail->harga_beli);
 			$row['jumlah'] = '
 				<input type="number" class="form-control input-sm jumlah" data-pembelian-detail-id="' . $pembelian_detail->pembelian_detail_id . '" value="' . $pembelian_detail->jumlah . '">';
 			$row['subtotal'] = rupiah_bentuk($pembelian_detail->subtotal);
@@ -137,38 +138,38 @@ class PembelianDetailController extends Controller
 			->make(true);
 	}
 
-	// mengambil daftar data table produk_penyuplai yang terkait penyuplai nya untuk di tampilkan di modal pilih produk_penyuplai misalnya penyuplai nya adalah perusahaan smartfren maka ambil semua produk perusahaan smartfren
+	// mengambil daftar data table produk yang terkait penyuplai nya untuk di tampilkan di modal pilih produk misalnya penyuplai nya adalah perusahaan smartfren maka ambil semua produk perusahaan smartfren
 	// anggaplah parameter $penyuplai_id berisi angka 1
-	public function produk_penyuplai($penyuplai_id)
+	public function produk($penyuplai_id)
 	{
-		// misalnya parameter $penyuplai_id berisi 1 maka ambil semua produk_penyuplai yang value column penyuplai_id berisi 1
-		// produk_penyuplai dimana value column penyuplai_id sama dengan value parameter $penyuplai_id, urutan data nya dari A ke Z atau dipesan oleh column nama_produk dan menaik lalu dapatkan semua data nya
-        $semua_produk_penyuplai = ProdukPenyuplai::where('penyuplai_id', $penyuplai_id)->orderBy('nama_produk', 'asc')->get();
+		// misalnya parameter $penyuplai_id berisi 1 maka ambil semua produk yang value column penyuplai_id berisi 1
+		// produk dimana value column penyuplai_id sama dengan value parameter $penyuplai_id, urutan data nya dari A ke Z atau dipesan oleh column nama_produk dan menaik lalu dapatkan semua data nya
+        $semua_produk_terkait = Produk::where('penyuplai_id', $penyuplai_id)->orderBy('nama_produk', 'asc')->get();
         // syntax punya yajra
-        // kembalikkan datatable dari semua_produk_penyuplai
-        return DataTables::of($semua_produk_penyuplai)
+        // kembalikkan datatable dari semua_produk_terkait
+        return DataTables::of($semua_produk_terkait)
         // untuk pengulangan nomor
         // tambah index column
         ->addIndexColumn()
 		// aku akan mengubah 1000 menjadi Rp 1.000 menggunakan bantuan helpers rupiah_bentuk()
-		// tambah column harga, jalankan fungsi, ProdukPenyuplai $produk_penyuplai berisi pengulangan detail_produk_penyuplai
-		->addColumn('harga', function(ProdukPenyuplai $produk_penyuplai) {
+		// tambah column harga, jalankan fungsi, Produk $produk berisi pengulangan detail_produk
+		->addColumn('harga_beli', function(Produk $produk) {
 			// ubah 1000 menjadi Rp 1.000
-			// kembalikkan panggil fungsi rupiah_bentuk di helpers.php lalu kirimkan $produk_penyuplai->harga sebagai argumen
-			return rupiah_bentuk($produk_penyuplai->harga);
+			// kembalikkan panggil fungsi rupiah_bentuk di helpers.php lalu kirimkan $produk->harga_beli sebagai argumen
+			return rupiah_bentuk($produk->harga_beli);
 		})
-        // $produk_penyuplai berarti ulang detail penyuplai
+        // $produk berarti ulang detail penyuplai
         // buat tombol pilih
-        // tambah column action, jalankan fungsi, ambil semua detail_penyuplai
-        ->addColumn('action', function(ProdukPenyuplai $produk_penyuplai) {
-            // buat attribute data-produk-penyuplai-id untuk menyimpan value detail produk_penyuplai, column produk_penyuplai_id
-			// alasan aku menggunakan class="pilih_produk_penyuplai" daripada id="pilih_produk_penyuplai" karena id="" tidak boleh diulang
+        // tambah column action, jalankan fungsi, ambil semua detail
+        ->addColumn('action', function(Produk $produk) {
+            // buat attribute data-produk-id untuk menyimpan value detail produk, column produk_id
+			// alasan aku menggunakan class="pilih_produk" daripada id="pilih_produk" karena id="" tidak boleh diulang
             return '
-				<button data-produk-penyuplai-id='. $produk_penyuplai->produk_penyuplai_id .' data-harga='. $produk_penyuplai->harga .' type="button" class="pilih_produk_penyuplai btn btn-success btn-sm"><i class="fa fa-hand-point-right"></i> Pilih</button>
+				<button data-produk-id='. $produk->produk_id .' data-harga-beli='. $produk->harga_beli .' type="button" class="pilih_produk btn btn-success btn-sm"><i class="fa fa-hand-point-right"></i> Pilih</button>
             ';
         })
         // jika column berisi membuat elemnet html maka harus dimasukkan ke rawColumns
-        ->rawColumns(['harga', 'action'])
+        ->rawColumns(['harga_beli', 'action'])
         // buat nyata
         ->make(true);
 	}
@@ -184,30 +185,31 @@ class PembelianDetailController extends Controller
 	{
         // return response()->json($request->all());
 
-		// ambil detail_produk_penyuplai berdasarkan produk_penyuplai_id
-		// berisi ProdukPenyuplai dimana value column produk_penyuplai_id sama dengan value input name="produk_penyuplai_id", pertama
-        $detail_produk_penyuplai = ProdukPenyuplai::where('produk_penyuplai_id', $request->produk_penyuplai_id)->first();
+		// ambil detail_produk berdasarkan produk_id
+		// berisi Produk dimana value column produk_id sama dengan value input name="produk_id", pertama
+        $detail_produk = Produk::where('produk_id', $request->produk_id)->first();
 
-        // jika tidak ada detail_produk_penyuplai
-        if (!$detail_produk_penyuplai) {
+        // jika tidak ada detail_produk
+        if (!$detail_produk) {
 			// kembalikkan tanggapan berupa json, kirimkan 2 data
             return response()->json([
-				'pesan' => 'Produk Penyuplai Tidak Ada.'
+				'pesan' => 'Produk Tidak Ada.'
 			]);
         };
 
         // Simpan Data Ke table pembelian_detail
 		// PembelianDetail buat
 		PembelianDetail::create([
-			'nama_produk' => $detail_produk_penyuplai->nama_produk,
+			// panggil column nama_produk di table pembelian_detail lalu diisi dengan 
+			'nama_produk' => $detail_produk->nama_produk,
 			// column pembelian_id diisi value $request->pembelian_id
 			'pembelian_id' => $request->pembelian_id,
-			'produk_penyuplai_id' => $request->produk_penyuplai_id,
-			'harga' => $detail_produk_penyuplai->harga,
+			'produk_id' => $request->produk_id,
+			'harga' => $detail_produk->harga_beli,
 			// bawaan jumlah pasti nya adalah 1
 			'jumlah' => 1,
-			// bawaan subtotal adalah sama dengan column harga
-			'subtotal' => $detail_produk_penyuplai->harga
+			// bawaan subtotal adalah sama dengan column harga_beli
+			'subtotal' => $detail_produk->harga_beli
 		]);
 
 		// // kembalikkan tanggapan berupa json lalu kirimkan data berupa array assosiatif

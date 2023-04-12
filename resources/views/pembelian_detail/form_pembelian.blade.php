@@ -1,8 +1,8 @@
 <!-- form pembelian untuk memperbarui ke table pembelian -->
 <form id="form_pembelian" action="{{ route('pembelian.store') }}" method="post">
     @csrf
-    <label for="produk_penyuplai_id" hidden>produk_penyuplai_id</label>
-    <input name="produk_penyuplai_id" id="produk_penyuplai_id" type="hidden" placeholder="akan diisi jika aku sudah click tombol pilih di modal pilih produk penyuplai" readonly size="65px">
+    <label for="produk_id" hidden>produk_id</label>
+    <input name="produk_id" id="produk_id" type="hidden" placeholder="akan diisi jika aku sudah click tombol pilih di modal pilih produk" readonly size="65px">
 
     {{-- input yang hidden --}}
     <label for="pembelian_id" hidden>pembelian_id: </label>

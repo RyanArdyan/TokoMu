@@ -44,7 +44,7 @@ class PembelianController extends Controller
         // syntax punya yajra
         // disini aku melakukan pengulangan
         return DataTables::of($semua_pembelian)
-            // nomor
+            // pengulangan nomor
             ->addIndexColumn()
             ->addColumn('tanggal', function ($pembelian) {
                 // contoh tanggal nya adalah: Selasa, 7 Februari 2023
@@ -76,10 +76,12 @@ class PembelianController extends Controller
             // Buat tombol lihat pembelian detail, hapus dan retur pembelian
             // tambahColumn action, jalankan fungsi, parameter pembelian berisi semua pembelian detail
             ->addColumn('action', function ($pembelian) {
+                // fitur retur pembelian
                 // jika value $pembelian->status sama dengan 'Retur' maka kasi attribute disabled agar tidak bisa di click
                 if ($pembelian->status === 'Retur') {
+                    // data-toggle="keterangan_alat" adalah tooltips milik bootstrap untuk menampilkan keterangan ketika tombok di hover
                     $tombol_retur = '
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2" disabled>
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" class="btn btn-danger btn-sm ml-2" disabled>
                     <i class="mdi mdi-credit-card-refund"></i>
                     </button>';
                 }
@@ -91,10 +93,10 @@ class PembelianController extends Controller
                     </button>';
                 };
 
-                // data-toggle="keterangan_alat" adalah tooltips milik bootstrap untuk menampilkan keterangan ketika tombok di hover
+                // fitur lihat semua pembelian_detail yang terkait
                 return '
                 <div class="btn-group">
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Lihat semua pembelian detailnya" onclick="show_detail(`' . route('pembelian.show', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Lihat semua pembelian detailnya" onclick="tampilkan_semua_pembelian_detail_terkait(`' . route('pembelian.tampilkan_semua_pembelian_detail_terkait', $pembelian->pembelian_id) . '`)" class="btn btn-info btn-sm">
                     <i class="fas fa-eye"></i>
                     </button>
 
@@ -113,8 +115,8 @@ class PembelianController extends Controller
             ->make(true);
     }
 
-    // untuk mengecek apakah ada penyuplai dan produk_penyuplai, jika tidak ada maka tampilkan notifikasi menggunakan sweetalert yang menyatakan "kamu harus menambahkan minimal 1 penyuplai terlebih dahulu" lalu arahkan ke menu penyuplai
-    public function cek_penyuplai_dan_produk_penyuplai()
+    // untuk mengecek apakah ada penyuplai dan produk, jika tidak ada maka tampilkan notifikasi menggunakan sweetalert yang menyatakan "kamu harus menambahkan minimal 1 penyuplai terlebih dahulu" lalu arahkan ke menu penyuplai
+    public function cek_penyuplai_dan_produk()
     {
         // ambil detail_penyuplai_pertama agar jika penyuplai pertama tidak ada maka kasi tau user, bahwa mereka harus menambahkan minimal 1 penyuplai terlebih dahulu
         // berisi ambil detail penyuplai pertama
@@ -129,14 +131,14 @@ class PembelianController extends Controller
             ]);
         };
 
-        // ambil detail_produk_penyuplai yang pertama
-        $detail_produk_penyuplai_pertama = ProdukPenyuplai::first();
-        // lain jika detail_produk_penyuplai_pertama tidak ada atau null maka
-        if ($detail_produk_penyuplai_pertama === null) {
+        // ambil detail_produk yang pertama
+        $detail_produk_pertama = Produk::first();
+        // lain jika detail_produk_pertama tidak ada atau null maka
+        if ($detail_produk_pertama === null) {
             // kembalikkan tanggapan berupa json lalu kirimkan data
             return response()->json([
                 // key message berisi value atau pesan berikut
-                'pesan' => 'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu.'
+                'pesan' => 'Anda harus menambahkan minimal 1 produk terlebih dahulu.'
             ]);
         };
     }
@@ -174,7 +176,7 @@ class PembelianController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Perbarui column total_barang dan total_harga di table pembelian ketika tombol Simpan Pembelian di click
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -196,67 +198,17 @@ class PembelianController extends Controller
         // anggaplah berisi dua baris data jadi ambil beberapa pembelian detail berdasarkan value column pembelian_id yang sesuai
         $beberapa_pembelian_detail = PembelianDetail::where('pembelian_id', $detail_pembelian->pembelian_id)->get();
 
-        // update table produk atau buat data di table produk
+        // update table produk 
         // karena aku membeli barang berarti stok nya bertambah
         foreach ($beberapa_pembelian_detail as $pembelian_detail) {
-            // detail produk_penyuplai
-            // berisi ProdukPenyuplai dimana value column produk_penyuplai_id sama dengan value $pembelian_detail->produk_penyuplai lalu ambil data baris pertama
-            $detail_produk_penyuplai = ProdukPenyuplai::where('produk_penyuplai_id', $pembelian_detail->produk_penyuplai_id)->first();
-
             // ambil detail_produk
             // berisi produk dimana value column nama_produk sama dengan value detail_produk_penyuplai, column nama_produk, data baris pertama
-            $detail_produk = Produk::where('nama_produk', $detail_produk_penyuplai->nama_produk)->first();
+            $detail_produk = Produk::where('produk_id', $pembelian_detail->produk_id)->first();
 
-            // jika tidak ada detail produk
-            if (!$detail_produk) {
-                // ambil satu baris data produk yang terakhir
-                $baris_data_produk_yg_terakhir = produk::latest()->first();
-                // jika tidak ada baris data produk yang terakhir karena belum ada produk maka $kode_produk_yg_terakhir diisi 00001
-                if (!$baris_data_produk_yg_terakhir) {
-                    $kode_produk = '00001';
-                }
-                // lain jika ada baris data produk
-                else if ($baris_data_produk_yg_terakhir) {
-                    // anggaplah berisi "P-00001"
-                    $kode_produk_yg_terakhir = $baris_data_produk_yg_terakhir->kode_produk;
-                    // anggaplah data terakhir berisi "P-00001"
-                    // maka saya tidak akan bisa melakukan "P-00001" + 1 karena string + integer = string
-                    // aku butuh explode agar bisa memecah menggunakan -
-
-                    // anggaplah berisi ["P", "00001"]
-                    $explode_kode_produk = explode("-", $kode_produk_yg_terakhir);
-                    // "P-00001" akan menjadi P dan 00001 lalu di tambah 1 = 2
-                    // berisi ubah isi $explode_kode_produk index 1 yang berisi "00001" menjadi 00001 lalu di tambah 1 maka akan menjadi 00002
-                    $ubah_string_kode_produk_menjadi_integer = (int) $explode_kode_produk[1] + 1;
-
-                    // panggil fungsi helper kode_berurutan
-                    // 5 berarti jumlah digit kode_produknya
-                    $kode_produk = kode_berurutan($ubah_string_kode_produk_menjadi_integer, 5);
-                };
-                // Produk buat data baru 
-                Produk::create([
-                    'kategori_id' => $detail_produk_penyuplai->kategori_id,
-                    'penyuplai_id' => $detail_produk_penyuplai->penyuplai_id,
-                    'kode_produk' => 'P-' . $kode_produk,
-                    'nama_produk' => $detail_produk_penyuplai->nama_produk,
-                    'merk' => $detail_produk_penyuplai->merk,
-                    'harga_beli' => $detail_produk_penyuplai->harga,
-                    'diskon' => 0,
-                    'harga_jual' => 0,
-                    'stok' => $pembelian_detail->jumlah
-                ]);
-            }
-            // lain jika ada detail_produk
-            else if ($detail_produk) {
-                // panggil value detail_produk, column stok lalu value nya ditambah value $pembelian_detail->jumlah
-                $detail_produk->stok += $pembelian_detail->jumlah;
-                // detail_produk, diperbarui
-                $detail_produk->update();
-            };
-
-            // karena aku membeli barang berarti stok nya bertambah
-            // $detail_produk->stok += $pembelian_detail->jumlah;
-            // $detail_produk->update();
+            // panggil value detail_produk, column stok lalu value nya ditambah value $pembelian_detail->jumlah
+            $detail_produk->stok += $pembelian_detail->jumlah;
+            // detail_produk, diperbarui
+            $detail_produk->update();
         };
 
         // kembali alihkan ke route pembelian.index
@@ -292,16 +244,16 @@ class PembelianController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Jika aku click tombol lihat semua pembelian detail terkait maka tampilkan 
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($pembelian_id)
+    public function tampilkan_semua_pembelian_detail_terkait($pembelian_id)
     {
-        // model PembelianDetail berelasi dengan model produk jadi 1 pembelian detail hanya bisa membeli 1 produk penyuplai
-        // table PembelianDetail dengan table produk_penyuplai dimana value column pembelian_id sama dengan $pembelian_id, dapatkan semua data terkait
-        $beberapa_pembelian_detail = PembelianDetail::with('produk_penyuplai')->where('pembelian_id', $pembelian_id)->get();
+        // model PembelianDetail berelasi dengan model produk jadi 1 pembelian detail hanya bisa membeli 1 produk
+        // table PembelianDetail yang berelasi dengan table produk dimana value column pembelian_id sama dengan $pembelian_id, dapatkan semua data terkait
+        $beberapa_pembelian_detail = PembelianDetail::with('produk')->where('pembelian_id', $pembelian_id)->get();
 
         // aku melakukan pengulangan disini
         // kembalikkan datatables dari beberapa_pembelian_detail
@@ -310,7 +262,11 @@ class PembelianController extends Controller
             // lakukan pengulagan terhadap nomor
             ->addIndexColumn()
             ->addColumn('nama_produk', function (PembelianDetail $pembelian_detail) {
-                return $pembelian_detail->produk_penyuplai->nama_produk;
+                // kembalikan detail table pembelian_detail yang berelasi dengan detail table produk, lalu ambil value column nama_produk
+                return $pembelian_detail->produk->nama_produk;
+            })
+            ->addColumn('kode_produk', function(PembelianDetail $pembelian_detail) {
+                return $pembelian_detail->produk->kode_produk;
             })
             ->addColumn('harga', function (PembelianDetail $pembelian_detail) {
                 return rupiah_bentuk($pembelian_detail->harga);
@@ -345,6 +301,7 @@ class PembelianController extends Controller
         return response()->json('Berhasil menghapus 1 baris di table pembelian dan beberapa baris data di table pembelian_detail');
     }
 
+    // jadi jika aku di halaman pembelian_detail.index lalu aku tidak memilih produk penyuplai lalu aku kembali pembelian.index maka detail pembelian di table pembelian yang baru tadi akan di hapus dan semua pembelian detail terkait nya juga akan terhapus
     public function kembali($pembelian_id)
     {
         // ambil detail pembelian
@@ -359,6 +316,15 @@ class PembelianController extends Controller
 
         // kembalikan lalu alihkan ke route pembelian.index
         return redirect()->route('pembelian.index');
+    }
+
+    // menampilkan semua pembelian detail terkait ketika tombol retur pembelian di click
+    public function data_retur($pembelian_id)
+    {
+        // ambil semua pembelian detail terkait
+        // berisi PembelianDetail dimana value column pembelian_id sama dengan nilai parameter $pembelian_id, dapatkan
+        $semua_pembelian_detail = PembelianDetail::where('pembelian_id', $pembelian_id)->get();
+        return response()->json($semua_pembelian_detail);
     }
 
     // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
@@ -403,14 +369,5 @@ class PembelianController extends Controller
             'status' => 200,
             'message' => 'Berhasil retur pembelian'
         ]);
-    }
-
-    // menampilkan semua pembelian detail terkait ketika tombol retur pembelian di click
-    public function data_retur($pembelian_id)
-    {
-        // ambil semua pembelian detail terkait
-        // berisi PembelianDetail dimana value column pembelian_id sama dengan nilai parameter $pembelian_id, dapatkan
-        $semua_pembelian_detail = PembelianDetail::where('pembelian_id', $pembelian_id)->get();
-        return response()->json($semua_pembelian_detail);
     }
 }

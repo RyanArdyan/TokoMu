@@ -54,10 +54,10 @@
     <script>
         // untuk mengecilkan sidebar
 
-        // lakukan ajax untuk mengecek apakah ada penyuplai dan produk_penyuplai jika tidak ada maka tampilkan notifikasi "Anda harus menambahkan minimal 1 penyuplai terlebih dahulu", lalu arahkan ke menu penyuplai
+        // lakukan ajax untuk mengecek apakah ada penyuplai dan produk jika tidak ada maka tampilkan notifikasi "Anda harus menambahkan minimal 1 penyuplai terlebih dahulu", lalu arahkan ke menu penyuplai
         $.ajax({
-                // panggil route pembelian.cek_pemyuplai_dan_produk_penyuplai
-                url: "{{ route('pembelian.cek_penyuplai_dan_produk_penyuplai') }}",
+                // panggil route pembelian.cek_pemyuplai_dan_produk
+                url: "{{ route('pembelian.cek_penyuplai_dan_produk') }}",
                 // panggil route tipe dapatkan
                 type: "GET"
             })
@@ -80,18 +80,18 @@
                         });
                 };
                 // // lain jika tanggapan.pesan sama dengan pesan berikut
-                if (resp.pesan === 'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu.') {
+                if (resp.pesan === 'Anda harus menambahkan minimal 1 produk terlebih dahulu.') {
                     // tampilkan notifikasi menggunakan sweetalert
                     Swal.fire(
                             'Ada yang salah!',
-                            'Anda harus menambahkan minimal 1 produk penyuplai terlebih dahulu!',
+                            'Anda harus menambahkan minimal 1 produk terlebih dahulu!',
                             'error'
                         )
                         // jika user click oke maka kemudian jalankan fungsi berikut
                         .then(function() {
-                            // ke route produk_penyuplai.index
+                            // ke route produk.index
                             // window.lokasi memanggil route poduk_penyuplai.index
-                            window.location = "{{ route('produk_penyuplai.index') }}";
+                            window.location = "{{ route('produk.index') }}";
                         });
                 };
             });
@@ -163,6 +163,9 @@
                 },
                 {
                     data: 'nama_produk'
+                },
+                {
+                    data: 'kode_produk'
                 },
                 {
                     data: 'harga'
@@ -267,8 +270,8 @@
         });
 
         // detail pembelian
-        // fungsi show_detail, parameter berisi url
-        function show_detail(url) {
+        // fungsi tampilkan_semua_pembelian_detail_terkait, parameter berisi url
+        function tampilkan_semua_pembelian_detail_terkait(url) {
             // #modal_detail modalnya di tampilkan
             $("#modal_detail").modal("show");
             // table_detail panggil ajax url berisi url
@@ -331,7 +334,7 @@
                     // lakukan pengulangan terhadap response yang berisi semua pembelian detail terkait
                     // tanggapan.untukSetiap(fungsi(barang, index))
                     // parameter item berisi data table pembelian detail maksudnya semua detail pembelian_detail terkait
-                    // parameter index berisi index
+                    // parameter index berisi index nya misalnya index 0, index 1
                     response.forEach(function(item, index) {
                         // lakukan pengulangan terhadap tr atau table rows atau table baris
                         // panggil variable hasil lalu tambahkan element tr berulang kali ke dalam variable hasil
@@ -341,7 +344,10 @@
                                 <td>${item.nama_produk}</td>    
                                 <td>
                                     <input name="jumlah_retur" type="number" class="form-control" value="${item.jumlah}" max="${item.jumlah}" data-produk-penyuplai-id="${item.produk_penyuplai_id}">
-                                </td>    
+                                </td> 
+                                <td>
+                                    <input name="keterangan" type="text" class="form-control" autocomplete="off">
+                                </td>
                             </tr>
                         `;
                     });

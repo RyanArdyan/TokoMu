@@ -1,1 +1,6 @@
-pembelian_id akan di looping lalu Jika nama_produknya sama maka column stok milik table produk dikurangi value column jumlah_retur milik table retur_pembelian
+1. Aku hapus produk_penyuplai.
+2. Jadi nanti di modal tambah produk, tidak ada input stok karena harus melakukan pembelian produk dulu baru lah stok bertambah dan belum ada diskon, kan cuma data produk, stok nya saja belum ada.
+3. Di modal edit produk, tidak ada input stok karena stok tidak boleh diubah, 
+
+
+"message": "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'P-00002' for key 'produk_kode_produk_unique' (Connection: mysql, SQL: insert into `produk` (`kategori_id`, `penyuplai_id`, `kode_produk`, `nama_produk`, `merk`, `harga_beli`, `diskon`, `harga_jual`, `stok`, `updated_at`, `created_at`) values (1, 1, P-00002, You don, sdfsaf, 88000, 0, 823409, 0, 2023-04-11 21:57:24, 2023-04-11 21:57:24))",

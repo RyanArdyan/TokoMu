@@ -18,6 +18,12 @@
             {{-- panggil modal edit --}}
             @includeIf('produk.modal_edit')
 
+            {{-- jika aku click tombol Tambah produk maka panggil modal tambah --}}
+            <button id="tombol_tambah" class="btn btn-purple btn-sm mb-4">
+                <i class="mdi mdi-plus"></i>
+                Tambah Produk
+            </button>
+
             {{-- agar tablenya responsive --}}
             <div class="table-responsive">
                 {{-- aku menyimpan table ke dalam form agar aku bisa mengambil data table lalu menghapus beberapa produk dan mencetak beberapa barcode --}}
@@ -165,14 +171,14 @@
         $("#tombol_tambah").on("click", function() {
             // lakukan ajax
             $.ajax({
-                    // url ke route produk_dan_relasinya karena aku akan mengambil semua kategori dan penyuplai terlebih dahulu
-                    url: "{{ route('produk_dan_relasinya') }}",
+                    // url ke route produk.data_relasinya karena aku akan mengambil semua kategori dan penyuplai terlebih dahulu
+                    url: "{{ route('produk.data_relasinya') }}",
                     // panggil route tipe dapatkan
                     type: "GET"
                 })
                 // ketika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapannya
                 .done(function(resp) {
-                    // show modal tambah
+                    // panggil #modal_tambah lalu modalnya tampilkan
                     $("#modal_tambah").modal("show");
                     // lakukan pengulangan sebanyak jumlah kategori
                     // value berisi semua value dari column kategori_id dan nama_kategori
@@ -195,60 +201,60 @@
         });
 
         // jika modal tambah dikirim
-        // jika form tambah dikirim jalankan fungsi berikut
+        // jika form tambah dikirim jalankan fungsi berikut dan ambil event atau acara nya
         $("#form_tambah").on("submit", function(e) {
             // cegah bawaan nya yaitu reload
             e.preventDefault();
             // lakukan ajax
             $.ajax({
-                    // url ke route produk.store
-                    url: "{{ route('produk.store') }}",
-                    // panggil route type POST
-                    type: "POST",
-                    // kirimkan formulir data  dari #form_tambah
-                    data: new FormData(this),
-                    // aku butuh 3 baris kode dibawah ini
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    // sebelum formnya dikirim, hapus validsai error dulu
-                    beforeSend: function() {
-                        // panggil .input hapus class is-invalid
-                        $(".input").removeClass("is-invalid");
-                        // panggil .pesan_error lalu kosongkan textnya
-                        $(".pesan_error").text("");
-                    }
-                })
-                // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapnnya
-                .done(function(resp) {
-                    // jika validasi menemukan error
-                    // jika tanggapan.status sama dengan 0
-                    if (resp.status === 0) {
-                        // lakukan pengulangan terhadap value attribute name dan pesan errornya
-                        // key berisi semua value attribute name 
-                        // value berisi semua pesan error
-                        $.each(resp.errors, function(key, value) {
-                            // contohnya panggil .nama_produk_input lalu tambah .is-invalid
-                            $(`.${key}_input`).addClass("is-invalid");
-                            // panggil .nama_produk_error lalu textnya diisi dengan pesan value index 0 atau pesan error
-                            $(`.${key}_error`).text(value[0]);
-                        });
-                        // jika produk brhasil disimpan
-                        // lain jika tanggapan.status sama dengan 200
-                    } else if (resp.status === 200) {
-                        // reset formulir atau kosongkan semua value element input
-                        // panggil #form_tambah, index 0, lalu atur ulang
-                        $("#form_tambah")[0].reset();
-                        // input nama produk di focuskan
-                        // panggil #nama_produk lalu fokuskan
-                        $("#nama_produk").focus();
-                        // muat ulang table ajax
-                        // panggil variabel table, ajaxnya kita reload
-                        table.ajax.reload();
-                        // notifikasi menggunakan toastr
-                        toastr.success(`${resp.pesan}.`);
-                    };
-                });
+                // url ke route produk.store
+                url: "{{ route('produk.store') }}",
+                // panggil route type POST
+                type: "POST",
+                // kirimkan data berupa baru FormulirData dar9 #form_tambah
+                data: new FormData(this),
+                // aku butuh 3 baris kode dibawah ini
+                processData: false,
+                contentType: false,
+                cache: false,
+                // sebelum formnya dikirim, hapus validsai error dulu
+                beforeSend: function() {
+                    // panggil .input hapus class is-invalid
+                    $(".input").removeClass("is-invalid");
+                    // panggil .pesan_error lalu kosongkan textnya
+                    $(".pesan_error").text("");
+                }
+            })
+            // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapnnya
+            .done(function(resp) {
+                // jika validasi menemukan error
+                // jika tanggapan.status sama dengan 0
+                if (resp.status === 0) {
+                    // lakukan pengulangan terhadap value attribute name dan pesan errornya
+                    // key berisi semua value attribute name 
+                    // value berisi semua pesan error
+                    $.each(resp.errors, function(key, value) {
+                        // contohnya panggil .nama_produk_input lalu tambah .is-invalid
+                        $(`.${key}_input`).addClass("is-invalid");
+                        // panggil .nama_produk_error lalu textnya diisi dengan pesan value index 0 atau pesan error
+                        $(`.${key}_error`).text(value[0]);
+                    });
+                    // jika produk brhasil disimpan
+                    // lain jika tanggapan.status sama dengan 200
+                } else if (resp.status === 200) {
+                    // reset formulir atau kosongkan semua value element input
+                    // panggil #form_tambah, index 0, lalu atur ulang
+                    $("#form_tambah")[0].reset();
+                    // input nama produk di focuskan
+                    // panggil #nama_produk lalu fokuskan
+                    $("#nama_produk").focus();
+                    // muat ulang table ajax
+                    // panggil variabel table, ajaxnya kita reload
+                    table.ajax.reload();
+                    // notifikasi menggunakan toastr
+                    toastr.success(`${resp.pesan}.`);
+                };
+            });
         });
 
         // Edit produk

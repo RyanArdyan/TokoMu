@@ -90,7 +90,7 @@ class ProdukController extends Controller
     }
 
     // berfungsi untuk menampilkan semua kategori dan penyuplai di modal tambah produk
-    public function produk_dan_relasinya()
+    public function data_relasinya()
     {
         // berisi kategori pilih semua value column karegori_id dan nama_kategori
         $semua_kategori = Kategori::select('kategori_id', 'nama_kategori')->get();
@@ -121,11 +121,8 @@ class ProdukController extends Controller
             'nama_produk' => 'required|unique:produk|max:255|min:2',
             'merk' => 'required|min:2|max:20',
             'harga_beli' => 'required',
-            // diskon tidak harus diisi karena defaultnya adalah 0
-            'diskon' => 'required|integer|max:100|min:0',
             // gt berarti greater than atau harus lebih besar dari input name="harga_beli"
             'harga_jual' => 'required|gt:harga_beli',
-            'stok' => 'required|integer|min:1'
         ],
         // jika validator gagal
         [
@@ -138,58 +135,60 @@ class ProdukController extends Controller
             return response()->json([
                 // key status berisi value 0
                 'status' => 0,
-                // key pesan berisi value error
-                'pesan' => 'Error',
+                // key message berisi value error
+                'Message' => 'Harap isi formulir dengan benar',
                 // key errrors berisi semua value attribute name dan pesan eror
                 'errors' => $validator->errors()
             ]);
         }
-        // lain jiak validasi nya berhasil
+        // lain jiak validasi nya berhasil atau formulir nya diisi dengan benar
         else {
             // ambil satu baris data produk yang terakhir
-            $baris_data_produk_yg_terakhir = produk::latest()->first();
+            $baris_data_produk_yg_terakhir = Produk::latest()->first();
             // jika baris data produk yang terakhir tidak ada karena belum ada produk maka $kode_produk_yg_terakhir diisi P-00001
             // jika tidak ada baris data produk yang terakhir
             if (!$baris_data_produk_yg_terakhir) {
                 // berisi 00001
                 $kode_produk = '00001';
             } 
-            // jiak ada baris data produk yang terakhir
+            // jiKA ada baris data produk yang terakhir, anggaplah ada P-00001
             else if ($baris_data_produk_yg_terakhir) {
                 // anggaplah berisi "P-00001"
                 $kode_produk_yg_terakhir = $baris_data_produk_yg_terakhir->kode_produk;
                 // anggaplah data terakhir berisi "P-00001"
-                // maka saya tidak akan bisa melakukan "M-00001" + 1 karena string + integer = string
+                // maka saya tidak akan bisa melakukan "P-00001" + 1 karena string + integer = string
                 // aku butuh explode agar bisa memecah menggunakan -
 
-                // anggaplah berisi ["M", "00001"]
+                // explode akan memecah string berdasarkan argumen pertama yang dikirim
+                // anggaplah menghasilkan ["P", "00001"]
                 $explode_kode_produk = explode("-", $kode_produk_yg_terakhir);
-                // "P-00001" akan menjadi 1 lalu di tambah 1 = 2
+                // "00001" akan menjadi 1 lalu di tambah 1 maka menjadi 2
                 $ubah_string_kode_produk_menjadi_integer = (int) $explode_kode_produk[1] + 1;
 
-                // panggil fungsi helper kode_berurutan
+                // panggil fungsi helper kode_berurutan agar menjadi P-00002
                 // 5 adalah jumlah angka nya, jadi contohnya adalah 10000
                 $kode_produk = kode_berurutan($ubah_string_kode_produk_menjadi_integer, 5);
             };
 
-            // Simpan produk dengan cara produk : buat
+            // Simpan produk dengan cara produk buat
             produk::create([
-                // column nama_produk di table produk diisi dengan value input name="nama_produk"
-                'nama_produk' => $request->nama_produk,
-                'kode_produk' => 'P-' . $kode_produk,
+                // column kategori_id di table produk diisi dengan value select name="kategori_id"
                 'kategori_id' => $request->kategori_id,
                 'penyuplai_id' => $request->penyuplai_id,
+                // diisi dengan "p" digabung value variabel kode_produk
+                'kode_produk' => 'P-' . $kode_produk,
+                'nama_produk' => $request->nama_produk,
                 'merk' => $request->merk,
                 'harga_beli' => $request->harga_beli,
-                'diskon' => $request->diskon,
+                'diskon' => 0,
                 'harga_jual' => $request->harga_jual,
-                'stok' => $request->stok,
+                'stok' => 0
             ]);
             // kembalikkan tanggapan berupa json
             return response()->json([
                 // key status berisi value 200
                 'status' => 200,
-                // key pesan berisi value misalnya "Produk ikan kaleng berhasil disimpan
+                // key pesan berisi value misalnya "Produk paket smartfren 6 GB sebulan berhasil disimpan
                 'pesan' => "Produk $request->nama_produk berhasil disimpan."
             ]);
         };

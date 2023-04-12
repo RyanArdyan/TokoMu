@@ -28,8 +28,8 @@
             <div class="card">
                 <div class="card-body">
 
-                    {{-- termasuk ada jika modal pembelian_detail.modal_produk_penyuplai di panggil --}}
-                    @include('pembelian_detail.modal_produk_penyuplai')
+                    {{-- termasuk ada jika modal pembelian_detail.modal_produk di panggil --}}
+                    @includeIf('pembelian_detail.modal_produk')
 
                     <div class="row mb-2">
                         <div class="col-sm-6">
@@ -41,9 +41,10 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <button id="tombol_tampilkan_modal_produk_penyuplai" class="btn btn-success btn-sm"><i
+                                {{-- jika #tombol_tampilkan_modal_produk di click maka tampilkan modal_produk.blade --}}
+                                <button id="tombol_tampilkan_modal_produk" class="btn btn-success btn-sm"><i
                                         class="fa fa-shopping-bag"></i>
-                                    Pilih Produk Penyuplai</button>
+                                    Pilih Produk</button>
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -91,8 +92,9 @@
                             <i class="fas fa-arrow-left"></i>
                             Kembali
                         </a>
-                        <button id="simpan_transaksi" type="submit" class="btn btn-sm btn-primary"><i
-                                class="fa fa-save"></i> Simpan Transaksi</button>
+                        {{-- jika tombol Simpan Pembelian di click maka Update detail pembelian --}}
+                        <button id="tombol_simpan_pembelian" type="submit" class="btn btn-sm btn-primary"><i
+                                class="fa fa-save"></i> Simpan Pembelian</button>
                     </div>
                 </div>
             </div>
@@ -139,7 +141,7 @@
             // lain jika value parameter nilai lebih kecil dari 200
             else if (nilai < 200) {
                 // berisi "Senilai Seratus" digabung panggil fungsi angka_terbilang(nilai - 100);
-                temp = "Senilai Seratus" + angka_terbilang(nilai - 100);
+                temp = "Seratus " + angka_terbilang(nilai - 100);
             }
             // lain jika value parameter nilai lebih kecil dari 1000
             else if (nilai < 1000) {
@@ -183,16 +185,16 @@
         };
 
 
-        // panggil data table produk_penyuplai yang terkait dengan penyuplai yang dipilih
-        // panggil #table_produk_penyuplai lalu gunakan datatable
-        $("#table_produk_penyuplai").DataTable({
-            // Jika data produk_penyuplai sedang dimuat maka tampilkan processing nya dulu
+        // panggil data table produk yang terkait dengan penyuplai yang dipilih
+        // panggil #table_produk lalu gunakan datatable
+        $("#table_produk").DataTable({
+            // Jika data produk sedang dimuat maka tampilkan processing nya dulu
             processing: true,
             // Jika data sudah lebih dari 10.000 maka tidak akan ngelag karena serverSide nya true
             // sisi server: benar
             serverSide: true,
             // lakukan ajax, dan panggil route pembelian_detail.produk lalu kirimkan penyuplai_id
-            ajax: "{{ route('pembelian_detail.produk_penyuplai', $detail_penyuplai->penyuplai_id) }}",
+            ajax: "{{ route('pembelian_detail.produk', $detail_penyuplai->penyuplai_id) }}",
             // buat tbody, tr dan td lalu isi datanya
             columns: [{
                     // pengulangan nomor
@@ -207,16 +209,16 @@
                     name: 'nama_produk'
                 },
                 {
-                    data: 'harga',
-                    name: 'harga'
+                    data: 'harga_beli',
+                    name: 'harga_beli'
                 },
-                // panggil tombol pilih produk_penyuplai
+                // panggil tombol pilih produk
                 {
                     data: 'action',
                     name: 'action',
                     // sortable: false berarti akan menghilangkan icon anak panah atau menghilangkan fitur balik data dari Z-A
                     sortable: false,
-                    // menghilangkan fitur cari di column pilih produk_penyuplai
+                    // menghilangkan fitur cari di column pilih produk
                     searchable: false
                 }
             ],
@@ -289,7 +291,7 @@
                 }
             })
             // pada draw.dt, jalankan fungsi berikut
-            // agar input produk_penyuplai_id yang hidden sampai input total_harga di update value nya dan component dikiri juga diupdate
+            // agar input produk_id yang hidden sampai input total_harga di update value nya dan component dikiri juga diupdate
             .on("draw.dt", function() {
                 // panggil fungsi reload_form
                 reload_form();
@@ -324,28 +326,28 @@
 
         });
 
-        // jika #tombol_tampilkan_produk_penyuplai di click maka jalankan fungsi berikut
-        $('#tombol_tampilkan_modal_produk_penyuplai').on('click', function() {
-            // panggil #modal_produk_penyuplai lalu modal nya di tampilkan
-            $("#modal_produk_penyuplai").modal("show");
+        // jika #tombol_tampilkan_produk di click maka jalankan fungsi berikut
+        $('#tombol_tampilkan_modal_produk').on('click', function() {
+            // panggil #modal_produk lalu modal nya di tampilkan
+            $("#modal_produk").modal("show");
         })
 
-        // fitur pilih produk penyuplai
-        // jika document di click yang class nya adalah .pilih_produk_penyuplai, jalankan fungsi berikut
-        $(document).on('click', '.pilih_produk_penyuplai', function() {
-            // berisi panggil value dari .pilih_produk_penyuplai, attribute data-produk-penyuplai-id
-            let produk_penyuplai_id = $(this).data('produk-penyuplai-id');
-            // berisi panggil value dari .pilih_produk_penyuplai, attribute data-harga
-            let harga = $(this).data('harga');
+        // fitur pilih produk
+        // jika document di click yang class nya adalah .pilih_produk, jalankan fungsi berikut
+        $(document).on('click', '.pilih_produk', function() {
+            // berisi panggil value dari .pilih_produk_penyuplai, attribute data-produk-id
+            let produk_id = $(this).data('produk-id');
+            // berisi panggil value dari .pilih_produk, attribute data-harga-beli
+            let harga_beli = $(this).data('harga-beli');
 
             // berisi ambil nilai input #pembelian_id yang disimpan dalam form_pembelian.blade
             let pembelian_id = $("#pembelian_id").val();
-            // panggil #produk_penyuplai_id yang disimpan di form_produk_penyuplai.blade diisi dengan variable produk_penyuplai_id
-            $('#produk_penyuplai_id').val(produk_penyuplai_id);
+            // panggil #produk_id yang disimpan di form_produk.blade diisi dengan variable produk_id
+            $('#produk_id').val(produk_id);
 
-            // sembunyikan modal produk_penyuplai
-            // panggil #modal_produk_penyuplai lalu modal nya di tutup
-            $(`#modal_produk_penyuplai`).modal('hide');
+            // sembunyikan modal produk
+            // panggil #modal_produk lalu modal nya di tutup
+            $(`#modal_produk`).modal('hide');
 
             // jquery lakukan ajax
             $.ajax({
@@ -365,7 +367,7 @@
                     data: {
                         // key pembelian_id berisi value variable pembelian_id
                         "pembelian_id": pembelian_id,
-                        "produk_penyuplai_id": produk_penyuplai_id
+                        "produk_id": produk_id
                     }
                 })
                 // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapan nya
@@ -516,16 +518,16 @@
 
         });
 
-        // jika tombol #simpan_transaksi di click maka jalankan fungsi berikut
-        $("button#simpan_transaksi").on("click", function() {
-            // berisi text dari .total_barang
+        // jika #tombol_simpan_pembelian di click maka jalankan fungsi berikut
+        $("#tombol_simpan_pembelian").on("click", function() {
+            // berisi text dari .total_barang yang di buat di PembelianDetailController, method data
             let total_barang = $(".total_barang").text();
-            // jika total_barang sama dengan "0", tipe datanya string bukan integer
+            // jika total_barang sama dengan "0" karena user memilih produk, tipe datanya string bukan integer
             if (total_barang === "0") {
                 // tampilkan notifikasi berisi pesan berikut
                 Swal.fire('Silahkan pilih produk terlebih dahulu.');
             }
-            // lain jika total_barang tidak sama dengan "0" misalnya "3" maka
+            // lain jika total_barang tidak sama dengan "0" karna user sudah memilih produk dan tidak menghapus semua produk di halaman pembelian detail, misalnya total_barang berisi "10" maka
             else if (total_barang !== "0") {
                 // panggil #form_pembelian lalu di kirim
                 $("#form_pembelian").submit();

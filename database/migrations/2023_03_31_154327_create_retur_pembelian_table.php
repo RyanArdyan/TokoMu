@@ -23,6 +23,10 @@ return new class extends Migration
                 ->references('pembelian_id')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            // tipe data string, column nama_produk, harus unique atau tidak boleh sama
+            $table->string('nama_produk')->unique();
+            // tipe data integer, column jumlah_retur
+            $table->integer('jumlah_retur');
             // Metode date membuat tanggal kolom yang setara:
             $table->dateTime('tanggal_retur');
             $table->string('keterangan');

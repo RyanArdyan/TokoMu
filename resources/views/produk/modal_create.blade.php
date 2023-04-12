@@ -59,17 +59,6 @@
                             </div>
                         </div>
     
-                        {{-- diskon --}}
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label" for="diskon">Diskon</label>
-                            <div class="col-sm-10">
-                                <input id="diskon" name="diskon" class="diskon_input input form-control input_angka" type="text"
-                                placeholder="Masukkan diskon (Maksimal 100%)"    data-inputmask="'alias': 'decimal', 'suffix': '%', 'groupSeparator':  ',',  'removeMaskOnSubmit': true, 'autoUnMask': true, 'rightAlign': false, 'radixPoint': ','" autocomplete="off" value="0" onkeypress="return number(event)">
-                                {{-- pesan error --}}
-                                <span class="diskon_error pesan_error text-danger"></span>
-                            </div>
-                        </div>
-    
                         {{-- harga_jual --}}
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" for="harga_jual">Harga Jual</label>
@@ -79,18 +68,6 @@
                                 data-inputmask="'alias': 'decimal', 'prefix': 'Rp ', 'groupSeparator':  '.',  'removeMaskOnSubmit': true, 'autoUnMask': true, 'rightAlign': false, 'radixPoint': ','" autocomplete="off" autocomplete="off" onkeypress="return number(event)">
                                 {{-- pesan error --}}
                                 <span class="harga_jual_error pesan_error text-danger"></span>
-                            </div>
-                        </div>
-    
-                        {{-- stok --}}
-                        <div class="form-group row">
-                            <label class="col-sm-2 col-form-label" for="stok">Stok</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="stok"
-                                    class="stok_input input form-control input_angka" id="stok"
-                                    placeholder="Masukkan stok"
-                                    data-inputmask="'alias': 'decimal', 'prefix': '', 'groupSeparator':  ',',  'removeMaskOnSubmit': true, 'autoUnMask': true, 'rightAlign': false, 'radixPoint': ','" autocomplete="off" onkeypress="return number(event)">
-                                <span class="stok_error pesan_error text-danger"></span>
                             </div>
                         </div>
                     </div>

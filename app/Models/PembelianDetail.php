@@ -18,15 +18,15 @@ class PembelianDetail extends Model
     protected $guarded = [];
 
     // relasi
-	//  1 pembelian_detail milik 1 produk_penyuplai atau 1 pembelian detail hanya bisa membeli 1 produk penyupalai atau 1 produk_penyuplai bisa banyak di beli pembelian_detail
+	//  1 pembelian_detail milik 1 produk atau 1 pembelian detail hanya bisa membeli 1 produk atau 1 produk bisa banyak di beli pembelian_detail
     // publik fungsi produk
-    public function produk_penyuplai() 
+    public function produk() 
 	{
         // argumen pertama adalah relasi table nya
         // argumen kedua adalah foreign key / kunci asing di table pembelian_detail
-        // argumen ketiga adalah primary key atau kunci utama di table produk_penyuplai
-        // kembalikkan pembelian_detail milik table produk_penyuplai, produk_penyuplai_id, produk_penyuplai_id
-        return $this->belongsTo(ProdukPenyuplai::class, 'produk_penyuplai_id', 'produk_penyuplai_id');
+        // argumen ketiga adalah primary key atau kunci utama di table produk
+        // kembalikkan pembelian_detail milik table produk, produk_id, produk_id
+        return $this->belongsTo(Produk::class, 'produk_id', 'produk_id');
     }
 
     // 1 PembelianDetail milik 1 Pembelian atau 1 pembelian punya banyak pembelian_detail

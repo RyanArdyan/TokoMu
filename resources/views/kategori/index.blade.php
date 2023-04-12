@@ -132,7 +132,7 @@
             });
     });
 
-    // hapus validasi error ketika aku menutup modal tambah
+    // hapus validasi error ketika aku menutup modal
     // jika .tutup di click maka jalankan fungsi berikut
     $(".tutup").on("click", function() {
         // reset formulir

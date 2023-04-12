@@ -15,6 +15,7 @@
                         <tr>
                             <th width="5%">No</th>
                             <th>Nama Produk</th>
+                            <th>Kode Produk</th>
                             <th>Harga Beli</th>
                             <th>Jumlah</th>
                             <th>Subtotal</th>
