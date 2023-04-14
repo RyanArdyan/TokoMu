@@ -6,6 +6,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Pengaturan;
 use App\Models\User;
+use App\Models\Penyuplai;
+use App\Models\Kategori;
+use App\Models\Produk;
+use App\Models\Pembelian;
+use App\Models\PembelianDetail;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -41,6 +46,66 @@ class DatabaseSeeder extends Seeder
             'diskon_perusahaan' => 5,
             'logo_perusahaan' => 'logo_perusahaan.png',
             'kartu_member' => 'kartu_member.png'
+        ]);
+
+        Kategori::create([
+            'nama_kategori' => 'Paket Internet',
+            'deskripsi_kategori' => '-'
+        ]);
+
+        Penyuplai::create([
+            'nama_penyuplai' => 'PT Smartfren Telecom TBK',
+            'telepon_penyuplai' => '088705968716',
+            'alamat_penyuplai' => 'Jalan A'
+        ]);
+
+        Produk::create([
+            'kategori_id' => 1,
+            'penyuplai_id' => 1,
+            'kode_produk' => 'P-00001',
+            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari    Selama Sebulan',
+            'merk' => 'Smartfren',
+            'harga_beli' => 77000,
+            'diskon' => 0,
+            'harga_jual' => 82000,
+            'stok' => 0
+        ]);
+
+        Produk::create([
+            'kategori_id' => 1,
+            'penyuplai_id' => 1,
+            'kode_produk' => 'P-00002',
+            'nama_produk' => 'Paket Smartfren 6 GB Selama Sebulan',
+            'merk' => 'Smartfren',
+            'harga_beli' => 28000,
+            'diskon' => 0,
+            'harga_jual' => 33000,
+            'stok' => 0
+        ]);
+
+        Pembelian::create([
+            'penyuplai_id' => 1,
+            'total_barang' => 10,
+            'total_harga' => 1050000,
+            'status' => 'Oke'
+        ]);
+
+        PembelianDetail::create([
+            'pembelian_id' => 1,
+            'produk_id' => 1,
+            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari    Selama Sebulan',
+            'harga' => 77000,
+            'jumlah' => 10,
+            'subtotal' => 770000
+        ]);
+
+        PembelianDetail::create([
+            'pembelian_id' => 1,
+            'produk_id' => 2,
+            'nama_produk' => 'Paket Smartfren 6 GB Selama Sebulan',
+            'harga' => 28000,
+            'jumlah' => 10,
+            'subtotal' => 280000
         ]);
     }
 }

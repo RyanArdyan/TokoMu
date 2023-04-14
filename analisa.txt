@@ -1,6 +1,4 @@
-1. Aku hapus produk_penyuplai.
-2. Jadi nanti di modal tambah produk, tidak ada input stok karena harus melakukan pembelian produk dulu baru lah stok bertambah dan belum ada diskon, kan cuma data produk, stok nya saja belum ada.
-3. Di modal edit produk, tidak ada input stok karena stok tidak boleh diubah, 
-
-
-"message": "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'P-00002' for key 'produk_kode_produk_unique' (Connection: mysql, SQL: insert into `produk` (`kategori_id`, `penyuplai_id`, `kode_produk`, `nama_produk`, `merk`, `harga_beli`, `diskon`, `harga_jual`, `stok`, `updated_at`, `created_at`) values (1, 1, P-00002, You don, sdfsaf, 88000, 0, 823409, 0, 2023-04-11 21:57:24, 2023-04-11 21:57:24))",
+Analisis akupasti.com
+di table retur_pembelian, aku butuh column produk_id.
+jadi anggaplah yang di return adalah pembelian_id 1 maka ambil semua data di table retur_pembelian yang column pembelian_id nya berisi 1, anggaplah ada dua baris data, lalu ambil produk_id yang sesuai berdasarkan column produk_id, misalnya produk_id 1 dan 2, berarti ada dua baris produk.
+lalu table produk, column stok dikurangi table retur_pembelian, column jumlah_retur.
