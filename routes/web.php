@@ -76,10 +76,11 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/penjualan/data-retur/{penjualan_id}', [PenjualanController::class, 'data_retur'])->name('penjualan.data_retur');
     // route tipe kirim, ke url /penjualan/retur-penjualan lalu kirimkan ke PenjualanController, method retur_penjualan, name nya adalah penjualan.retur_penjualan
     Route::post('/penjualan/retur-penjualan', [PenjualanController::class, 'retur_penjualan'])->name('penjualan.retur_penjualan');
-    // route tipe dapatkan, jika user diarahkan ke url /penjualan/export-excel maka arahkan ke PenjualanController, method export_excel, name nya adalah penjualan.export_excel
-    Route::get('/penjualan-export-excel', [PenjualanController::class, 'export_excel'])->name('penjualan.export_excel');
+    // route tipe kirim, jika user diarahkan ke url /penjualan/export-excel maka arahkan ke PenjualanController, method export_excel, name nya adalah penjualan.export_excel
+    Route::post('/penjualan/export-excel', [PenjualanController::class, 'export_excel'])->name('penjualan.export_excel');
     // route tipe kirim, jika user diarahkan ke url berikut maka kirimkan penjualan_id lalu ke PenjualanController, ke method berikut, name nya adalah berikut
     Route::get('/penjualan/penjualan-detail/export-excel/{penjualan_id}', [PenjualanController::class, 'export_excel_penjualan_detail'])->name('export_excel.penjualan_detail');
+
 
 
     // detail penjualan

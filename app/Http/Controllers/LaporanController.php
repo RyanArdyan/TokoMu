@@ -33,10 +33,12 @@ class LaporanController extends Controller
     // $request menangkap data formulir atau value dari value attribute name
     public function ubah_periode(Request $request)
     {
-        // timpa value $tanggal awal dengan value $request->tanggal_awal
+        // berisi value dari input name="tanggal_awal"
+        // anggaplah akan berisi "2023-04-24"
         $tanggal_awal = $request->tanggal_awal;
-        // timpa value $tanggal_hari_ini dengan value $request->tanggal_hari_ini
         $tanggal_hari_ini = $request->tanggal_hari_ini;
+
+        // dd($tanggal_awal);
 
          // kembalikan ke tampilan laporan.index, kirimkan data berupa array
         return view('laporan.index', [

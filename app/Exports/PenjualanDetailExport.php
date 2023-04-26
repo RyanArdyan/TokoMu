@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-use App\Models\PenjualanDetail;
 // ini digunakan untuk mencetak data table penjualan_detail
 use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Models\PenjualanDetail;
 // Ini untuk membuat thead, tr, th
 use Maatwebsite\Excel\Concerns\WithHeadings;
 // agar aku bisa mengirim value argument dari controller dan mengangkap nya
@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
+// ketika pertama kali implementasi maka akan ada underline merah, itu bukan error
 class PenjualanDetailExport implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
 {
     // agar aku bisa mengirim value argument dari controller dan menangkap nya
@@ -62,6 +63,6 @@ class PenjualanDetailExport implements FromCollection, WithHeadings, ShouldAutoS
     public function collection()
     {
         // kembalikkan Data table penjualan_detail, pilih value dari column berikut, dimana value column penjualan_id sama dengan value $this->penjualan_id, data baris pertama
-        return PenjualanDetail::select('kode_produk', 'nama_produk', 'harga_jual', 'jumlah', 'diskon', 'subtotal')->where('penjualan_id', $this->penjualan_id)->get();
+        return PenjualanDetail::select('kode_produk', 'name_produk', 'harga_jual', 'jumlah', 'diskon', 'subtotal')->where('penjualan_id', $this->penjualan_id)->get();
     }
 }

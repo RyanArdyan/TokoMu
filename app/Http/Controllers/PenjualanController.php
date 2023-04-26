@@ -17,6 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 // fitur export ke excel
 use App\Exports\PenjualanExport;
 use App\Exports\PenjualanDetailExport;
+use App\Exports\Excel2Export;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -494,16 +495,34 @@ class PenjualanController extends Controller
         ]);
     }
 
-    // export ke excel
-    public function export_excel()
+    // export ke excel berdasarkan periode
+    // $request akan menangkap data yang dikirim formulir
+    public function export_excel(Request $request)
     {
-        // kembalikkan excel::unduh(new panggil file PengeluaranExport, nama file nya adalah 'pengeluran.xlsx')
-        return Excel::download(new PenjualanExport, 'penjualan.xlsx');
+        // dump and die atau cetak dan matikan semua value formulir
+        // dd($request->all());
+        // hasil dari dd adalah
+        // "_token" => "g44mj6FNhUC8OcXibLgp8dBClErkjQ02bTaM67F7"
+        // "tanggal_awal" => "2023-04-23"
+        // "tanggal_hari_ini" => "2023-04-26"
+
+        // berisi tangkap value input name="tanggal_awal"
+        $tanggal_awal = $request->tanggal_awal;
+        // berisi tangkap value input name="tanggal_akhir"
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        // kembalikkan excel::unduh(new panggil PenjualanExport.php lalu kirimkan value parameter $tanggal_awal dan $tanggal_akhir, nama file nya adalah 'penjualan.xlsx')
+        return Excel::download(new PenjualanExport($tanggal_awal, $tanggal_akhir), 'penjualan.xlsx');
     }
 
     // export ke excel semua penjualan_detail terkait nya
     public function export_excel_penjualan_detail($penjualan_id) {
         // kembalikkan excel::unduh(new panggil file PengeluaranDetailExport lalu kirimkan value parameter $penjualan_id, nama file nya adalah 'penjualan_detail.xlsx')
         return Excel::download(new PenjualanDetailExport($penjualan_id), 'penjualan_detail.xlsx');
+    }
+
+    public function excel2(Request $request)
+    {
+        
     }
 }

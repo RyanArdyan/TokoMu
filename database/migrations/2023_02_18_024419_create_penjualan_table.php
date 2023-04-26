@@ -36,7 +36,11 @@ return new class extends Migration
             $table->tinyInteger('diskon')->default(0);
             $table->bigInteger('harus_bayar')->default(0);
             $table->bigInteger('uang_diterima')->default(0);
-            $table->timestamps();
+            // $table->timestamps();
+            // tipe data tanggal tanpa waktu, column created_at
+            $table->date('created_at');
+            // tipe data tanggal tanpa waktu, column updated_at
+            $table->date('updated_at');
         });
     }
 

@@ -21,20 +21,20 @@
                 <a href="{{ route('penjualan_detail.create') }}" class="btn btn-purple btn-sm">
                     <i class="mdi mdi-plus"></i> Penjualan Baru
                 </a>
-                {{-- export semua data penjualan ke file excel --}}
-                {{-- panggil route penjualan.export_excel --}}
-                <a href="{{ route('penjualan.export_excel') }}" class="btn btn-sm btn-success">
-                    <i class="mdi mdi-file-excel"></i> Excel</a>
+                {{-- jika #tombol_ubah_periode di click maka tampilkan modal ubah periode --}}
+                <button id="tombol_ubah_periode" class="btn btn-sm btn-success">
+                    <i class="mdi mdi-file-excel"></i> Export Excel</button>
             </div>
 
             {{-- termasuk element table dan form --}}
             @include('penjualan.table')
-
             {{-- jika tombol lihat detail penjualan di click maka panggil views/penjualan/modal_detail --}}
             {{-- termasuk ada jika penjualan.detail di panggil --}}
             @includeIf('penjualan.modal_detail')
             {{-- termasuk ada jika modal penjualan.modal_retur dipanggil --}}
             @includeIf('penjualan.modal_retur')
+            {{-- termasuk ada jika modal_ubah_periode di panggil --}}
+            @includeIf('penjualan.modal_ubah_periode')
         </div>
     </div>
 @endsection
@@ -247,5 +247,11 @@ function retur_penjualan(penjualan_detail_id, produk_id, penjualan_id) {
         };
     });
 };
+
+// jika #tombol_ubah_periode di click maka jalankan fungsi
+$("#tombol_ubah_periode").on("click", function() {
+    // panggil #modal_ubah_periode lalu modal nya di tampilkan
+    $("#modal_ubah_periode").modal("show");
+});
 </script>
 @endpush

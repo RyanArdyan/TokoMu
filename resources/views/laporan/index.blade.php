@@ -53,7 +53,7 @@
         serverSide: true,
         // autoLebar mati
         autoWith: false,
-        // lakukan ajax lalu ke route laporan.data, kirimkan $tangal_awal dan $tanggal_akhir yg didapatkan dari LaporanController method index
+        // lakukan ajax lalu ke route laporan.data, kirimkan $tangal_awal dan $tanggal_akhir yg didapatkan dari LaporanController method index atau method ubah_periode
         ajax: "{{ route('laporan.data', [$tanggal_awal, $tanggal_hari_ini]) }}",
         // ada name agar aku bisa mengirimkan datanya menggunakan formulir, anggaplah itu input name=""
         columns: [
@@ -93,6 +93,7 @@
 
     // jika #tombol_ubah_periode di click maka jalankan fungsi berikut
     $("#tombol_ubah_periode").on("click", function() {
+        // panggil #modal_ubah_periode lalu modalnya ditampilkan
         $("#modal_ubah_periode").modal('show')
     });
 </script>

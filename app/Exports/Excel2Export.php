@@ -11,17 +11,18 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
 // agar lebar kolom nya pas
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-// 2 baris dibawah ini digunakan untuk menghias tampilan di excel
+// ini digunakan untuk menghias tampilan di excel
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-// ada garis merah di bawah itu bukan error
-class PenjualanExport implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
+use Illuminate\Support\Facades\DB;
+
+// ketika pertama kali implementasi maka akan ada underline merah, itu bukan error
+class Excel2Export implements FromCollection, WithHeadings, ShouldAutoSize, WithStyles
 {
     // agar aku bisa mengirim value argument dari controller dan menangkap nya
     use Exportable;
 
-    // inisialisasi property agar aku bisa mengisi nya di method construct dan memanggil value nya di method collection
     // property tanggal_awal berisi string
     protected $tanggal_awal = "";
     protected $tanggal_akhir = "";
@@ -42,7 +43,6 @@ class PenjualanExport implements FromCollection, WithHeadings, ShouldAutoSize, W
         ];
     }
 
-    // method gaya untuk menghias tampilan
     public function styles(Worksheet $sheet)
     {
         return [
