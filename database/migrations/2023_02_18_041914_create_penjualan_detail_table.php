@@ -20,6 +20,11 @@ return new class extends Migration
             $table->unsignedBigInteger('produk_id')->nullable();
             // arti restrict adalah misalnya, table penjualan_detail baris 1, punya id_produk 1, lalu aku hapus id_produk 1 maka akan ada error di penjualan_detail
             $table->foreign('produk_id')->references('produk_id')->on('produk')->restrictOnUpdate()->restrictOnDelete();
+            // tipe asing id, column retur_penjualan_id, bolek kosong karena tidak semua penjualan_detail akan di retur
+            $table->foreignId('retur_penjualan_id')->nullable();
+            // kedua baris kode berikut untuk mencetak laporan excel 
+            $table->string('kode_produk');
+            $table->string('nama_produk');
             // bigInteger agar menghindari out of range jika angka usdha menyentuh m
             $table->bigInteger('harga_jual');
             $table->integer('jumlah');

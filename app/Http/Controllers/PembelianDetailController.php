@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ProdukPenyuplai;
 use App\Models\Produk;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
@@ -43,8 +42,8 @@ class PembelianDetailController extends Controller
 		// penyuplai dimana value column penyuplai_id sama dengan value $penyuplai_id yang dikirim, ambil data pertama, anggaplah $penyuplai_id berisi 1
 		$detail_penyuplai = Penyuplai::where('penyuplai_id', $penyuplai_id)->first();
 		// misalnya, penyuplai nya adalah smartfren maka ambil semua produk smartfren misalnya paket unlimited dan paket biasa, urutannya ascending atau naik atau dari a ke z
-		// ProdukPenyuplai dimana value column penyuplai_id sama dengan penyuplai_id yang dikirimkan, ambil semua produk penyuplai_terkait
-		$semua_produk_penyuplai_terkait = ProdukPenyuplai::where('penyuplai_id', $penyuplai_id)->get();
+		// Produk dimana value column penyuplai_id sama dengan penyuplai_id yang dikirimkan, ambil semua produk penyuplai_terkait
+		$semua_produk = Produk::where('penyuplai_id', $penyuplai_id)->get();
 
 		// ambil value dari detail_pembelian, column total_harga
 		// pembelian dimana value column pembelian_id sama dengan pembelian_id, baris data pertama, column total_harga
@@ -89,7 +88,7 @@ class PembelianDetailController extends Controller
 			// membuat dan menambah array assosiatif
 			// berisi pembelian_detail memanggil relasi nya yaitu produk lalu value column nama_produk
 			$row['nama_produk'] = $pembelian_detail->produk->nama_produk;
-			$row['harga'] = rupiah_bentuk($pembelian_detail->harga_beli);
+			$row['harga'] = rupiah_bentuk($pembelian_detail->harga);
 			$row['jumlah'] = '
 				<input type="number" class="form-control input-sm jumlah" data-pembelian-detail-id="' . $pembelian_detail->pembelian_detail_id . '" value="' . $pembelian_detail->jumlah . '">';
 			$row['subtotal'] = rupiah_bentuk($pembelian_detail->subtotal);

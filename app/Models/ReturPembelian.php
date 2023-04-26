@@ -25,4 +25,12 @@ class ReturPembelian extends Model
         // argumen ketiga adalah primary key di table pembelian
         return $this->belongsTo(Pembelian::class, 'pembelian_id', 'pembelian_id');
     }
+
+     // 1 retur pembelian milik 1 produk
+     public function produk()
+     {
+         // argumen kedua adaah foreign key milik table return_produk
+         // argumen ketiga adalah primary key di table produk
+         return $this->belongsTo(Produk::class, 'produk_id', 'produk_id');
+     }
 }

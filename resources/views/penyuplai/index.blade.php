@@ -25,10 +25,11 @@
                     {{-- untuk keamanan --}}
                     @csrf
                     <table class="table table-striped table-sm">
-                        <thead>
+                        <thead class="bg-primary">
                             <tr>
                                 <!-- Pilih -->
                                 <th scope="col" width="5%">
+                                    {{-- jika aku click centang pada checkbox paling atas maka semua kotak centang akan di centang --}}
                                     <input type="checkbox" name="select_all" id="select_all">
                                 </th>
                                 <th scope="col" width="5%">No</th>

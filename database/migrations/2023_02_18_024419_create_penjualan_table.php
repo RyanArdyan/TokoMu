@@ -24,6 +24,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             // arti restrict adalah misalnya, table penjualan baris 1, punya id_user 1, lalu aku hapus id_user 1 maka akan ada error di penjualan
             $table->foreign('user_id')->references('user_id')->on('users')->restrictOnUpdate()->restrictOnDelete();
+            // tipe data string, column nama_member
+            $table->string('nama_member')->nullable();
+            // tipe data string, column name_user
+            $table->string('name_user');
             // tipe data integer karena sedikit
             $table->integer('total_barang');
             // big integer agar tidak out of range jika sudah lebih dari 1 m

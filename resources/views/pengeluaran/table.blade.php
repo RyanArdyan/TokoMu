@@ -3,7 +3,7 @@
     <form id="form_pengeluaran">
         @csrf
         <table class="table table-striped table-sm">
-            <thead>
+            <thead class="bg-primary">
                 <tr>
                     <!-- Pilih -->
                     <th scope="col" width="5%">

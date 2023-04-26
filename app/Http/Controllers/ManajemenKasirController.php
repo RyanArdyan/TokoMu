@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 // package laravel datatables
 use DataTables;
 use Illuminate\Support\Facades\Hash;
+use App\Rules\GmailRule;
 use App\Models\User;
 
 class ManajemenKasirController extends Controller
@@ -59,7 +60,7 @@ class ManajemenKasirController extends Controller
         $validator = Validator::make($request->all(), [
             // validasi input name name, email, password, password_confirmation
             'name' => ['required', 'string', 'unique:users', 'min:3', 'max:20'],
-            'email' => ['required', 'email', 'max:255', 'unique:users'],
+            'email' => [new GmailRule, 'required', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6', 'max:20'],
             // value input password harus sama dengan input password_confirmation
             'password_confirmation' => ['required']

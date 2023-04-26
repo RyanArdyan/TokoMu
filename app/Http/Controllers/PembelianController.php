@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Pembelian;
 use App\Models\Penyuplai;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
-use App\Models\ProdukPenyuplai;
 use App\Models\ReturPembelian;
+// carbon digunakan di fitur retur, aku dapat dari internet
+use Carbon\Carbon;
 // gunakan package datatable
 use DataTables;
 
@@ -21,10 +23,9 @@ class PembelianController extends Controller
      */
     public function index()
     {
-        // Pembelian::whereRaw('DATEDIFF(NOW(), created_at) > 1')->where('total_barang', 0)->delete();
-
-        // hapus beberapa baris dari table pembelian yang column total_barang nya sama dengan 0 dan sudah lebih dari 60 menit
-        Pembelian::where('total_barang', 0)->whereDate('created_at', '<=', now()->subMinute(60))->delete();
+        // hapus beberapa baris dari table pembelian yang column total_barang nya sama dengan 0
+        // pembelian dimana value column total_barang sama dengan 0 maka hapus
+        Pembelian::where('total_barang', 0)->delete();
 
         // ambil semua penyuplai
         // berisi penyuplai di pesan oleh column nama_penyuplai, data nya dari A ke Z, lalu dapatkan semua data nya
@@ -41,56 +42,48 @@ class PembelianController extends Controller
         // tampilkan semua pembelian yang column total harga nya tidak sama dengan 0 lalu urutkan data dimulai dari yang paling baru
         // berisi pembelian dimana value column total_harga tidak sama dengan 0, dipesan oleh colum updated_at, menurun, dapatkan semua data
         $semua_pembelian = Pembelian::where('total_harga', '!=', 0)->orderBy('updated_at', 'desc')->get();
-        // syntax punya yajra
-        // disini aku melakukan pengulangan
+        // syntax punya yajra, disini aku melakukan pengulangan
+        // kembalikkan datatables dari semua_pembelian
         return DataTables::of($semua_pembelian)
             // pengulangan nomor
             ->addIndexColumn()
+            // ulang
+            // tambahColumn('tanggal', jalankan fungsi, parameter $pembelelian)
             ->addColumn('tanggal', function ($pembelian) {
                 // contoh tanggal nya adalah: Selasa, 7 Februari 2023
                 return $pembelian->updated_at->isoFormat('dddd, D MMMM Y');
             })
             ->addColumn('penyuplai', function ($pembelian) {
-                // panggil nama penyuplai yang berelesi dengan table pembelian
+                // panggil table pembelian yang berelesi dengan table penyuplai
+                // panggil models pembelian yang berelasi dengan models penyuplai, lalu ambil value column nama_penyuplai
                 return $pembelian->penyuplai->nama_penyuplai;
             })
             // ulang detail pembelian
             ->addColumn('total_barang', function ($pembelian) {
+                // panggil fungsi angka_bentuk milik helpers agar mengubah 1000 menjadi 1.000, lalu kirimkan $pembelian->total_barang sebagai argumen
                 return angka_bentuk($pembelian->total_barang);
             })
             ->addColumn('total_harga', function ($pembelian) {
                 return rupiah_bentuk($pembelian->total_harga);
             })
-            ->addColumn('status', function ($pembelian) {
-                // jika value $pembelian->status sama dengan "Oke"
-                if ($pembelian->status === "Oke") {
-                    // return element p
-                    return "<p>$pembelian->status</p>";
-                }
-                // lain jika value $pembelian->status sama dengan Retur
-                else if ($pembelian->status === "Retur") {
-                    // return element p
-                    return "<p class='text-danger'>$pembelian->status</p>";
-                }
-            })
             // Buat tombol lihat pembelian detail, hapus dan retur pembelian
             // tambahColumn action, jalankan fungsi, parameter pembelian berisi semua pembelian detail
             ->addColumn('action', function ($pembelian) {
-                // fitur retur pembelian
-                // jika value $pembelian->status sama dengan 'Retur' maka kasi attribute disabled agar tidak bisa di click
-                if ($pembelian->status === 'Retur') {
-                    // data-toggle="keterangan_alat" adalah tooltips milik bootstrap untuk menampilkan keterangan ketika tombok di hover
-                    $tombol_retur = '
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" class="btn btn-danger btn-sm ml-2" disabled>
+                // cek apakah waktu pembelian sudah lewat dua hari, Jika sudah lewat dua hari setelah barang di terima pembeli maka aku tidak akan bisa retur barang yang di beli nya
+                // Fungsi Carbon::parse() adalah fungsi yang disediakan oleh library Carbon di Laravel, yang digunakan untuk mengubah string tanggal atau waktu menjadi objek Carbon. 
+                // karbon::uraikan($pembelian->dibuat_pada)
+                $tanggal_pembelian = Carbon::parse($pembelian->created_at);
+                // jika sudah lewat dua hari setelah tanggal_pembelian atau di buat maka aku akan berikan attribute disabled atau matikan tombol nya
+                if ($tanggal_pembelian->diffInDays(now()) > 2) {
+                    $retur_pembelian = '<button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" class="btn btn-danger btn-sm" disabled>
                     <i class="mdi mdi-credit-card-refund"></i>
-                    </button>';
+                </button>';
                 }
-                // jika value $pembelian->status sama dengan 'Oke' maka hapus attribute disabled agar tombol nya bisa di click
-                else if ($pembelian->status === 'Oke') {
-                    $tombol_retur = '
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="retur_pembelian(' . $pembelian->pembelian_id . ')" class="btn btn-danger btn-sm ml-2">
+                // jika belum lewat dari dua hari setelah tanggal_pembelian di buat maka cek apakah pembelian belum pernah di retur, jika belum pernah di retur maka aku boleh melakukan retur, jika sudah pernah retur maka pelanggan tidak boleh retur laig
+                else {
+                    $retur_pembelian = '<button data-toggle="keterangan_alat" data-placement="top" title="Retur Pembelian" onclick="data_retur(`' . route('pembelian.data_retur', $pembelian->pembelian_id) . '`, `' . $pembelian->pembelian_id . '`)" class="btn btn-danger btn-sm">
                     <i class="mdi mdi-credit-card-refund"></i>
-                    </button>';
+                </button>';
                 };
 
                 // fitur lihat semua pembelian_detail yang terkait
@@ -100,17 +93,17 @@ class PembelianController extends Controller
                     <i class="fas fa-eye"></i>
                     </button>
 
-                    <button data-toggle="keterangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm ml-2">
+                    <button data-toggle="keterangan_alat" data-placement="top" title="Hapus" onclick="hapus_data(`' . route('pembelian.hapus', $pembelian->pembelian_id) . '`)" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
                     </button>
                     
-                    ' . $tombol_retur . '
+                    ' . $retur_pembelian . '
                 </div>
 				  ';
             })
             // jika aku membuat sebuah element di dalam colum maka harus dimasukkan ke dalam rawColumns
             // mentah column-column action
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['action'])
             // buat nyata
             ->make(true);
     }
@@ -157,9 +150,7 @@ class PembelianController extends Controller
             // total_barang diisi 0 secara sementara 
             'total_barang' => 0,
             // total_harga diisi 0 secara sementara
-            'total_harga' => 0,
-            // column status pada table pembelian menggunakan tipe data enum yang berisi pilihan 'retur', 'oke'
-            'status' => 'Oke'
+            'total_harga' => 0
         ]);
 
         // Membuat Session
@@ -318,56 +309,147 @@ class PembelianController extends Controller
         return redirect()->route('pembelian.index');
     }
 
-    // menampilkan semua pembelian detail terkait ketika tombol retur pembelian di click
+    // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
+    // anggaplah parameter $pembelian_id berisi angka 1
     public function data_retur($pembelian_id)
     {
-        // ambil semua pembelian detail terkait
-        // berisi PembelianDetail dimana value column pembelian_id sama dengan nilai parameter $pembelian_id, dapatkan
-        $semua_pembelian_detail = PembelianDetail::where('pembelian_id', $pembelian_id)->get();
-        return response()->json($semua_pembelian_detail);
+        // model PembelianDetail berelasi dengan model produk jadi 1 pembelian detail hanya bisa membeli 1 produk
+        // table PembelianDetail yang berelasi dengan table produk dimana value column pembelian_id sama dengan $pembelian_id, dapatkan semua data terkait
+        $beberapa_pembelian_detail = PembelianDetail::with('produk')->where('pembelian_id', $pembelian_id)->get();
+
+        // aku melakukan pengulangan disini
+        // kembalikkan datatables dari beberapa_pembelian_detail
+        return datatables()->of($beberapa_pembelian_detail)
+            // lakukan pengulagan terhadap nomor
+            ->addIndexColumn()
+            ->addColumn('nama_produk', function (PembelianDetail $pembelian_detail) {
+                // kembalikan detail table pembelian_detail yang berelasi dengan detail table produk, lalu ambil value column nama_produk
+                return $pembelian_detail->produk->nama_produk;
+            })
+            // penjelasan untuk attribute max, jadi jumlah retur tidak boleh melebihi jumlah pembelian, jadi anggaplah jumlah pembelian detail nya adalah 5 masa retur pembelian nya 10
+            ->addColumn('jumlah', function(PembelianDetail $pembelian_detail) {
+                // jika value $pembelian_detail, column retur_pembelian_id sama dengan NULL maka pembelian nya bisa di retur dengan cara aku menghapus attribute disabled
+                if ($pembelian_detail->retur_pembelian_id === NULL) {
+                    // anggaplah berisi .jumlah_retur_1, .jumlah_retur_1, dst.
+                    // untuk menampilkan efek input error, element input butuh .is-invalid
+                    return "
+                    <input name='jumlah_retur' type='number' class='jumlah_retur_$pembelian_detail->produk_id form-control input_$pembelian_detail->produk_id' value='$pembelian_detail->jumlah' max='$pembelian_detail->jumlah' min='1' autocomplete='off'>
+
+                    <span class='jumlah_retur_error_$pembelian_detail->produk_id pesan_error_$pembelian_detail->produk_id text-danger'></span>
+                    ";
+                } else if ($pembelian_detail->retur_pembelian_id !== NULL) {
+                    // anggaplah berisi .jumlah_retur_1, .jumlah_retur_1, dst.
+                    // untuk menampilkan efek input error, element input butuh .is-invalid
+                    return "
+                    <input name='jumlah_retur' type='number' class='jumlah_retur_$pembelian_detail->produk_id form-control input_$pembelian_detail->produk_id' value='$pembelian_detail->jumlah' max='$pembelian_detail->jumlah' min='1' autocomplete='off' disabled>
+                    ";
+                };
+            })
+            ->addColumn('keterangan', function (PembelianDetail $pembelian_detail) {
+                if ($pembelian_detail->retur_pembelian_id === NULL) {
+                    return "<input name='keterangan' type='text' class='keterangan_$pembelian_detail->produk_id input_$pembelian_detail->produk_id form-control' autocomplete='off' autocomplete='off'>
+                    <span class='keterangan_error_$pembelian_detail->produk_id pesan_error_$pembelian_detail->produk_id text-danger'></span>";
+                } else if ($pembelian_detail->retur_pembelian_id !== NULL) {
+                    return "<input name='keterangan' type='text' class='keterangan_$pembelian_detail->produk_id input_$pembelian_detail->produk_id form-control' autocomplete='off' autocomplete='off' disabled>";
+                };
+            })
+            // tombol
+            ->addColumn('action', function(PembelianDetail $pembelian_detail) {
+                // jika value pembelian_detail, column retur_pembelian_id sama dengan NULL atau kosong maka
+                if ($pembelian_detail->retur_pembelian_id === NULL) {
+                    // jadi nanti ada id="tombol_retur_1", id="tombol_retur_2", dst.
+                    return "
+                    <button id='tombol_retur_$pembelian_detail->produk_id' data-toggle='keterangan_alat' data-placement='top' title='Retur Pembelian' onclick='retur_pembelian($pembelian_detail->pembelian_detail_id, $pembelian_detail->produk_id, $pembelian_detail->pembelian_id)' class='btn btn-danger btn-sm ml-2' type='button'>
+                    <i class='mdi mdi-credit-card-refund'></i>
+                    </button>";
+                }
+                // lain jika value $pembelian-detail, column retur_pembelian_id tidak sama dengan kosong
+                else if ($pembelian_detail->retur_pembelian_id !== NULL) {
+                    // jadi nanti ada id="tombol_retur_1", id="tombol_retur_2", dst.
+                    return "
+                    <button id='tombol_retur_$pembelian_detail->produk_id' data-toggle='keterangan_alat' data-placement='top' title='Retur Pembelian' onclick='retur_pembelian($pembelian_detail->pembelian_detail_id, $pembelian_detail->produk_id, $pembelian_detail->pembelian_id)' class='btn btn-danger btn-sm ml-2' type='button' disabled>
+                    <i class='mdi mdi-credit-card-refund'></i>
+                    </button>";
+                };
+                
+            })
+            // jika aku membuat element html di addColumn maka aku wajib memasukkan ke dalam rawColumns([])
+            // mentah column-column
+            ->rawColumns(['jumlah', 'keterangan', 'action'])
+            // buat nyata
+            ->make(true);
     }
 
-    // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
+    // $request akan menangkap semua data yang dikirim oleh property data milik script
     public function retur_pembelian(Request $request)
     {
-        // kembalikkan tanggapan berupa json yang berisi semua value dari semua permintaan
-        // return response()->json($request->all());
-
-        // ambil detail pembelian
-        // pembelian dimana value column pembelian_id sama dengan value paramter $request->pembelian_id, baris data pertama
-        $detail_pembelian = Pembelian::where('pembelian_id', $request->pembelian_id)->first();
-        // panggil detail_pembelian, value column status, ditimpa dengan "Retur"
-        $detail_pembelian->status = "Retur";
-        // detail_pembelian di perbarui
-        $detail_pembelian->update();
-
-        // buat data ke tabel ReturPembelian
-        // ReturPembelian::buat
-        ReturPembelian::create([
-            // column pembelian_id diisi dengan value input name="pembelian_id"
-            'pembelian_id' => $request->pembelian_id,
-            'tanggal_retur' => now(),
-            'keterangan' => $request->keterangan
+        // ambil detail pembelian_detail
+        // berisi PembelianDetail dimana value column pembelian_detail_id sama dengan valu $request->pembelian_detail_id yang dikirim key data milik script, ambil rekaman baris pertama
+        $detail_pembelian_detail = PembelianDetail::where('pembelian_detail_id', $request->pembelian_detail_id)->first();
+        // validasi semua input yang punya attribute name
+        // berisi vaidator buat semua permintaan
+        $validator = Validator::make($request->all(), [
+            // input name="jumlah_retur" harus mengikuti aturan berikut
+            'jumlah_retur' => "required|min:1|max:$detail_pembelian_detail->jumlah",
+            'keterangan' => 'required|max:255',
         ]);
 
-        // misalnya $request->pembelian_id berisi angka 1 maka ambil semua PembelianDetail yang column pembelian_id berisi 1
-        $semua_pembelian_detail_terkait = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
-
-        // lakukan pengulangan terhadap semua_pembelian_detail_terkait, anggaplah ada 2 baris data
-        foreach ($semua_pembelian_detail_terkait as $pembelian_detail) {
-            // berisi ambil setiap data table ProdukPenyuplai dimana value column produk_penyuplai_id sama dengan value $pembelian_detail->produk_penyuplai_id
-            $setiap_produk_penyuplai = ProdukPenyuplai::where('produk_penyuplai_id', $pembelian_detail->produk_penyuplai_id)->first();
-            // produk dimana value column nama_produk sama dengan value $setiap_produk_penyuplai->nama_produk, pertama
-            $setiap_produk = Produk::where('nama_produk', $setiap_produk_penyuplai->nama_produk)->first();
-            $setiap_produk->stok -= $pembelian_detail->jumlah;
-            $setiap_produk->update();
+        // jika validator gagal maka
+        if ($validator->fails()) {
+            // kembalikkan tanggapan berupa json
+            return response()->json([
+                // key status berisi value 0
+                'status' => 0,
+                // key pesan beisi value error
+                'pesan' => 'Validasi Input Error Menemukan Error.',
+                // key errros berisi semua value attribute name yang error dan semua pesan error nya
+                // key errors berisi validaror, kesalahan-kesalahan
+                'errors' => $validator->errors()
+            ]);
         };
 
-        // kembalikkan tanggapan berupa json lalu kirimkan data berupa object
+        // tangkap data yang dikirim oleh property data milik script, itu data formulir atau input
+        $pembelian_id = $request->pembelian_id;
+        $produk_id = $request->produk_id;
+        $pembelian_detail_id = $request->pembelian_detail_id;
+        // intval() akan mengubah string menjadi integer, contohnya "100" menjadi 100
+        $jumlah_retur = intval($request->jumlah_retur);
+        $keterangan = $request->keterangan;
+
+        // insert atau sisipkan rekaman ke dalam table ReturPembelian
+        $detail_retur_pembelian = ReturPembelian::create([
+            // column pembelian_id diisi value variable $pembelian_id
+            'pembelian_id' => $pembelian_id,
+            'produk_id' => $produk_id,
+            'jumlah_retur' => $jumlah_retur,
+            // key tanggal_retur diisi tanggal dan waktu sekaang
+            'tanggal_retur' => now(),
+            'keterangan' => $keterangan
+        ]);
+        
+        // value $detail_pembelian_detail, colum retur_pembelian_id diisi value $detail_retur_pembelian, column retur_pembelian_id
+        $detail_pembelian_detail->retur_pembelian_id = $detail_retur_pembelian->retur_pembelian_id;
+        // berisi value $detail_pembelian_detail, column jumlah dikurangi value $jumlah_retur
+        $detail_pembelian_detail->jumlah = $detail_pembelian_detail->jumlah - $jumlah_retur;
+        // detail_pembelian_detail diperbarui
+        $detail_pembelian_detail->update();
+
+        // ambil detail produk
+        // berisi produk dimana value column produk_id sama dengan value dari $detail_retur_pembelian, column produk_id, ambil rekaman baris pertama
+        $detail_produk = Produk::where('produk_id', $detail_retur_pembelian->produk_id)->first();
+
+        // berisi panggil detail_produk, column stok dikurangi value variable $jumlah_retur
+        $pengurangan_stok = $detail_produk->stok - $jumlah_retur;
+
+        // update stok produk
+        Produk::where('produk_id', $detail_retur_pembelian->produk_id)
+        ->update(['stok' => $pengurangan_stok]);
+
+        // kembalikkan tanggapan lalu kirimkan data berupa array
         return response()->json([
-            // key status berisi value 200
+            // kirimkan key status yang berisi value 200
             'status' => 200,
-            'message' => 'Berhasil retur pembelian'
+            'message' => 'Berhasil melakukan retur pembelian'
         ]);
     }
 }

@@ -23,8 +23,11 @@ return new class extends Migration
                 ->references('pembelian_id')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            // tipe data string, column nama_produk, harus unique atau tidak boleh sama
-            $table->string('nama_produk')->unique();
+            // tipe data foreign key, column produk_id, berelasi dengan table produk, jika produk di hapus maka baris retur_pembelian yang terkait juga akan terhapus, begitu juga update.
+            $table->foreignId('produk_id')->constrained('produk')
+                ->references('produk_id')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             // tipe data integer, column jumlah_retur
             $table->integer('jumlah_retur');
             // Metode date membuat tanggal kolom yang setara:

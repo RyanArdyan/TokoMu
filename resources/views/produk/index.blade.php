@@ -31,7 +31,7 @@
                     {{-- untuk keamanan --}}
                     @csrf
                     <table class="table table-striped table-sm">
-                        <thead>
+                        <thead class="bg-primary">
                             <tr>
                                 <th scope="col" width="5%">
                                     <input type="checkbox" name="select_all" id="select_all">
@@ -450,7 +450,7 @@
             }
             // jika input .pilih yang dicentang, panjang nya lebih besar atau sama dengan 3
             else {
-                // pnaggil #form_produk, lalu attribute target diisi dengan blank
+                // panggil #form_produk, lalu attribute target diisi dengan blank
                 $("#form_produk").attr({
                     // buat attribute dan isi attributenya
                     // _blank agar membuka tab baru

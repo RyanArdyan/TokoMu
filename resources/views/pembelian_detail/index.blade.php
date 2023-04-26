@@ -103,7 +103,6 @@
     </div>
 @endsection
 
-
 @push('script')
     <script>
         // fungsi angka_terbilang akan mengubah 1000 menjadi 1000

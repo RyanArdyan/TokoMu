@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('nama_perusahaan');
             $table->string('alamat_perusahaan');
             $table->string('telepon_perusahaan');
-            // tiny integer karena isinya kecil yaitu antara 1 atau 2
+            // enum itu string
+            // enum karena hanya ada dua pilihan
             // 1 berarti nota kecil
             // 2 berarti nota besar
-            $table->tinyInteger('tipe_nota_perusahaan');
+            $table->enum('tipe_nota_perusahaan', [1, 2]);
             // small integer karena isinya hanya 0 sampai 100, bawaannya adalah 0
             $table->smallInteger('diskon_perusahaan')->default(0);
             $table->string('logo_perusahaan');

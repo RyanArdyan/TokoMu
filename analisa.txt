@@ -2,3 +2,7 @@ Analisis akupasti.com
 di table retur_pembelian, aku butuh column produk_id.
 jadi anggaplah yang di return adalah pembelian_id 1 maka ambil semua data di table retur_pembelian yang column pembelian_id nya berisi 1, anggaplah ada dua baris data, lalu ambil produk_id yang sesuai berdasarkan column produk_id, misalnya produk_id 1 dan 2, berarti ada dua baris produk.
 lalu table produk, column stok dikurangi table retur_pembelian, column jumlah_retur.
+
+Jika tidak ada yang dicentang lalu aku click tombol retur maka tampilkan anda "anda belum memilih produk yang akan di retur"
+
+setiap kotak centang akan mengirim produk_id untuk masuk ke table retur_pembalian, column produk_id dan pembelian_id.

@@ -22,6 +22,14 @@
             {{-- termasuk element table dan form --}}
             @include('pengeluaran.table')
 
+            {{-- import pengeluran dari file excel --}}
+            <form action="{{ route('pengeluaran.import_excel') }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                @csrf
+                <input type="file" name="file" class="form-control">
+                <button class="btn btn-info" class="form-control">Upload</button>
+            </form>
+
+
             <div class="mt-2">
                 {{-- jika aku click tombol pengeluaran baru maka panggil modal pengeluaran --}}
                 <button id="tombol_pengeluaran_baru" class="btn btn-purple btn-sm">
@@ -34,6 +42,11 @@
                     <i class="mdi mdi-delete"></i>
                     Hapus
                 </button>
+
+                {{-- export semua data pengeluran ke file excel --}}
+                {{-- panggil route pengeluaran.export_excel --}}
+                <a href="{{ route('pengeluaran.export_excel') }}" class="btn btn-sm btn-success">
+                    <i class="mdi mdi-file-excel"></i> Excel</a>
             </div>
 
         </div>
@@ -43,6 +56,7 @@
 @push('script')
 <script>
     // package Input Mask - Robin Herbots
+    // aku perlu ini agar Rp 1.000 akan menjadi 1000 ketika sudah di controller
     // 1000 akan menjadi 1.000
     $(".input_angka").inputmask();
 
@@ -136,7 +150,7 @@
             url: "{{ route('pengeluaran.store') }}",
             // panggil route tipe POST
             type: "POST",
-            // kirimknan data formulir dari #form_tambah
+            // kirimkan data formulir dari #form_tambah
             data: new FormData(this),
             // aku butuh 2 baris kode berikut
             processData: false,

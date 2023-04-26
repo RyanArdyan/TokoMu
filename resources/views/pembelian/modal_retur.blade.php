@@ -13,33 +13,17 @@
                     </div>
 
                     <div class="modal-body">
-                        {{-- <div class="form-group row">
-                            <label for="keterangan" class="col-sm-3 col-form-label" >Keterangan</label>
-                            <div class="col-sm-9">
-                                <input type="text" name="keterangan" class="form-control" id="keterangan"
-                                    placeholder="Keterangan" rqeuired>
-                            </div>
-                        </div> --}}
-
                         <table id="table_retur_pembelian_detail" class="table table-striped table-bordered table-sm">
                             <thead>
                                 <tr>
-                                    <th></th>
                                     <th width="5%">No</th>
                                     <th>Nama Produk</th>
                                     <th width="15%">Jumlah Retur</th>
                                     <th>Keterangan</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody_retur_pembelian">
-
-                            </tbody>
                         </table>
-                    </div>
-
-                    <div class="modal-footer justify-content-between">
-                        <button type="button" class="tombol_tutup_retur_pembelian btn btn-default" data-dismiss="modal">Tutup</button>
-                        <button id="submit_retur_pembelian" type="submit" class="btn btn-info waves-effect waves-light">Retur</button>
                     </div>
                 </form>
             </div>
@@ -49,4 +33,4 @@
     <!-- /.modal-dialog -->
 </div>
 
-<div id="pembungkus_modal_retur"></div>
+{{-- <div id="pembungkus_modal_retur"></div> --}}

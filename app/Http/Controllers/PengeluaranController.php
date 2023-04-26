@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 // untuk validasi formulir
 use Illuminate\Support\Facades\Validator;
 use App\Models\Pengeluaran;
+// fitur yang berhubungan dengan excel
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\PengeluaranImport;
+use App\Exports\PengeluaranExport;
 // package laravel datatables
 use DataTables;
 
@@ -219,5 +223,22 @@ class PengeluaranController extends Controller
             'status' => 200,
             'pesan' => 'Berhasil menghapus pengeluaran yang dipilih.'
         ]);
+    }
+
+    // import
+    public function import_excel(Request $request)
+    {
+        // excel import(new PengeluranImport, $permintaan->file('file))
+        Excel::import(new PengeluaranImport, $request->file('file'));
+
+        // kembalikkan kembali()
+        return back();
+    }
+
+    // export
+    public function export_excel(Request $request)
+    {
+        // kembalikkan excel::unduh(new PengeluranExport, 'pengeluran.xlsx')
+        return Excel::download(new PengeluaranExport, 'pengeluaran.xlsx');
     }
 }

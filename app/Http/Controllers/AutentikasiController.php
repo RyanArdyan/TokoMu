@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Rules\GmailRule;
 
 class AutentikasiController extends Controller
 {
@@ -23,7 +24,8 @@ class AutentikasiController extends Controller
         // validasi untuk semua input yang punya attribute name
 		$validator = Validator::make($request->all(), [
             // input name email harus mengikut aturan berikut
-			'email' => ['required', 'email'],
+			// new GmailRule berarti inisialisasi GmailRule.php lalu panggil GmailRule lalu harus menggunakan gmail
+			'email' => ['required', new GmailRule, 'email'],
 			'password' => ['required', 'min:6', 'max:20']
 		]);
 

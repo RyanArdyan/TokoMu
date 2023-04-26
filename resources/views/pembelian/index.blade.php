@@ -138,9 +138,6 @@
                     data: 'total_harga'
                 },
                 {
-                    data: 'status'
-                },
-                {
                     data: 'action',
                     searchable: false,
                     sortable: false
@@ -151,6 +148,7 @@
         // table detail
         // berisi #table_detail gunakan datatable
         let table_detail = $("#table_detail").DataTable({
+            // kode ini belum dijalankan karena ajax nya belum ada
             processing: true,
             bsort: false,
             dom: 'Brt',
@@ -176,6 +174,36 @@
                 {
                     data: 'subtotal'
                 },
+            ]
+        });
+
+        // table retur
+        // berisi #table_retur gunakan datatable
+        let table_retur = $("#table_retur_pembelian_detail").DataTable({
+            // kode ini belum dijalankan karena ajax nya belum ada, jadi kode ini baru akan dijalankan setelah aku mengirimkan ajax
+            processing: true,
+            // menghilangkan fitur pencarian, pagination dan memesan jumlah data    
+            bsort: false,
+            dom: 'Brt',
+            columns: [
+                // looping nomor
+                {
+                    data: 'DT_RowIndex',
+                    // nonaktifkan fitur bolak-balik data atau icon anak panah
+                    sortable: false
+                },
+                {
+                    data: 'nama_produk'
+                },
+                {
+                    data: 'jumlah'
+                },
+                {
+                    data: 'keterangan'
+                },
+                {
+                    data: 'action'
+                }
             ]
         });
 
@@ -314,85 +342,78 @@
 
         hasil_pembelian_id = '';
 
-        // fungsi retur_pembelian agar aku bisa retur_pembelian atau mengembalikkan pembelian
-        // function retur_pembelian berisi parameter pembelian_id yang menangkap pembelian_id dari controller
-        function retur_pembelian(pembelian_id) {
-            // jquery lakukan ajax
-            $.ajax({
-                // url panggil /pembelian/data-retur/ kirimkan pembelian_id
-                url: `/pembelian/data-retur/${pembelian_id}`,
-                // panggil route tipe dapatkan
-                type: "GET",
-            })
-                // jika selesai dan berhasil maka jalankan fungsi berikut lalu ambil tanggapan
-                // parameter response berisi semua pembelian detail terkait
-                // misalnya column pembelian_id berisi 1 maka ambil semua pembelian detail yang column pembelian_id berisi 1
-                .done(function(response) {
-                    // aku butuh variable hasil untuk menyimpan banyak tr, jadi pada awal nya variabel hasil berisi string kosong, setelah di looping maka variable hasil akan digabung dengan element tr
-                    let hasil = ``;
-
-                    // lakukan pengulangan terhadap response yang berisi semua pembelian detail terkait
-                    // tanggapan.untukSetiap(fungsi(barang, index))
-                    // parameter item berisi data table pembelian detail maksudnya semua detail pembelian_detail terkait
-                    // parameter index berisi index nya misalnya index 0, index 1
-                    response.forEach(function(item, index) {
-                        // lakukan pengulangan terhadap tr atau table rows atau table baris
-                        // panggil variable hasil lalu tambahkan element tr berulang kali ke dalam variable hasil
-                        hasil += `
-                            <tr>
-                                <td>${index + 1}</td>    
-                                <td>${item.nama_produk}</td>    
-                                <td>
-                                    <input name="jumlah_retur" type="number" class="form-control" value="${item.jumlah}" max="${item.jumlah}" data-produk-penyuplai-id="${item.produk_penyuplai_id}">
-                                </td> 
-                                <td>
-                                    <input name="keterangan" type="text" class="form-control" autocomplete="off">
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    
-                    // panggil #tbody_retur_pembelian lalu tambahkan value variable data_retur_pembelian_detail sebagai anak terakhir
-                    $("#tbody_retur_pembelian").append(hasil);
-
-                    // panggil #modal_retur lalu modal nya di tampilkan
-                    $("#modal_retur").modal('show');
-
-                    hasil_pembelian_id = pembelian_id;
-                });
+        // Menampilkan data retur terkait jika tombol retur pembelian di click
+        // fungsi data_retur, parameter berisi url
+        function data_retur(url, pembelian_id) {
+            // #modal_retur modalnya di tampilkan
+            $("#modal_retur").modal("show");
+            // table_retur buat panggilan ajax url, berisi value parameter url
+            table_retur.ajax.url(url);
+            // table_retur, ajax nya, di muat ulang
+            table_retur.ajax.reload();
         };
 
-        // jika #tombol_tutup_retur_pembelian di click maka jalankan fungsi berikut
-        $(".tombol_tutup_retur_pembelian").on("click", function() {
-            // panggil #tbody_return_pembelian lalu kosongkan semua anaknya
-            $("#tbody_retur_pembelian").empty();
-        });
-
-        // jika #form_retur_pembelian dikirim maka jalankan fungsi berikut dan ambil event atau acara nya
-        $("#form_retur_pembelian").on("submit", function(e) {
-            // event cegah bawaan nya
-            e.preventDefault();
-
-            // console.log(hasil_pembel ian_id);
+        // retur pembelian, ada 3 parameter
+        function retur_pembelian(pembelian_detail_id, produk_id, pembelian_id) {
+            // berisi ambil value dari anggaplah .jumlah_retur_1
+            let jumlah_retur = $(`.jumlah_retur_${produk_id}`).val();
+            let keterangan = $(`.keterangan_${produk_id}`).val();
             // lakukan ajax
             $.ajax({
-                // url memanggil /pembelian/retur/ lalu kirimkan pembelian_id
-                url: `/pembelian/retur/${hasil_pembelian_id}`,
-                // panggil route tipe kirim
+                // url panggil route berikut
+                url: "{{ route('pembelian.retur_pembelian') }}",
+                // panggil route tipe post
                 type: "POST",
-                // kirimkan data formulir dari #form_retur_pembelian
-                // data: baru FormulirData("#form_retur_pembelian")
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                cache: false
+                // laravel mewajibkan keamanan dari serangan csrf
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                // hapus validasi error sebelum value input-input di kirim
+                // sebelum kirim, jalankan fungsi berikut
+                beforeSend: function() {
+                    // anggaplah panggil .input_1 lalu hapus class is-invalid
+                    $(`.input_${produk_id}`).removeClass("is-invalid");
+                    // panggil .pesan_error lalu textnya di kosongkan
+                    $(`.pesan_error_${produk_id}`).text("");
+                },
+                // kirimkan data yang akan di tangkap parameter $request, method retur_pembelian
+                data: {
+                    // key pembelian_id berisi value parameter pembelian_id
+                    pembelian_id: pembelian_id,
+                    pembelian_detail_id: pembelian_detail_id,
+                    produk_id: produk_id,
+                    jumlah_retur: jumlah_retur,
+                    keterangan: keterangan
+                }
             })
-                // jika selesai dan berhasil maka ambil tanggapannya
-                .done(function(response) {
-                    $("#modal_retur").modal('hide');
-                    // variabel table.ajax.muatuLANG
-                    table.ajax.reload();
-                })
-        });
+            // jika selesai dan berhasil maka ambil tanggapan nya
+            .done(function(resp) {
+                // jika validasi input nya error
+                // jika value dari resp.status sama dengan 0
+                if (resp.status === 0) {
+                    // lakukan pengulangan
+                    // key berisi semua nilai name.
+                    // value berisi array yang menyimpan semua pesan error
+                    $.each(resp.errors, function(key, value) {
+                        // anggaplah panggil .jumlah_retur_1 lalu tambah .is-invalid
+                        $(`.${key}_${produk_id}`).addClass("is-invalid");
+                        $(`.${key}_error_${produk_id}`).text(value[0]);
+                    });
+                };
+                // jika retur pembelian nya berhasil alias kode nya tidak ada error
+                if (resp.status === 200) {
+                    // // disabled atau matikan tombol retur karena aku sudah retur
+                    // // anggaplah panggil #tombol_retur_1 lalu kasi attribute disabled dan setel value nya ke true
+                    // $(`#tombol_retur_${produk_id}`).attr({
+                    //     disabled: true
+                    // });
+                    // berikan notifikasi berdasarkan resp.message
+                    table_retur.ajax.reload();
+                    toastr.success(resp.message);
+                };
+            });
+        };
+
+        
     </script>
 @endpush

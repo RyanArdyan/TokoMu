@@ -29,7 +29,7 @@
                         {{-- email --}}
                         <div class="form-group">
                             <label for="email">Email<span class="text-danger"> *</span></label>
-                            <input id="email" name="email" class="email_input input form-control" type="email"
+                            <input id="email" name="email" class="email_input input form-control" type="text"
                             placeholder="Email" autocomplete="off">
                             {{-- pesan error --}}
                             <span class="email_error pesan_error text-danger"></span>

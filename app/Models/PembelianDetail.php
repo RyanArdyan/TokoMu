@@ -38,4 +38,13 @@ class PembelianDetail extends Model
         // kembalikkan pembelian_detail milik table pembelian, pembelian_id, pembelian_id
         return $this->belongsTo(Pembelian::class, 'pembelian_id', 'pembelian_id');
     }
+
+    // 1 pembelian detail mungkin akan di retur
+    // 1 pembelian detail mungkin milik 1 retur pembelian
+    public function retur_pembelian()
+    {
+        // 1 pembelian_detail mungkin dimiliki atau akan di retur
+        // argumen pertama adalah nama models relasi nya, argumen kedua adalah foreign key di table pembelian_detail, argumen ketiga adalah primary key di table retur_pembelian_id
+        return $this->belongsTo(ReturPembelian::class, 'retur_pembelian_id', 'retur_pembelian_id');
+    }
 }

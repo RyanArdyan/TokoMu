@@ -28,7 +28,7 @@ class KategoriController extends Controller
             // kita akan menjahit menggunakan tanda .
             $data = '
                 <table class="table">
-                <thead>
+                <thead class="bg-primary">
                     <tr>
                         <th scope="col" width="5%">
                             <input id="pilih_semua" type="checkbox">

@@ -47,7 +47,7 @@
                                 <div class="form-group mb-3">
                                     <label for="email">Email</label>
                                     {{-- untuk membuat efek error di input, aku butuh is-invalid --}}
-                                    <input name="email" class="input email_input form-control" type="email" id="email"
+                                    <input name="email" class="input email_input form-control" type="text" id="email"
                                         placeholder="Email" autocomplete="off">
                                     {{-- untuk menampilkan pesan error --}}
                                     <p class="email_error pesan_error text-danger"></p>

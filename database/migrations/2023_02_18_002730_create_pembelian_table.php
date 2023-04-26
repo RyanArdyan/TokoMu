@@ -25,8 +25,6 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->integer('total_barang');
             $table->bigInteger('total_harga');
-            // buat enum agar hanya ada beberapa pilihan input / masukkan
-            $table->enum('status', ['Retur', 'Oke']);
             $table->timestamps();
         });
     }

@@ -11,6 +11,8 @@ use App\Models\Kategori;
 use App\Models\Produk;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
+use App\Models\Pengeluaran;
+use App\Models\Member;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -29,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 1,
             'gambar' => 'gambar_default.png',
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@egmail.com',
             'password' => Hash::make('pontianak')
         ]);
 
@@ -68,7 +70,7 @@ class DatabaseSeeder extends Seeder
             'harga_beli' => 77000,
             'diskon' => 0,
             'harga_jual' => 82000,
-            'stok' => 0
+            'stok' => 100
         ]);
 
         Produk::create([
@@ -80,14 +82,13 @@ class DatabaseSeeder extends Seeder
             'harga_beli' => 28000,
             'diskon' => 0,
             'harga_jual' => 33000,
-            'stok' => 0
+            'stok' => 100
         ]);
 
         Pembelian::create([
             'penyuplai_id' => 1,
             'total_barang' => 10,
-            'total_harga' => 1050000,
-            'status' => 'Oke'
+            'total_harga' => 1050000
         ]);
 
         PembelianDetail::create([
@@ -106,6 +107,23 @@ class DatabaseSeeder extends Seeder
             'harga' => 28000,
             'jumlah' => 10,
             'subtotal' => 280000
+        ]);
+
+        Pengeluaran::create([
+            'nama_pengeluaran' => 'Menggaji Semua Karyawan',
+            'total_pengeluaran' => 200000000
+        ]);
+
+        Pengeluaran::create([
+            'nama_pengeluaran' => 'Mendekorasi Kantor',
+            'total_pengeluaran' => 100000000
+        ]);
+
+        Member::create([
+            'kode_member' => 'M-00001',
+            'nama_member' => 'Ardyan',
+            'telepon_member' => '088705968716',
+            'alamat_member' => 'Jalan Tanjung Raya 1'
         ]);
     }
 }

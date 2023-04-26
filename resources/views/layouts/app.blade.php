@@ -12,6 +12,9 @@
         {{-- logo web di sebelah title --}}
         {{-- asset berarti memanggil folder public --}}
         <link rel="shortcut icon" href="{{ asset('storage/logo_web/logo.jpg') }}">
+
+
+
         <!-- Bootstrap -->
         <link href="{{ asset('adminto') }}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         {{-- icons --}}
@@ -86,6 +89,16 @@
         <script src="{{ asset('js_saya/jquery-3.6.3.min.js') }}"></script>
         <!-- Vendor js -->
         <script src="{{ asset('adminto') }}/assets/js/vendor.min.js"></script>
+
+
+
+        <!-- knob plugin -->
+        <script src="{{ asset('adminto') }}/assets/libs/jquery-knob/jquery.knob.min.js"></script>
+
+
+
+
+
         <!-- App js -->
         <script src="{{ asset('adminto') }}/assets/js/app.min.js"></script>
         {{-- datatables js --}}

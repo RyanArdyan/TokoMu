@@ -29,11 +29,29 @@
 
             <ul class="metismenu" id="side-menu">
 
-                <li class="menu-title">Navigation</li>
+                <li class="menu-title">Navigasi</li>
                 {{-- jika kasir yang login --}}
                 {{-- jika user yang login, value column is_admin nya adalah 0 maka --}}
                 @if (auth()->user()->is_admin === 0)
-                    
+                    {{-- Dashboard --}}
+                    <li>
+                        {{-- jika permintaan adalah dashboard maka aktifkan, kalau bukan kasi string kosong --}}
+                        <a href="{{ route('dashboard.index') }}"
+                            class="{{ Request()->is('dashboard*') ? 'active' : '' }}">
+                            <i class="mdi mdi-view-dashboard"></i>
+                            <span> Dashboard </span>
+                        </a>
+                    </li>
+                    {{-- penjualan --}}
+                    <li>
+                        {{-- ke route penjualan.index --}}
+                        {{-- jika permintaan adalah penjualan lalu apapun setelah itu maka aktifkan, kalau bukan maka kasi string kosong --}}
+                        <a href="{{ route('penjualan.index') }}"
+                            class="{{ Request()->is('penjualan*') ? 'active' : '' }}">
+                            <i class="mdi mdi-credit-card-minus-outline"></i>
+                            <span> Penjualan </span>
+                        </a>
+                    </li>
                 @endif
 
                 {{-- jika admin yang login --}}
@@ -59,20 +77,10 @@
                     </li>
                     {{-- penyuplai --}}
                     <li>
-                        <a href="javascript: void(0);">
+                        <a href="{{ route('penyuplai.index') }}" class="{{ request()->is('penyuplai*') ? 'active' : '' }}">
                             <i class="mdi mdi-truck"></i>
                             <span> Penyuplai </span>
-                            <span class="menu-arrow"></span>
                         </a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            {{-- Data Penyuplai --}}
-                            {{-- jika permintaan url nya adalah penyuplai dan apapun setelah itu maka kasi class active kalau bukan maka kasi string kosong  --}}
-                            {{-- ke route penyuplai.index --}}
-                            <li class="{{ Request()->is('penyuplai*') ? 'active' : '' }}"><a href="{{ route('penyuplai.index') }}">Data Penyuplai</a></li>
-                            
-                            {{-- Produk Penyuplai --}}
-                            <li class="{{ Request()->is('produk-penyuplai*') ? 'active' : '' }}"><a href="{{ route('produk_penyuplai.index') }}">Produk Penyuplai</a></li>
-                        </ul>
                     </li>
                     {{-- Produk --}}
                     <li>
@@ -114,6 +122,16 @@
                             <span> pembelian </span>
                         </a>
                     </li>
+                    {{-- penjualan --}}
+                    <li>
+                        {{-- ke route penjualan.index --}}
+                        {{-- jika permintaan adalah penjualan lalu apapun setelah itu maka aktifkan, kalau bukan maka kasi string kosong --}}
+                        <a href="{{ route('penjualan.index') }}"
+                            class="{{ Request()->is('penjualan*') ? 'active' : '' }}">
+                            <i class="mdi mdi-credit-card-plus"></i>
+                            <span> Penjualan </span>
+                        </a>
+                    </li>
                     {{-- Manajement kasir --}}
                     <li>
                         {{-- jika permintaan adalah manajemen_kasir maka aktifkan, kalau bukan kasi string kosong --}}
@@ -121,6 +139,16 @@
                             class="{{ Request()->is('manajemen_kasir*') ? 'active' : '' }}">
                             <i class="mdi mdi-account-group"></i>
                             <span> Manajemen Kasir </span>
+                        </a>
+                    </li>
+                    {{-- Laporan --}}
+                    <li>
+                        {{-- ke route laporan.index --}}
+                        {{-- jika permintaan adalah laporan dan apapun stelah itu maka aktifkan, kalau bukan kasi string kosong --}}
+                        <a href="{{ route('laporan.index') }}"
+                            class="{{ Request()->is('laporan*') ? 'active' : '' }}">
+                            <i class="mdi mdi-file-pdf-box"></i>
+                            <span>Laporan</span>
                         </a>
                     </li>
                 @endif
