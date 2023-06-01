@@ -61,6 +61,23 @@ class PenyuplaiController extends Controller
     // $request berisi semua value attribute name
     public function store(Request $request)
     {
+        // lakukan validasi terhadap input name="telepon_member" agar user memasukkan nomor handphone indonesia yang benar
+        // nomor telepon indonesia diawali oleh 08, minimal 10 digit dan maksimal 13 digit
+        $regex = '/^08[0-9]{8,11}$/';
+
+        // Fungsi ini preg_match()akan memberi tahu Anda apakah suatu string berisi kecocokan suatu pola.
+        // jika value input name="telepon_member" tidak sama dengan regex maka
+        if(!preg_match($regex, $request->telepon_penyuplai)) {
+            // nomor handphone tidak valid
+            // kembalikkan tanggapan berupa json
+            return response()->json([
+                // key status berisi value 422
+                'status' => 422,
+                // key message berisi value berikut
+                'message' => 'Tolong masukkan nomor handphone indonesia yang benar.'
+            ]);
+        };
+
         // validasi semua inout yang punya attribute name
         // berisi validator dibuat untuk semua permintaan
         $validator = Validator::make($request->all(), [
@@ -89,23 +106,6 @@ class PenyuplaiController extends Controller
         }
         // jika validasi berhasil
         else {            
-            // jika validasi biasa menggunakan laravel sudah berhasil maka lakukan validasi terhadap input name="telepon_member" agar user memasukkan nomor handphone indonesia yang benar
-            // nomor telepon indonesia diawali oleh 08, minimal 10 digit dan maksimal 13 digit
-            $regex = '/^08[0-9]{8,11}$/';
-
-            // Fungsi ini preg_match()akan memberi tahu Anda apakah suatu string berisi kecocokan suatu pola.
-            // jika value input name="telepon_member" tidak sama dengan regex maka
-            if(!preg_match($regex, $request->telepon_penyuplai)) {
-                // nomor handphone tidak valid
-                // kembalikkan tanggapan berupa json
-                return response()->json([
-                    // key status berisi value 422
-                    'status' => 422,
-                    // key message berisi value berikut
-                    'message' => 'Tolong masukkan nomor handphone indonesia yang benar.'
-                ]);
-            };
-
             // Simpan penyuplai ke table penyuplai
             // penyuplai buat
             penyuplai::create([

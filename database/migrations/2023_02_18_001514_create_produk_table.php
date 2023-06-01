@@ -16,11 +16,11 @@ return new class extends Migration
             // lakukan auto increment dan big integer
             $table->bigIncrements('produk_id');
             // foreign key atau kunci asing, relasinya adalah 1 produk milik 1 kategori
-            // buat foreign key column di table produk yaitu kategori_id yang berelasi dengean column kategori_id milik table kategori
+            // buat foreign key column di table produk yaitu kategori_id yang berelasi dengean column kategori_id milik table kategori, ketika kategori di hapus maka produk nya juga akan terhapus
             $table->foreignId('kategori_id')->constrained('kategori')
                 ->references('kategori_id')
                 ->onUpdate('cascade')
-                ->onDelete(('cascade'));
+                ->onDelete('cascade');
             $table->foreignId('penyuplai_id')->constrained('penyuplai')
                 ->references('penyuplai_id')
                 ->onUpdate('cascade')

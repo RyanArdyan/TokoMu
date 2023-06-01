@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/edit-profile/update-password', [EditProfileController::class, 'update_password'])->name('edit_profile.update_password');
 
     // penjualan
+    // route tipe dapatkan, jika user diarahkan ke url /penjualan/create maka maka PenjualanController, method create, name nya adalah penjualan.create
+    Route::get('/penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
     // route tipe dapatkan, jika user di arahkan ke url /penjualan maka arahkan PenjualanController, ke method index, name nya adalah penjualan.index
     Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
     // route tipe dapatkan, jika user di arahkan ke url /penjualan/data maka arahkan ke PenjualanController, method data, name nya adalah penjualan.data
@@ -80,23 +82,27 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/penjualan/export-excel', [PenjualanController::class, 'export_excel'])->name('penjualan.export_excel');
     // route tipe kirim, jika user diarahkan ke url berikut maka kirimkan penjualan_id lalu ke PenjualanController, ke method berikut, name nya adalah berikut
     Route::get('/penjualan/penjualan-detail/export-excel/{penjualan_id}', [PenjualanController::class, 'export_excel_penjualan_detail'])->name('export_excel.penjualan_detail');
+    // route tipe kirim, jika user diarahkan ke url berikut maka arahkan ke PenjualanController, method cek_stok_produk, name nya adalah penjualan.cek_stok_produk
+    Route::post('/penjualan/cek-stok-produk', [PenjualanController::class, 'cek_stok_produk'])->name('penjualan.cek_stok_produk');
 
 
 
     // detail penjualan
-    // ke PenjualanController karena aku create data di table penjualan
-    // route tipe dapatkan, jika user diarahkan ke url /penjualan-detail/create maka maka PenjualanController, method create, name nya adalah penjualan_detail.create
-    Route::get('/penjualan-detail/create', [PenjualanController::class, 'create'])->name('penjualan_detail.create');
     // route tipe kirim, jika user diarahkan ke url /penjualan-detail, ke PenjualanDetailController, ke method store, name nya adalah penjualan_detail.store
     Route::post('/penjualan-detail', [PenjualanDetailController::class, 'store'])->name('penjualan_detail.store');
     // route tipe dapatkan, jika user di arahkan ke /penjualan-detail maka arahkan PenjualanDetailController, method index, name nya adalah penjualan_detail.index
     Route::get('/penjualan-detail', [PenjualanDetailController::class, 'index'])->name('penjualan_detail.index');
     // route tipe dapatkan, jika user di arahkan ke url berikut maka kirimkan penjualan_id, ke PenjualanController, method data, name nya adalah penjualan_detail.data
-    Route::get('/penjualan-detail/{penjualan_id}/data', [PenjualanDetailController::class, 'data'])->name('penjualan_detail.data');
+    Route::get('/penjualan-detail/data/{penjualan_id}', [PenjualanDetailController::class, 'data'])->name('penjualan_detail.data');
     // route tipe dapatkan, jika user di arahkan ke /penjualan-detail/load-form/ maka kirimkan 3 argument, lalu ke PenjualanDdetailController, method load_form, name nya adalah penjualan_detail.load_form
     Route::get('/penjualan-detail/muat-ulang-form/{diskon}/{total_harga}/{uang_diterima}', [PenjualanDetailController::class, 'muat_ulang_form'])->name('penjualan_detail.muat_ulang_form');
-    Route::put('/penjualan-detail/{penjualan_id}', [PenjualanDetailController::class, 'update'])->name('penjualan_detail.update');
+    // route tipe letakkan, jika user diarahkan ke url /penjualan-detail/ tangkap dan kirimkan penjualan_detail_id, panggil PenjualanDetailController, method update, name nya adalah penjualan_detail.update
+    Route::put('/penjualan-detail/{penjualan_detail_id}', [PenjualanDetailController::class, 'update'])->name('penjualan_detail.update');
     Route::delete('/penjualan-detail/{penjualan_id_detail}', [PenjualanDetailController::class, 'destroy'])->name('penjualan_detail.destroy');
+    // route tipe kirim, jika user diarahkan ke url berikut maka panggil PenjualanDetailController, method ambil_detail-produk, name nya adalah penjualan_detail.ambil_detail_produk
+    Route::post('/penjualan-detail/ambil-detail-produk', [PenjualanDetailController::class, 'ambil_detail_produk'])->name('penjualan_detail.ambil_detail_produk');
+    // route tipe kirim, jika user diarahkan ke url berikut maka arahkan ke PenjualanDetailController, method cek_stok_produk, name nya adalah penjualan_detail.cek_stok_produk
+    Route::post('/penjualan-detail/cek-stok-produk', [PenjualanDetailController::class, 'cek_stok_produk'])->name('penjualan_detail.cek_stok_produk');
 });
 
 

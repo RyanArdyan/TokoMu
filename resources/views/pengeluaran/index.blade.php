@@ -134,8 +134,12 @@
 
     // ketika modal tambah ditutup maka reset formulir, dan hapus error validasi
     $(".tutup").on("click", function() {
+        // reset formulir
+        // panggil element form, index 0 lalu di atur ulang
         $("form")[0].reset();
+        // panggil .input lalu hapus class is-invalid
         $(".input").removeClass("is-invalid");
+        // panggil .pesan_error lalu text nya dikosongkan
         $(".pesan_error").text("");
     });
 

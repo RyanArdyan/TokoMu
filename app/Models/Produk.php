@@ -18,7 +18,7 @@ class Produk extends Model
     // agar aku bisa melakukan create dan update data secara massal
     protected $guarded = [];
 
-    // eager loading mencegah kueri N+1
+    // eager loading mencegah kueri N+1, bersemangat memuat secara bawaan, ini penting untuk membuat api
     // lindungi dengan relasi kategori dan penyuplai
     protected $with = ["kategori", "penyuplai"];
 

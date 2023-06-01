@@ -86,13 +86,13 @@
         let table = $("table").DataTable({
             // tampilkan processing, sebelum datanya di muat
             processing: true,
-            // jika produk sudah lebih dari 10.000 maka loading nya tidka akan lama karena server side nya true
+            // jika produk sudah lebih dari 10.000 maka loading nya tidak akan lama karena server side nya true
             serverSide: true,
             // lakukan ajax, panggil route produk.index
             ajax: "{{ route('produk.index') }}",
             // jika selesai dan berhasil maka buat element tbody, tr, td dan isi valuenya
             columns: [
-                // buat kotak centang
+                // buat kotak centang atau input type="checkbox"
                 {
                     data: "select",
                     // aku tidak bisa menghilangkan icon anak panah di colmn pertama table tapi aku akan mematikan fungsi pembalik dari a ke z atau sebaliknya
@@ -102,7 +102,7 @@
                     // lakukan pengulangan terhadap nomor
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
-                    // sortable: false, brearti aku menghilangkan icon anak panah agar aku tidak membalik data
+                    // sortable: false, berarti aku menghilangkan icon anak panah agar aku tidak membalik data
                     sortable: false
                 },
                 // 
@@ -116,6 +116,7 @@
                 },
                 {
                     data: 'nama_kategori',
+                    // ini berarti relasi, produk berelasi dengan kategori
                     name: 'nama_kategori.nama_kategori'
                 },
                 {
@@ -142,6 +143,7 @@
                     data: 'stok',
                     name: 'stok'
                 },
+                // tombol edit
                 {
                     data: 'action',
                     name: 'action',
@@ -185,7 +187,7 @@
                     $.each(resp.semua_kategori, function(key, value) {
                         // tambahkan element option untuk menampilkan semua kategori
                         // panggil #kategori_id lalu tambahkan element option yang berattribute value untuk dikirimkan valuenya
-                        $("#kategori_id").append(
+                        $(`#kategori_id`).append(
                             `<option value="${value.kategori_id}">${value.nama_kategori}</option>`);
                     });
                     // lakukan pengulangan sebanyak jumlah penyuplai
@@ -211,7 +213,7 @@
                 url: "{{ route('produk.store') }}",
                 // panggil route type POST
                 type: "POST",
-                // kirimkan data berupa baru FormulirData dar9 #form_tambah
+                // kirimkan data berupa baru FormulirData dari #form_tambah
                 data: new FormData(this),
                 // aku butuh 3 baris kode dibawah ini
                 processData: false,
@@ -236,12 +238,13 @@
                     $.each(resp.errors, function(key, value) {
                         // contohnya panggil .nama_produk_input lalu tambah .is-invalid
                         $(`.${key}_input`).addClass("is-invalid");
-                        // panggil .nama_produk_error lalu textnya diisi dengan pesan value index 0 atau pesan error
+                        // anggaplah panggil .nama_produk_error lalu textnya diisi dengan pesan value index 0 atau pesan error
                         $(`.${key}_error`).text(value[0]);
                     });
-                    // jika produk brhasil disimpan
-                    // lain jika tanggapan.status sama dengan 200
-                } else if (resp.status === 200) {
+                }
+                // jika produk berhasil disimpan
+                // lain jika tanggapan.status sama dengan 200
+                else if (resp.status === 200) {
                     // reset formulir atau kosongkan semua value element input
                     // panggil #form_tambah, index 0, lalu atur ulang
                     $("#form_tambah")[0].reset();
@@ -259,8 +262,9 @@
 
         // Edit produk
         // jika document di click yang classnya adalah .tombol_edit maka jalankan fungsi berikut
+        // pakai document karena .tombol_Edit dibuat di script
         $(document).on("click", ".tombol_edit", function(e) {
-            // cegah bawaanya yaitu reload
+            // cegah bawaan nya yaitu reload
             e.preventDefault();
             // ambil nilai attr data-id
             // panggil .tombol_edit lalu ambil value dari attribute data-id, angaplah berisi angka 1
@@ -275,6 +279,7 @@
                 // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapannya
                 .done(function(resp) {
                     // tampilkan modal
+                    // panggil #modal_edit lalu modalnya di tampilkan
                     $("#modal_edit").modal("show");
 
                     // tambahkan element option

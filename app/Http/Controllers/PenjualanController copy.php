@@ -25,6 +25,26 @@ class PenjualanController extends Controller
      // menyimpan satu baris penjualan setelah aku click tombol Penjualan Baru
      public function create()
      {
+         // berisi create data di table penjualan secara sementara
+         $detail_penjualan = Penjualan::create([
+             // id membernya null karena pembelinya itu belum tentu adalah member
+             'member_id' => null,  
+             // berisi id user yang login
+             'user_id' => auth()->id(),
+             'nama_member' => null,
+             // diisi name user yang login
+             'name_user' => auth()->user()->name,
+             'total_barang' => 0,  
+             'total_harga' => 0,
+             'diskon' => 0, 
+             // pelanggan harus membayar 
+             'harus_bayar' => 0, 
+             // uang yang kita terima dari pelanggan
+             'uang_diterima' => 0,  
+         ]);
+ 
+         // buat sessi penjualan_id agar aku bisa memanggil value detail_penjualan, column penjualan_id lewat sessi penjualan_id
+         session(['penjualan_id' => $detail_penjualan->penjualan_id]);
          // kembali alihkan ke route penjualan_detail.index
          return redirect()->route('penjualan_detail.index');
      }

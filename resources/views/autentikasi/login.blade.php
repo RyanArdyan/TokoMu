@@ -127,63 +127,66 @@
         });
 
         // login
+        // jika #form_login di kirim maka jalankan fungsi berikut lalu ambil event atau acaranya  nya
         $("#form_login").on("submit", function(event) {
             // cegah bawaan yaitu reload
+            // acara.cegahBawaan();
             event.preventDefault();
             //  lakukan ajax
             $.ajax({
-                    // panggil route login.store
-                    url: `{{ route('login.store') }}`,
-                    // panggil route type POST
-                    type: 'POST',
-                    // data harus mengirimkan object
-                    // new FormData(this) secara otomatis membuat object
-                    data: new FormData(this),
-                    // aku butuh 3 baris kode dibawah
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    // sebelum kirim hapus validasi error
-                    beforeSend: () => {
-                        $(".input").removeClass("is-invalid");
-                        // .pesan_error, kosongkan textnya
-                        $(".pesan_error").text("");
-                    },
-                    // laravel butuh csrf
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                })
-                // jika selesai dan berhasil maka jalankan fungsi berikut
-                .done((response) => {
-                    // jika validasi biasa error
-                    if (response.message === 'Validasi Biasa Errors') {
-                        // lakukan pengulangan
-                        // key berisi semua value attribute name yang error
-                        // value berisi pesan errornya
-                        $.each(response.errors, function(key, value) {
-                            // contoh nya panggil .email_input lalu tambahkan .is-invalid
-                            $(`.${key}_input`).addClass("is-invalid");
-                            // contohnya panggil email_error lalu tambahkan pesan error nya
-                            $(`.${key}_error`).text(value);
-                        });
-                        // jika email dan password yang di input tidak ada di database
-                    } else if (response.message === 'Email belum terdaftar') {
-                        $('#email').addClass('is-invalid');
-                        $('.email_error').text('Email belum terdaftar, silahkan registrasi.');
-                        // Jika user berhasil login
-                    } else if (response.message === 'Password salah') {
-                        $('#password').addClass('is-invalid');
-                        $('.password_error').text('password salah');
-                    } else {
-                        Swal.fire('Mengarahkan Anda Ke Dashbaord');
-                        // level = response.level;
-                        // nama = response.nama;
-                        setTimeout(() => {
-                            location.href = `{{ route('dashboard.index') }}`;
-                        }, 2000);
-                    }
-                });
+                // panggil route login.store
+                url: `{{ route('login.store') }}`,
+                // panggil route type POST
+                type: 'POST',
+                // data harus mengirimkan object
+                // new FormData(this) secara otomatis membuat object
+                data: new FormData(this),
+                // aku butuh 3 baris kode dibawah
+                processData: false,
+                contentType: false,
+                cache: false,
+                // sebelum kirim hapus validasi error
+                beforeSend: () => {
+                    $(".input").removeClass("is-invalid");
+                    // panggil .pesan_error, kosongkan textnya
+                    $(".pesan_error").text("");
+                },
+                // laravel butuh csrf
+                headers: {
+                    // panggil tag meta, name nya csrf-token, ambil value attribute content
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            // jika selesai dan berhasil maka jalankan fungsi berikut
+            .done((response) => {
+                // jika validasi biasa error
+                if (response.message === 'Validasi Biasa Errors') {
+                    // lakukan pengulangan
+                    // key berisi semua value attribute name yang error
+                    // value berisi pesan errornya
+                    $.each(response.errors, function(key, value) {
+                        // contoh nya panggil .email_input lalu tambahkan .is-invalid
+                        $(`.${key}_input`).addClass("is-invalid");
+                        // contohnya panggil email_error lalu tambahkan pesan error nya
+                        $(`.${key}_error`).text(value);
+                    });
+                    // jika email dan password yang di input tidak ada di database
+                } else if (response.message === 'Email belum terdaftar') {
+                    $('#email').addClass('is-invalid');
+                    $('.email_error').text('Email belum terdaftar, silahkan registrasi.');
+                    // Jika user berhasil login
+                } else if (response.message === 'Password salah') {
+                    $('#password').addClass('is-invalid');
+                    $('.password_error').text('password salah');
+                } else {
+                    Swal.fire('Mengarahkan Anda Ke Dashbaord');
+                    // level = response.level;
+                    // nama = response.nama;
+                    setTimeout(() => {
+                        location.href = `{{ route('dashboard.index') }}`;
+                    }, 2000);
+                }
+            });
         });
     </script>
 </body>

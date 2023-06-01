@@ -25,7 +25,7 @@ class ProdukController extends Controller
         // jika $permintaan memiliki ajax
         if ($request->ajax()) {
             // syntax punya laravel
-            // Bersemangat memuat banyak hubungan dengan kategori dan penyuplai
+            // Bersemangat memuat banyak hubungan dengan kategori dan penyuplai, , ini wajib jika relasi nya adalah belongsTo atau miliki
             // produk berelasi dengan kategori dan penyuplai, ambil semuanya datanya, urutannya dari Z sampai A.
             $data_produk = Produk::with(['kategori', 'penyuplai'])->latest()->get();
             // syntax punya yajra
@@ -47,9 +47,12 @@ class ProdukController extends Controller
                     // $produk->kode_produk ambil value column kode_produk dari table produk
                     return '<span class="badge badge-success">' . $produk->kode_produk . '</span>';
                 })
+                // relasi table produk ke table kategori
+                // berdasarkan addColumn('nama_kategori')
                 // tambah column nama_kategori, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
                 ->addColumn('nama_kategori', function (Produk $produk) {
                     // panggil semua value column nama_kategori milik table kategori yang berelsasi dengan table produk
+                // panggil Models/Produk, method kategori
                     return $produk->kategori->nama_kategori;
                 })
                 // tambah column nama_penyuplai, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
@@ -112,6 +115,7 @@ class ProdukController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // parameter $permintaan semua value input
     public function store(Request $request)
     {
         // buat validasii kepada semua element input yang memiliki attribute name
@@ -124,7 +128,7 @@ class ProdukController extends Controller
             // gt berarti greater than atau harus lebih besar dari input name="harga_beli"
             'harga_jual' => 'required|gt:harga_beli',
         ],
-        // jika validator gagal
+        // terjemahan khusus untuk error .unique
         [
             'nama_produk.unique' => 'Produk sudah ada',
         ]);
@@ -144,12 +148,27 @@ class ProdukController extends Controller
         // lain jiak validasi nya berhasil atau formulir nya diisi dengan benar
         else {
             // ambil satu baris data produk yang terakhir
-            $baris_data_produk_yg_terakhir = Produk::latest()->first();
+            $baris_data_produk_yg_terakhir = Produk::orderBy('produk_id', 'desc')->first();
             // jika baris data produk yang terakhir tidak ada karena belum ada produk maka $kode_produk_yg_terakhir diisi P-00001
             // jika tidak ada baris data produk yang terakhir
             if (!$baris_data_produk_yg_terakhir) {
                 // berisi 00001
                 $kode_produk = '00001';
+
+                // Simpan produk dengan cara produk buat
+                produk::create([
+                    // column kategori_id di table produk diisi dengan value select name="kategori_id"
+                    'kategori_id' => $request->kategori_id,
+                    'penyuplai_id' => $request->penyuplai_id,
+                    // diisi dengan "p" digabung value variabel kode_produk
+                    'kode_produk' => 'P-00001',
+                    'nama_produk' => $request->nama_produk,
+                    'merk' => $request->merk,
+                    'harga_beli' => $request->harga_beli,
+                    'diskon' => 0,
+                    'harga_jual' => $request->harga_jual,
+                    'stok' => 0
+                ]);
             } 
             // jiKA ada baris data produk yang terakhir, anggaplah ada P-00001
             else if ($baris_data_produk_yg_terakhir) {
@@ -168,22 +187,24 @@ class ProdukController extends Controller
                 // panggil fungsi helper kode_berurutan agar menjadi P-00002
                 // 5 adalah jumlah angka nya, jadi contohnya adalah 10000
                 $kode_produk = kode_berurutan($ubah_string_kode_produk_menjadi_integer, 5);
+
+                // Simpan produk dengan cara produk buat
+                produk::create([
+                    // column kategori_id di table produk diisi dengan value select name="kategori_id"
+                    'kategori_id' => $request->kategori_id,
+                    'penyuplai_id' => $request->penyuplai_id,
+                    // diisi dengan "p" digabung value variabel kode_produk
+                    'kode_produk' => 'P-' . $kode_produk,
+                    'nama_produk' => $request->nama_produk,
+                    'merk' => $request->merk,
+                    'harga_beli' => $request->harga_beli,
+                    'diskon' => 0,
+                    'harga_jual' => $request->harga_jual,
+                    'stok' => 0
+                ]);
             };
 
-            // Simpan produk dengan cara produk buat
-            produk::create([
-                // column kategori_id di table produk diisi dengan value select name="kategori_id"
-                'kategori_id' => $request->kategori_id,
-                'penyuplai_id' => $request->penyuplai_id,
-                // diisi dengan "p" digabung value variabel kode_produk
-                'kode_produk' => 'P-' . $kode_produk,
-                'nama_produk' => $request->nama_produk,
-                'merk' => $request->merk,
-                'harga_beli' => $request->harga_beli,
-                'diskon' => 0,
-                'harga_jual' => $request->harga_jual,
-                'stok' => 0
-            ]);
+            
             // kembalikkan tanggapan berupa json
             return response()->json([
                 // key status berisi value 200
@@ -200,13 +221,11 @@ class ProdukController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // $produk_id beisi value produk_id anggaplah 1
+    // $produk_id beisi value produk_id anggaplah 1 yang dikirim lewat url
     public function show($produk_id)
     {
-
-
         // ambil detail produk berdasarkan produk_id yang dikirimkan
-        // berisi produk dimana value column produk_id sama dengan $produk_id yang dikirimkan
+        // berisi produk dimana value column produk_id sama dengan value $produk_id yang dikirimkan, ambil data baris pertama
         $detail_produk = Produk::where('produk_id', $produk_id)->first();
         // ambil semua kategori
         // kategori pilih semua value dari column kategori_id dan nama_kategori
@@ -217,7 +236,7 @@ class ProdukController extends Controller
         // kembalikkan tanggapan berupa json
         return response()->json([
             // key produk_id berisi memanggil fungsi angka_bentuk milik helpers lalu di dalamnya ada detail_produk, value column produk_id
-            'produk_id' => angka_bentuk($detail_produk->produk_id),
+            'produk_id' => $detail_produk->produk_id,
             'harga_beli' => rupiah_bentuk($detail_produk->harga_beli),
             'harga_jual' => rupiah_bentuk($detail_produk->harga_jual),
             'stok' => angka_bentuk($detail_produk->stok),
@@ -227,13 +246,9 @@ class ProdukController extends Controller
         ]);
     }
 
-    /**
-     * Memperbarui produk yang spesifik di penyimpanan
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Memperbarui produk yang spesifik di penyimpanan
+    // parameter $request berisi semua value input
+    // parameter $produk_id berisi produk_id yang dikirim lewat url, anggaplah berisi angka 1
     public function update(Request $request, $produk_id)
     {
         // ambil detail produk berdasarkan produk_id
@@ -274,8 +289,9 @@ class ProdukController extends Controller
                 // key errors berisi semua value attribute name yang error dan pesan errornya
                 'errors' => $validator->errors()->toArray()
             ]);
-            // jika validasi berhasil
-        } else {
+        } 
+        // jika validasi berhasil
+        else {
             // Perbarui produk
             // value detail produk, column kategori_id diisi dengan value input name="kategori_id"
             $detail_produk->kategori_id = $request->kategori_id;
@@ -299,9 +315,7 @@ class ProdukController extends Controller
         };
     }
 
-    /**
-     * Menghapus data data yang dipilih
-     */
+    // menghapus data-data yang di pilih
     public function destroy(Request $request)
     {
         // return response()->json($request);

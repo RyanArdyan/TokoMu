@@ -22,6 +22,7 @@ class Kategori extends Model
     // 1 kategori punya banyak produk
     public function produk()
     {
+        // kembalikkan class Kategori memiliki banyak produk
         return $this->hasMany(Produk::class);
     }
 }

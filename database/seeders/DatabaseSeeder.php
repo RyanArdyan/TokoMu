@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 1,
             'gambar' => 'gambar_default.png',
             'name' => 'Admin',
-            'email' => 'admin@egmail.com',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('pontianak')
         ]);
 
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => 1,
             'penyuplai_id' => 1,
             'kode_produk' => 'P-00001',
-            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari    Selama Sebulan',
+            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari Selama Sebulan',
             'merk' => 'Smartfren',
             'harga_beli' => 77000,
             'diskon' => 0,

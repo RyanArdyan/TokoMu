@@ -3,7 +3,6 @@
         <div class="modal-content">
             <div class="container">
                 <form id="form_produk">
-                    {{-- laravel mewajibkan keamanan dari serangan csrf --}}
                     @csrf
                     <div class="modal-header">
                         <h4 class="modal-title">Pilih Produk</h4>
@@ -27,7 +26,6 @@
 
                                 <tbody>
                                     {{-- lakukan pengulangan terhadap semua_produk yang dikirim PenjualanController, method index agar mendapat semua detail_member --}}
-                                    {{-- @untuk_setiap($semua_produk sebagai $produk) --}}
                                     @foreach($semua_produk as $produk)
                                     <tr width="5%">
                                         {{-- cetak, panggil fungsi angka_bentuk lalu kirimkan $loop->iteasi yang akan melakukan pengulangan nomor --}}
@@ -42,21 +40,14 @@
                                         <td>{{ $produk->nama_produk }}</td>
                                         {{-- cetak panggil fungsi rupiah_bentuk milik helpers lalu kirimkna value detail_produk, column harga_beli --}}
                                         <td width="10%">{{ rupiah_bentuk($produk->harga_beli) }}</td>
-                                        {{-- value attribute id akana berisi stok_1, stok_2 dan stok_3 --}}
-                                        <td id="stok_{{ $produk->produk_id }}" width="5%">{{ angka_bentuk($produk->stok) }}</td>
+
+                                        <td width="5%">{{ angka_bentuk($produk->stok) }}</td>
 
                                         <td width="5%">
-                                            {{-- jika value detail_produk, column stok sama dengan 0 maka --}}
-                                            @if ($produk->stok === 0) 
-                                                <button class="btn btn-sm btn-danger" disabled>Habis</button>
-                                            {{-- lain jika value detail_produk, column stok lebih besar dari 0 maka --}}
-                                            @elseif ($produk->stok > 0)
-                                                {{-- attribute data-produk-id menyimpan value atau nilai detail_produk, column produk_id --}}
-                                                {{-- attribute id akan mencetak pilih_1, pilih_2 dan seterusnya --}}
-                                                <button id="pilih_{{ $produk->produk_id }}" data-produk-id="{{ $produk->produk_id }}" data-kode-produk="{{ $produk->kode_produk }}" class="tombol_pilih_produk btn btn-sm btn-success" type="button">
-                                                    <i class="fa fa-hand-point-right">Pilih</i>
-                                                </button>
-                                            @endif
+                                            {{-- attribute data-produk-id menyimpan value atau nilai detail_produk, column produk_id --}}
+                                            <button data-produk-id="{{ $produk->produk_id }}" data-kode-produk="{{ $produk->kode_produk }}" class="tombol_pilih_produk btn btn-sm btn-success" type="button">
+                                                <i class="fa fa-hand-point-right">Pilih</i>
+                                            </button>
                                         </td>
                                     </tr>
                                     @endforeach

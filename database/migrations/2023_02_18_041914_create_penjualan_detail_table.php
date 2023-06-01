@@ -28,8 +28,6 @@ return new class extends Migration
             // bigInteger agar menghindari out of range jika angka usdha menyentuh m
             $table->bigInteger('harga_jual');
             $table->integer('jumlah');
-            // tiny integer karena isinya berisi 0 sampai 100 dan bawaanya adalah 0
-            $table->tinyInteger('diskon')->default(0);
             $table->integer('subtotal');
             $table->timestamps();
         });
