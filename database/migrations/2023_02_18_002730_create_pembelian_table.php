@@ -13,9 +13,8 @@ return new class extends Migration
     {
         // buat table pembelian
         Schema::create('pembelian', function (Blueprint $table) {
-            // buat column pembelian_id yang tipe datanya big increment dan auto increment
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('pembelian_id');
-
             // buat column foreign key penyuplai_id yang berelasi dengan table penyuplai, column penyuplai_id
             // onUpdate('cascade') berarti jika aku ubah suatu penyuplai maka pembelian nya akan mengambil data yang berubah
             // onDelete('cascade') berarti jika aku hapus suatu penyuplai maka pembelian nya yang terkait juga akan terhapus
@@ -23,8 +22,10 @@ return new class extends Migration
                 ->references('penyuplai_id')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('total_barang');
-            $table->bigInteger('total_harga');
+            // tipe data smallInteger menyimpan value maksimal 32767, smallInteger jauh lebih mengehemat memori dibandingkan integer karena hanya menggunakan 2 BYTE, kalau integer 4 byte
+            // $meja->kecil_integer, column total_barang
+            $table->smallInteger('total_barang');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }

@@ -48,6 +48,7 @@
             font-weight: normal;
         }
     </style>
+
 </head>
 <body>
     <h1 class="text-center my-5">Laporan Pendapatan</h1>

@@ -18,33 +18,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\PenjualanExport;
 use App\Exports\PenjualanDetailExport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Illuminate\Support\Facades\DB;
 
 class PenjualanController extends Controller
 {
      // menyimpan satu baris penjualan setelah aku click tombol Penjualan Baru
      public function create()
      {
-         // berisi create data di table penjualan secara sementara
-         $detail_penjualan = Penjualan::create([
-             // id membernya null karena pembelinya itu belum tentu adalah member
-             'member_id' => null,  
-             // berisi id user yang login
-             'user_id' => auth()->id(),
-             'nama_member' => null,
-             // diisi name user yang login
-             'name_user' => auth()->user()->name,
-             'total_barang' => 0,  
-             'total_harga' => 0,
-             'diskon' => 0, 
-             // pelanggan harus membayar 
-             'harus_bayar' => 0, 
-             // uang yang kita terima dari pelanggan
-             'uang_diterima' => 0,  
-         ]);
- 
-         // buat sessi penjualan_id agar aku bisa memanggil value detail_penjualan, column penjualan_id lewat sessi penjualan_id
-         session(['penjualan_id' => $detail_penjualan->penjualan_id]);
          // kembali alihkan ke route penjualan_detail.index
          return redirect()->route('penjualan_detail.index');
      }
@@ -78,7 +58,7 @@ class PenjualanController extends Controller
             // lakukan pengulangan terhadap value column total_barang
             // tambahColumn('total_barang', jalankan fungsi berikut, parameter $penjualan berisi pengulangan detail penjualan
             ->addColumn('total_barang', function ($penjualan) {
-                // kembalikkan panggil fungsi angka_bentuk milik helpers lalu kirimkan $penjualan->total_barang
+                // kembalikkan panggil fungsi angka_bentuk milik helpers lalu kirimkan value $penjualan->total_barang
                 return angka_bentuk($penjualan->total_barang);
             })
             ->addColumn('total_harga', function ($penjualan) {
@@ -92,9 +72,9 @@ class PenjualanController extends Controller
                 return tanggal_indonesia($penjualan->created_at, false);
             })
             ->addColumn('kode_member', function ($penjualan) {
-                // jika produk di jual ke member maka pasti nya ada nilai di table penjualan, column member_id lalu aku ambil value nya, jika produk di jual bukan ke member maka pasti nya nilai pada table penjualan, column member_id berisi NULL
+                // jika produk di jual ke member maka pasti nya ada nilai di table penjualan, column member_id lalu aku ambil value nya, jika produk di jual bukan ke pelanggan umum maka pasti nya nilai pada table penjualan, column member_id berisi NULL
                 // panggil value column kode_member milik detail table member yang berelasi dengan table penjualan, jika berisi null maka cetak bukan member
-                $member = $penjualan->member->kode_member ?? 'Bukan Member';
+                $member = $penjualan->member->kode_member ?? 'Pelanggan Umum';
                 return '<span class="label label-success">'. $member .'</spa>';
             })
             ->addColumn('diskon', function ($penjualan) {
@@ -113,7 +93,9 @@ class PenjualanController extends Controller
                 // karbon::uraikan($penjualan->dibuat_pada)
                 $tanggal_penjualan = Carbon::parse($penjualan->created_at);
                 // jika sudah lewat dua hari setelah tanggal_penjualan atau di buat maka aku akan berikan attribute disabled atau matikan tombol nya
+                // jika $tanggal_penjualan->berbedaDalamHari(sekarang() > 2)
                 if ($tanggal_penjualan->diffInDays(now()) > 2) {
+                    // berisi element html
                     $retur_penjualan = '<button data-toggle="keterangan_alat" data-placement="top" title="Retur Penjualan" class="btn btn-danger btn-sm" disabled>
                     <i class="mdi mdi-credit-card-refund"></i>
                 </button>';
@@ -126,7 +108,7 @@ class PenjualanController extends Controller
 
                 // kembalikkan tombol-tombol
                 return '
-                <div class="btn-group">
+                <div>
                     <button data-toggle="keterangan_alat" data-placement="top" title="Detail Penjualan" onclick="tampilkan_detail_penjualan(`'. route('penjualan.show', $penjualan->penjualan_id) .'`)" class="btn btn-xs btn-info btn-flat"><i class="fa fa-eye"></i></button>
 
                     <button data-toggle="keterangan_alat" data-placement="top" title="Hapus Penjualan" onclick="hapus(`'. route('penjualan.destroy', $penjualan->penjualan_id) .'`)" class="btn btn-xs btn-danger btn-flat"><i class="fa fa-trash"></i></button>
@@ -244,34 +226,27 @@ class PenjualanController extends Controller
         return view('penjualan.selesai', ['detail_pengaturan' => $detail_pengaturan]);
     }
 
-    // cetak nota_kecil penjualan
-    public function nota_kecil()
-    {
-        // ambil value session('penjualan_id') dari PenjualanController, method create
-        $penjualan_id = session('penjualan_id');
-        // ambil satu baris data pertama di table pengaturan
-        $detail_pengaturan = Pengaturan::first();
-        // ambil detail penjualan berdasarkan penjualan_id
-        // penjualan dimana value column penjualan_id sama dengan value $penjualan_id, data baris pertama
+    // $request menangkap penjualan_id yang dikirimkan url
+    public function nota_kecil(Request $request) {
+        // berisi $permintaan->penjualan_id menangkap penjualan_id yang dikirimkan url
+        $penjualan_id = $request->penjualan_id;
+
+        // ambil detail_penjualan berdasaran penjualan_id
+        // berisi model penjualan dimana value column penjualan_id sama dengan value variable $penjualan_id, ambil data baris pertama
         $detail_penjualan = Penjualan::where('penjualan_id', $penjualan_id)->first();
-        // jika tidak ada detail penjualan karena user misalnya dari url /dashboard langsung /penjualan/nota-kecil
-        if (! $detail_penjualan) {
-            // abort 404
-            abort(404);
-        };
-        // ambil beberapa baris data dari table penjualan detail berdasarkan penjualan_id yang dikirimkan
-        // setiap penjualan detail dapat memilih 1 produk untuk dijual
-        // penjualan_detail yang berelasi dengan produk, dimana value column penjualan_id sama dengan $penjualan_id, dapatkan semua penjualan_detail terkait
-        $beberapa_penjualan_detail = PenjualanDetail::with('produk')
-            ->where('penjualan_id', $penjualan_id)
-            ->get();
-        
-        // kembalikkan ke tampilan('penjualan.nota_kecil'), kirimkan data berupa array
+        // ambil beberapa data table penjualan_detail berdasarkan column penjualan_id
+        // berisi model PenjualanDetail dimana value column penjualan_id sama dengan value variable $penjualan_id, ambil beberapa baris data
+        $semua_penjualan_detail = PenjualanDetail::where('penjualan_id', $penjualan_id)->get();
+
+        // kembalikkan ke tampilan penjualan.nota_kecil, kirimkan value variable $detail_penjualan
         return view('penjualan.nota_kecil', [
-            // key detail_pengaturan berisi value $detail_pengaturan
-            'detail_pengaturan' => $detail_pengaturan,
+            // key detail_penjualan berisi value variable $detail_penjualan
             'detail_penjualan' => $detail_penjualan,
-            'beberapa_penjualan_detail' => $beberapa_penjualan_detail
+            // key semua_penjualan_detail berisi value variable $semua_penjualan_detail
+            'semua_penjualan_detail' => $semua_penjualan_detail,
+            // key naam_toko berisi panggil databse table pengaturan, ambil data baris pertama lalu ambil value column nama_perusahaan
+            'nama_perusahaan' => DB::table('pengaturan')->first()->nama_perusahaan,
+            'alamat_perusahaan' => DB::table('pengaturan')->first()->alamat_perusahaan,
         ]);
     }
 
@@ -517,10 +492,5 @@ class PenjualanController extends Controller
     public function export_excel_penjualan_detail($penjualan_id) {
         // kembalikkan excel::unduh(new panggil file PengeluaranDetailExport lalu kirimkan value parameter $penjualan_id, nama file nya adalah 'penjualan_detail.xlsx')
         return Excel::download(new PenjualanDetailExport($penjualan_id), 'penjualan_detail.xlsx');
-    }
-
-    public function excel2(Request $request)
-    {
-        
     }
 }

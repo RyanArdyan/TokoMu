@@ -4,6 +4,7 @@ aria-labelledby="label_latar_belakang_statis" aria-hidden="true">
         <div class="modal-content">
             {{-- ketika form dikirim maka panggil route penjualan.export_excel method post --}}
             <form action="{{ route('penjualan.export_excel') }}" method="POST">
+                {{-- laravel mewajibkan keamanan dari serangan csrf --}}
                 @csrf
                 <div class="modal-header">
                     <h4 class="modal-title" id="label_latar_belakang_statis">Pilih Periode</h4>

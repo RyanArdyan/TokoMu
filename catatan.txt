@@ -1,0 +1,11 @@
+Tema kita adalah berpikir dan merancang alur aplikasi sebelum koding:
+Tidak boleh dihapus:
+YANG INGIN AKU LAKUKAN
+1. Setelah berhasil menyimpan data ke table pengeluaran dan pengeluaran_detail maka RESET FORMULIR dan tampilkan notifikasi "Berhasil menyimpan data"
+2. Reset Formulir bisa menggunakan script, tampilkan notifikasi bisa aku kirimkan dari controller lalu aku tangkap pake ajax lalu aku tampilan notifikasi nya.
+3. aku juga akan komentarkan console.log agar bisa tau debugging.
+
+
+
+
+BOLEH HAPUS:

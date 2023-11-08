@@ -1,14 +1,14 @@
 {{-- memperluas parentnya yaitu layouts.app --}}
 @extends('layouts.app')
 
-{{-- dorong css lalu tangkap mengguakan $stack('css') --}}
+{{-- dorong css lalu tangkap menggunakan $stack('css') --}}
 @push('css')
     {{-- buat element style --}}
     <style>
     </style>
 @endpush
 
-{{-- kirim value section title ke @Yield('title') --}}
+{{-- kirim value section title ke @yield('title') --}}
 @section('title', 'Penjualan')
 
 {{-- kirim value section konten ke @yield('konten') --}}
@@ -17,11 +17,10 @@
     <div class="row mb-2">
         <div class="col-md-12 mt-2">
             <div class="mb-3">
-                {{-- Jika tombol Penjualan Baru di click maka arahkan ke route penjualan_detail.create --}}
-                <a href="{{ route('penjualan.create') }}" class="btn btn-purple btn-sm">
+                {{-- Jika tombol Penjualan Baru di click maka arahkan ke route penjualan_detail.index --}}
+                <a href="{{ route('penjualan_detail.index') }}" class="btn btn-purple btn-sm">
                     <i class="mdi mdi-plus"></i> Penjualan Baru
                 </a>
-                {{-- jika #tombol_ubah_periode di click maka tampilkan modal ubah periode --}}
                 <button id="tombol_ubah_periode" class="btn btn-sm btn-success">
                     <i class="mdi mdi-file-excel"></i> Export Excel</button>
             </div>
@@ -76,6 +75,7 @@ let table_penjualan = $('#table_penjualan').DataTable({
 
 // berisi table penjualan_detail gunakan datatable
 let table_penjualan_detail = $('#table_penjualan_detail').DataTable({
+    // attribute url tidak ada, ada setelah aku click tombol detail lalu panggil fungsi tampilkan_detail_penjualan
     // ketika data nya masih di muat maka tampilkan animasi processing
     processing: true,
     // dua baris kode dibawah akan menghilangkan fitur search, paginasi dan pilihan menanmpilkan beberapa data
@@ -98,7 +98,7 @@ let table_penjualan_detail = $('#table_penjualan_detail').DataTable({
 // table retur
 // berisi #table_retur gunakan datatable
 let table_retur = $("#table_retur_penjualan_detail").DataTable({
-    // kode ini belum dijalankan karena ajax nya belum ada, jadi kode ini baru akan dijalankan setelah aku mengirimkan ajax
+    // kode ini belum dijalankan karena attribute url nya belum ada, jadi kode ini baru akan dijalankan setelah aku mengirimkan attribute url menggunakan fungsi data_retur
     processing: true,
     // menghilangkan fitur pencarian, pagination dan memesan jumlah data    
     bsort: false,
@@ -125,12 +125,14 @@ let table_retur = $("#table_retur_penjualan_detail").DataTable({
     ]
 });
 
-// tampilkan detail-detail penjualan
+// tampilkan data detail-detail penjualan
 function tampilkan_detail_penjualan(url) {
-    // tampilkan modal
-    $('#modal_detail').modal('show');
+    // panggil variable table_penjual_detail lalu buat attribute url lalu kirimkan url
     table_penjualan_detail.ajax.url(url);
     table_penjualan_detail.ajax.reload();
+    // tampilkan modal
+    // panggil #modal_detail lalu modal nya di tampilkan
+    $('#modal_detail').modal('show');
 };
 
 // fungsi hapus detail penjualan dan semua penjualan_detail terkait nya
@@ -180,7 +182,7 @@ function hapus(url) {
 function data_retur(route_laravel, penjualan_id) {
     // panggil #modal_retur modalnya di tampilkan
     $("#modal_retur").modal("show");
-    // table_retur buat panggilan ajax route_laravel, berisi value parameter route_laravel
+    // panggil variable table_retur buat panggilan ajax route_laravel, berisi value parameter route_laravel
     table_retur.ajax.url(route_laravel);
     // table_retur, ajax nya, di muat ulang
     table_retur.ajax.reload();
@@ -236,13 +238,9 @@ function retur_penjualan(penjualan_detail_id, produk_id, penjualan_id) {
         };
         // jika retur pembelian nya berhasil alias kode nya tidak ada error
         if (resp.status === 200) {
-            // // disabled atau matikan tombol retur karena aku sudah retur
-            // // anggaplah panggil #tombol_retur_1 lalu kasi attribute disabled dan setel value nya ke true
-            // $(`#tombol_retur_${produk_id}`).attr({
-            //     disabled: true
-            // });
-            // berikan notifikasi berdasarkan resp.message
+            // table_retur, ajax, muat ulang
             table_retur.ajax.reload();
+            // berikan notifikasi berdasarkan resp.message
             toastr.success(resp.message);
         };
     });

@@ -13,13 +13,16 @@ return new class extends Migration
     {
         // buat table produk
         Schema::create('produk', function (Blueprint $table) {
-            // lakukan auto increment dan big integer
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('produk_id');
-            // foreign key atau kunci asing, relasinya adalah 1 produk milik 1 kategori
-            // buat foreign key column di table produk yaitu kategori_id yang berelasi dengean column kategori_id milik table kategori, ketika kategori di hapus maka produk nya juga akan terhapus
+            // foreign key atau kunci asing, relasinya adalah 1 produk milik 1 kategori dan 1 kategori memiliki banyak produk
+            // buat foreign key
+            // foreign artinya asing, constrained artinya dibatasi
             $table->foreignId('kategori_id')->constrained('kategori')
+                // referensi column kategori_id milik table kategori
                 ->references('kategori_id')
                 ->onUpdate('cascade')
+                // ketika di hapus mengalir, jadi jika aku hapus kategori maka semua postingan terkait nya juga akan terhapus
                 ->onDelete('cascade');
             $table->foreignId('penyuplai_id')->constrained('penyuplai')
                 ->references('penyuplai_id')
@@ -31,14 +34,14 @@ return new class extends Migration
             $table->string('nama_produk')->unique();
             // buat column string
             $table->string('merk');
-            // big integer karena kalau integer tidak bisa diatas 1M
-            $table->bigInteger('harga_beli');
+            $table->integer('harga_beli');
             // bawaan 0
-            $table->integer('diskon')->default(0);
-            // big integer karena kalau integer tidak bisa diatas 1M
-            $table->bigInteger('harga_jual');
-            // buat column stok, tipe data integer
-            $table->integer('stok');
+            // kecil_integer agar menghemat memory
+            $table->tinyInteger('diskon')->default(0);
+            $table->integer('harga_jual');
+            // tipe data smallInteger menyimpan value maksimal 32767, smallInteger jauh lebih mengehemat memori dibandingkan integer karena hanya menggunakan 2 BYTE, kalau integer 4 byte
+            // $meja->kecil_integer, column stok
+            $table->smallInteger('stok');
             $table->timestamps();
         });
     }

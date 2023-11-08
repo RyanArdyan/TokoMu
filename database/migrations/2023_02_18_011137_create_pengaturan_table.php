@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // buat table pengaturan
         Schema::create('pengaturan', function (Blueprint $table) {
-            // buat tipe big increment yang auto increment
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('pengaturan_id');
             // buat tipe data string
             $table->string('nama_perusahaan');

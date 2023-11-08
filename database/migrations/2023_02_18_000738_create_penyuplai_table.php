@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('penyuplai', function (Blueprint $table) {
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('penyuplai_id');
             $table->string('nama_penyuplai')->unique();
             $table->string('telepon_penyuplai')->unique();

@@ -33,10 +33,10 @@ class PenjualanDetailExport implements FromCollection, WithHeadings, ShouldAutoS
         return [
             'Kode Produk',
             'Nama Produk',
-            'Harga',
+            'Harga Jual',
             'Jumlah',
             'Diskon',
-            'Subtotal'
+            'Subtotal',
         ];
     }
 
@@ -63,6 +63,13 @@ class PenjualanDetailExport implements FromCollection, WithHeadings, ShouldAutoS
     public function collection()
     {
         // kembalikkan Data table penjualan_detail, pilih value dari column berikut, dimana value column penjualan_id sama dengan value $this->penjualan_id, data baris pertama
-        return PenjualanDetail::select('kode_produk', 'name_produk', 'harga_jual', 'jumlah', 'diskon', 'subtotal')->where('penjualan_id', $this->penjualan_id)->get();
+        return PenjualanDetail::select('produk.kode_produk', 'produk.nama_produk', 'produk.harga_jual', 'jumlah', 'produk.diskon', 'subtotal')
+            // berelasi dengan table member lewat column member_id
+            // gabung table, value table member, column member_id sama dengan value table penjualan.member_id
+            ->join('produk', 'produk.produk_id', '=', 'penjualan_detail.produk_id')
+            // dimana value column penjualan_id sama dengan value property penjualan_id yg berada diluar
+            ->where('penjualan_id', $this->penjualan_id)
+            // dapatkan beberapa baris data
+            ->get();
     }
 }

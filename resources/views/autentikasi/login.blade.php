@@ -141,14 +141,15 @@
                 // data harus mengirimkan object
                 // new FormData(this) secara otomatis membuat object
                 data: new FormData(this),
-                // aku butuh 3 baris kode dibawah
+                // aku butuh 3 baris kode dibawah jika menggunakan new FormData
                 processData: false,
                 contentType: false,
                 cache: false,
                 // sebelum kirim hapus validasi error
                 beforeSend: () => {
+                    // panggil .input lalu hapus class is-invalid
                     $(".input").removeClass("is-invalid");
-                    // panggil .pesan_error, kosongkan textnya
+                    // panggil .pesan_error lalu kosongkan text nya
                     $(".pesan_error").text("");
                 },
                 // laravel butuh csrf
@@ -167,24 +168,43 @@
                     $.each(response.errors, function(key, value) {
                         // contoh nya panggil .email_input lalu tambahkan .is-invalid
                         $(`.${key}_input`).addClass("is-invalid");
-                        // contohnya panggil email_error lalu tambahkan pesan error nya
+                        // contohnya panggil .email_error lalu tambahkan pesan error nya
                         $(`.${key}_error`).text(value);
                     });
-                    // jika email dan password yang di input tidak ada di database
-                } else if (response.message === 'Email belum terdaftar') {
+                } 
+                // jika email yang di input tidak ada di database
+                else if (response.message === 'Email belum terdaftar') {
+                    // panggil #email lalu tambah class is-invalid
                     $('#email').addClass('is-invalid');
+                    // panggil .email_error lalu text nya diisi string berikut
                     $('.email_error').text('Email belum terdaftar, silahkan registrasi.');
-                    // Jika user berhasil login
-                } else if (response.message === 'Password salah') {
+                } 
+                // jika email yang di input user ada di database tapi passwors nya salah
+                // lain jika value tanggapan.pesan sama dengan string berikut
+                else if (response.message === 'Password salah') {
+                    // panggil #password lalu tambah class is-invalid
                     $('#password').addClass('is-invalid');
+                    // panggil .password_error lalu text nya diisi string berikut
                     $('.password_error').text('password salah');
-                } else {
-                    Swal.fire('Mengarahkan Anda Ke Dashbaord');
-                    // level = response.level;
-                    // nama = response.nama;
-                    setTimeout(() => {
-                        location.href = `{{ route('dashboard.index') }}`;
-                    }, 2000);
+                } 
+                // lain jika berhasil login
+                else {
+                    // tampilkan notifikasi menggunakan package sweetalert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Bagus',
+                        text: 'Senang bertemu dengan anda',
+                    })
+                    // kemudian hasilnya maka jalankan fungsi berikut dan ambil hasil nya
+                    .then((result) => {
+                        // jika aku click oke pada pop up sweetalert maka
+                        // jika hasilnya dikonfirmasi maka
+                        if (result.isConfirmed) {
+                            // pindahkan ke route dashboard.index
+                            // jendela.lokasi.href
+                            location.href = `{{ route('dashboard.index') }}`;
+                        };
+                    });
                 }
             });
         });

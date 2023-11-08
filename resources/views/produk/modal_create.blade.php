@@ -52,6 +52,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" for="harga_beli">Harga Beli</label>
                             <div class="col-sm-10">
+                                {{-- aku pake package input mask, jadii ketika keyboard ditekan di input harga beli maka panggil fungsi number lalu kirimkan acara sebagai argument --}}
                                 <input id="harga_beli" name="harga_beli" class="harga_beli_input input form-control input_angka" type="text"
                                 placeholder="Masukkan harga beli" onkeypress="return number(event)" data-inputmask="'alias': 'decimal', 'prefix': 'Rp ', 'groupSeparator':  '.',  'removeMaskOnSubmit': true, 'autoUnMask': true, 'rightAlign': false, 'radixPoint': ','" autocomplete="off">
                                 {{-- pesan error --}}

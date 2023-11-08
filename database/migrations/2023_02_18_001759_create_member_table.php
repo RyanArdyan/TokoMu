@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // buat table member
         Schema::create('member', function (Blueprint $table) {
-            // buat big integer yang auto increment
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('member_id');
             // buat column kode_member yang tipe data string dan unique
             $table->string('kode_member')->unique();

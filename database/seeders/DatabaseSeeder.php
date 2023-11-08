@@ -12,27 +12,30 @@ use App\Models\Produk;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Pengeluaran;
+use App\Models\PengeluaranDetail;
 use App\Models\Member;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Mengirimkan database aplikasi
      */
     public function run(): void
     {
         // \App\Models\User::factory(10)->create();
 
         // tambah data di table user
-        // user pbarik buat
+        // user::pabrik()->buat([])
         User::factory()->create([
-            // 1 adalah true berarti dia adalah admin, kalau 0 false berarti dia adalah kasir
+            // 1 adalah true berarti dia adalah admin, kalau 0 berarti false berarti dia adalah kasir
+            // column is_admin diisi 1
             'is_admin' => 1,
+            // column gambar diisi 'gambar_default.jpg'
             'gambar' => 'gambar_default.png',
             'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('pontianak')
+            'email' => 'admin123@gmail.com',
+            'password' => Hash::make('pontianak1104')
         ]);
 
         // tambahkan 1 baris data ke table pengaturan menggunakan perintah php artisan db:seed
@@ -94,8 +97,6 @@ class DatabaseSeeder extends Seeder
         PembelianDetail::create([
             'pembelian_id' => 1,
             'produk_id' => 1,
-            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari    Selama Sebulan',
-            'harga' => 77000,
             'jumlah' => 10,
             'subtotal' => 770000
         ]);
@@ -103,21 +104,27 @@ class DatabaseSeeder extends Seeder
         PembelianDetail::create([
             'pembelian_id' => 1,
             'produk_id' => 2,
-            'nama_produk' => 'Paket Smartfren 6 GB Selama Sebulan',
-            'harga' => 28000,
             'jumlah' => 10,
             'subtotal' => 280000
         ]);
 
-        Pengeluaran::create([
-            'nama_pengeluaran' => 'Menggaji Semua Karyawan',
-            'total_pengeluaran' => 200000000
-        ]);
 
         Pengeluaran::create([
-            'nama_pengeluaran' => 'Mendekorasi Kantor',
-            'total_pengeluaran' => 100000000
+            'waktu_pengeluaran' => now(),
+            'diterima_oleh' => "Admin",
+            'nama_pengeluaran' => 'Belanja Persediaan',
+            'jumlah_pengeluaran' => 5,
+            'total_pengeluaran' => 15000
         ]);
+
+        PengeluaranDetail::create([
+            'pengeluaran_id' => 1,
+            'nama_pengeluaran' => 'Beli Pulpen Standard',
+            'jumlah' => 5,
+            'harga_satuan' => 3000,
+            'subtotal' => 15000
+        ]);
+
 
         Member::create([
             'kode_member' => 'M-00001',
@@ -127,3 +134,6 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+
+
+// buat model pengeluaran_detail dan relasi nya adalah 1 pengeluaran_detail milik 1 pengeluaran, kalau 1 pengeluaran punya banyak pengeluaran detail itu manual saja lebih gampang

@@ -8,7 +8,6 @@ use App\Models\Pembelian;
 use App\Models\Pengeluaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DataTables;
-use PhpParser\Node\Stmt\Echo_;
 
 class LaporanController extends Controller
 {
@@ -19,6 +18,7 @@ class LaporanController extends Controller
         // tanggal awal pada bulan saat ini, dimulai dari 1
         // y = year, m = month, d = day
         $tanggal_awal = date('Y-m-d', mktime(0, 0, 0, date('m'), 1, date('Y')));
+        // ya tanggal hari ini
         $tanggal_hari_ini = date('Y-m-d');
         // echo $tanggal_hari_ini;
         
@@ -61,7 +61,7 @@ class LaporanController extends Controller
         // ini juga akan dipanggil berulang kali untuk dilakukan penjumlahan
         $total_pendapatan = 0;
 
-        // jika user memasukkan tanggal awal yang lebih kecil sama dengan dari tanggal hari ini maka while akan bernilai true, kalau while bernilai true maka akan terjadi pengulangan
+        // jika user memasukkan tanggal awal yang lebih kecil dari atau sama dengan tanggal hari ini maka while akan bernilai true, kalau while bernilai true maka akan terjadi pengulangan
         // strtotime berfungsi mengubah string ke time
         while(strtotime($tanggal_awal) <= strtotime($tanggal_hari_ini)) {
             // $tanggal akan berisi tanggal awal sampai tanggal hari ini
@@ -82,7 +82,7 @@ class LaporanController extends Controller
 
             // buat array kosng
             $row = array();
-            // mulai lakukan pengulangan
+            // mulai lakukan pengulangan dengan cara push element2x kedalam array row
             // berisi panggil fungsi tanggal_indonesia yang berada di helpers, argument kedua nya false berarti aku tidak mencetak nama hari 
             $row['tanggal'] = tanggal_indonesia($tanggal, false);
             $row['penjualan'] = rupiah_bentuk($total_penjualan);
@@ -90,7 +90,7 @@ class LaporanController extends Controller
             $row['pengeluaran'] = rupiah_bentuk($total_pengeluaran);
             $row['pendapatan'] = rupiah_bentuk($pendapatan);
 
-            // $data[] diisi value $row
+            // $data[] diisi value $row atau push data ke array
             $data[] = $row;
         };
 
@@ -100,6 +100,7 @@ class LaporanController extends Controller
             'penjualan' => '',
             'pembelian' => '',
             'pengeluaran' => 'Total Pendapatan',
+            // key pendapatan berisi panggil helper rupiah_bentuk lalu kirimkan value variable $total_pendapatan sebagai argument
             'pendapatan' => rupiah_bentuk($total_pendapatan)
         ];
 
@@ -137,3 +138,4 @@ class LaporanController extends Controller
         return $pdf->stream('Laporan-pendapatan-'. date('Y-m-d-his') .'.pdf');
     }
 }
+

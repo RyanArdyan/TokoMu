@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 // untuk validasi formulir
 use Illuminate\Support\Facades\Validator;
 use App\Models\Pengeluaran;
+use App\Models\PengeluaranDetail;
 // fitur yang berhubungan dengan excel
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PengeluaranImport;
@@ -16,7 +17,7 @@ use DataTables;
 class PengeluaranController extends Controller
 {
     /**
-     * Ke tampilan pengeluarn.index
+     * Ke tampilan pengeluaran.index
      *
      * @return \Illuminate\Http\Response
      */
@@ -70,56 +71,62 @@ class PengeluaranController extends Controller
         ->make(true);
     }
 
+    // $request bisa mengambil value detail_user yang login
+    public function create(Request $request)
+    {
+        // kembalikkan ke tampilan pengeluaran.create
+        return view('pengeluaran.create');
+    }
+
     /**
      * Simpan pengeluaran baru
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // $request berisi data formulir atau value-value dari input
+    // $request containts data created by javascript
+    // $request berisi data yang dibuat oleh javascript
     public function store(Request $request)
     {
-        // validasi semua input yang punya attribute name
-        // berisi vaidator buat semua permintaan
-        $validator = Validator::make($request->all(), [
-            // unique berarti tidak boleh memasukkan value input name="nama_pengeluaran" yang sudah ada di column nama_pengeluaran milik table pengeluaran
-            // input name="nama_pengeluaran" harus mengikuti aturan berikut
-            'nama_pengeluaran' => 'required|unique:pengeluaran|min:3|max:255',
-            'total_pengeluaran' => 'required|integer|min:0',
-        ], 
-        // aku ubah terjemahan .unique di lang/id/valdation karena jika aku gunakan lang/id/validation maka hasilnya adalah "':Attribute sudah ada.',"
-        [
-            'nama_pengeluaran.unique' => 'Nama pengeluaran ini sudah ada.'
+        // berisi value input "waktu pengeluaran", "diterima oleh", "Nama Pengeluaran" dan "Total Jumlah", "Total Pengeluaran"
+        $data_formulir_pengeluaran = $request->data_formulir_pengeluaran[0];
+
+        // simpan data ke table pengeluaran
+        $detail_pengeluaran = Pengeluaran::create([
+            // column waktu_pengeluaran pada table pengeluaran diisi array $data_formulir_pengeluaran, indeks waktu_pengeluaran
+            'waktu_pengeluaran' => $data_formulir_pengeluaran['waktu_pengeluaran'],
+            'diterima_oleh' => $data_formulir_pengeluaran['diterima_oleh'],
+            'nama_pengeluaran' => $data_formulir_pengeluaran['nama_pengeluaran'],
+            'jumlah_pengeluaran' => $data_formulir_pengeluaran['total_jumlah'],
+            'total_pengeluaran' => $data_formulir_pengeluaran['total_pengeluaran'] 
         ]);
 
-        // jika validator gagal maka
-        if ($validator->fails()) {
-            // kembalikkan tanggapan berupa json
-            return response()->json([
-                // key status berisi value 0
-                'status' => 0,
-                // key pesan beisi value error
-                'pesan' => 'Validasi Formulir Error Menemukan Error.',
-                // key errros berisi semua value attribute name yang error dan semua pesan error nya
-                // key errors berisi validaror, kesalahan-kesalahan
-                'errors' => $validator->errors()
-            ]);
-        } else {            
-            // Simpan pengeluaran ke dalam table pengeluaran
-            // pengeluaran buat
-            Pengeluaran::create([
-                // panggil column nama_pengeluaran milik table pengeluaran lalu isi dengan value input name="nama_pengeluaran"
-                'nama_pengeluaran' => $request->nama_pengeluaran,
-                'total_pengeluaran' => $request->total_pengeluaran,
-            ]);
-            // kembalikkan tanggapan berupa json
-            return response()->json([
-                // key status beris value 200
-                'status' => 200,
-                // key pesan berisi pesan berikut contohnya "Pengeluaran gaji karyawan berhasil di simpan"
-                'pesan' => "Pengeluaran $request->nama_pengeluaran berhasil di simpan.",
+        // menangkap data_formulir_pengeluaran_detail yg dikirimkan oleh javascript, berisi input nama_pengeluaran, jumlah, harga satuan, subtotal=
+        // Ubah format data
+        $data_formulir_pengeluaran_detail = json_decode($request->input('data_formulir_pengeluaran_detail'), true);
+
+        // aku looping pakai foreach
+        foreach ($data_formulir_pengeluaran_detail as $pengeluaran_detail) {
+            PengeluaranDetail::create([
+                    'pengeluaran_id' => $detail_pengeluaran->pengeluaran_id,
+                    'nama_pengeluaran' => $pengeluaran_detail['nama_pengeluaran'],
+                    'jumlah' => $pengeluaran_detail['jumlah'],
+                    'harga_satuan' => $pengeluaran_detail['harga_satuan'],
+                    'subtotal' => $pengeluaran_detail['subtotal'],
             ]);
         };
+
+        // return the response in json
+        // kembalikkan tanggapan berupa json
+        return response()->json([
+            // the status key contains the value 200
+            // key status berisi value 200
+            'status' => 200,
+            // the data key contains the value of variable $detail_expense_form_data
+            'data' =>  $data_formulir_pengeluaran_detail
+            // // key pesan berisi pesan berikut contohnya "Pengeluaran gaji karyawan berhasil di simpan"
+            // 'pesan' => "Pengeluaran $request->nama_pengeluaran berhasil di simpan.",
+        ]);
     }
 
     /**

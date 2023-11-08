@@ -17,16 +17,15 @@ use App\Http\Controllers\ReturPembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PenjualanDetailController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\UjiController;
+
 
 // hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
 // middleware untuk guest, guest di dapatkan dari App/Http/Kernel.php
 Route::middleware(['guest'])->group(function() {
     // url awal
-    // jika user di url awal maka jalankan fungsi berikut
-    Route::get('/', function () {
-        // kembali alihkan route login
-        return redirect()->route('login.index');
-    });
+    // Route tipe dapatkan, jika user di url awal maka ke AutentikasiControllre, method index
+    Route::get('/', [AutentikasiController::class, 'index'])->name('url_awal');
 
     // login
     // route tipe dapatkan, ke url /login, ke AutentikasiController, ke method index, name nya adalah login.index
@@ -37,7 +36,7 @@ Route::middleware(['guest'])->group(function() {
 });
 
 
-
+// Role Kasir
 // middleware untuk yang sudah login, auth di dapatkan dari App/Http/Kernel.php
 // route tipe perangkatTengah, untuk yg sudah login, grup, jalankan fungsi
 Route::middleware(['auth'])->group(function() {
@@ -55,9 +54,7 @@ Route::middleware(['auth'])->group(function() {
     // Route tipe post, arahakn user ke url berikut, lalu ke controller dan method berikut, dan ada namenya
     Route::post('/edit-profile/update-password', [EditProfileController::class, 'update_password'])->name('edit_profile.update_password');
 
-    // penjualan
-    // route tipe dapatkan, jika user diarahkan ke url /penjualan/create maka maka PenjualanController, method create, name nya adalah penjualan.create
-    Route::get('/penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
+    // penjualan\
     // route tipe dapatkan, jika user di arahkan ke url /penjualan maka arahkan PenjualanController, ke method index, name nya adalah penjualan.index
     Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
     // route tipe dapatkan, jika user di arahkan ke url /penjualan/data maka arahkan ke PenjualanController, method data, name nya adalah penjualan.data
@@ -66,8 +63,8 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/penjualan', [PenjualanController::class, 'update'])->name('penjualan.update');
     // route tipe dapatkan, jika user diarahkan ke url /penjualan/selesai, maka arahkan ke PenjualanController, method selesai, name nya adalah penjualan.selesai
     Route::get('/penjualan/selesai', [PenjualanController::class, 'selesai'])->name('penjualan.selesai');
-    // route tipe dapatkanm jika user diarahkan ke url /penjualan/nota-kecil maka arahkan ke PenjualanController, method nota_kecil name nya adalah penjualan.nota_kecil
-    Route::get('/penjualan/nota-kecil', [PenjualanController::class, 'nota_kecil'])->name('penjualan.nota_kecil');
+    // route tipe dapatkan jika user diarahkan ke url /penjualan/nota-kecil lalu kirimkan penjualan_id maka arahkan ke PenjualanController, method nota_kecil name nya adalah penjualan.nota_kecil
+    Route::get('/penjualan/nota-kecil/{penjualan_id}', [PenjualanController::class, 'nota_kecil'])->name('penjualan.nota_kecil');
     // route tipe dapatkan, jika user di arahkan ke url /penjualan/nota-besar maka arahkan ke PenjualanController, method nota_besar, name nya adalah penjualan.nota_besar
     Route::get('/penjualan/nota-besar', [PenjualanController::class, 'nota_besar'])->name('penjualan.nota_besar');
     Route::get('/penjualan/{penjualan_id}', [PenjualanController::class, 'show'])->name('penjualan.show');
@@ -80,12 +77,10 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/penjualan/retur-penjualan', [PenjualanController::class, 'retur_penjualan'])->name('penjualan.retur_penjualan');
     // route tipe kirim, jika user diarahkan ke url /penjualan/export-excel maka arahkan ke PenjualanController, method export_excel, name nya adalah penjualan.export_excel
     Route::post('/penjualan/export-excel', [PenjualanController::class, 'export_excel'])->name('penjualan.export_excel');
-    // route tipe kirim, jika user diarahkan ke url berikut maka kirimkan penjualan_id lalu ke PenjualanController, ke method berikut, name nya adalah berikut
+    // route tipe dapatkan, jika user diarahkan ke url berikut maka kirimkan penjualan_id lalu ke PenjualanController, ke method berikut, name nya adalah berikut
     Route::get('/penjualan/penjualan-detail/export-excel/{penjualan_id}', [PenjualanController::class, 'export_excel_penjualan_detail'])->name('export_excel.penjualan_detail');
     // route tipe kirim, jika user diarahkan ke url berikut maka arahkan ke PenjualanController, method cek_stok_produk, name nya adalah penjualan.cek_stok_produk
     Route::post('/penjualan/cek-stok-produk', [PenjualanController::class, 'cek_stok_produk'])->name('penjualan.cek_stok_produk');
-
-
 
     // detail penjualan
     // route tipe kirim, jika user diarahkan ke url /penjualan-detail, ke PenjualanDetailController, ke method store, name nya adalah penjualan_detail.store
@@ -185,6 +180,8 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // Pengeluaran
     // route tipe dapatkan, ke url /pengeluaran, ke PengeluaranController ke method index, name nya adalah pengeluaran.index
     Route::get('/pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
+    // route tipe dapatkan, ke url /pengeluaran/create, ke PengeluaranController ke method create, name nya adalah pengeluaran.create
+    Route::get('/pengeluaran/create', [PengeluaranController::class, 'create'])->name('pengeluaran.create');
     // route tipe dapatkan, ke url /pengeluaran/read, ke PengeluaranController, ke method read, name nya adalah pengeluaran.read
     Route::get('/pengeluaran/read', [PengeluaranController::class, 'read'])->name('pengeluaran.read');
     // route tipe kirim, ke url pengeluaran, ke PengeluaranController, ke method store, namenya adalah pengelauran.store
@@ -244,10 +241,12 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // Laporan
     // route tipe dapatkam, jika user diarahkan ke url /laporan, ke LaporanController, method index, name nya adalah laporan.index
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    // route type get, url laporan tangkap dan kirimkan tanggal_awal dan tanggal_akhir
+    // // route type get, url laporan tangkap dan kirimkan tanggal_awal dan tanggal_hariini
     Route::get('/laporan/{tanggal_awal}/{tanggal_hari_ini}', [LaporanController::class, 'data'])->name('laporan.data');
     // route tipe dapatkan, jika user di arahkan ke url /laporan/ubah-periode maka arahkan ke LaporanController, method ubah_periode, name nya adalah laporan.ubah_periode
     Route::get('/laporan/ubah-periode', [LaporanController::class, 'ubah_periode'])->name('laporan.ubah_periode');
     // route tipe dapatkan, jika user diarahkan ke url berikut maka tangkap dan kirimkan value tanggal_awal dan tanggal_hari_ini, lalu ke LaporanController, method cetak_pdf, name nya laporan.cetak_pdf
     Route::get('/laporan/cetak-pdf/{tanggal_awal}/{tanggal_hari_ini}', [LaporanController::class, 'cetak_pdf'])->name('laporan.cetak_pdf');
 });
+
+Route::get('/uji', [UjiController::class, 'index']);

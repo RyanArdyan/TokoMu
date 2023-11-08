@@ -9,7 +9,7 @@ use App\Models\User;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
+     * Model untuk pemetaan kebijakan untuk aplikasi.
      *
      * @var array<class-string, class-string>
      */
@@ -18,11 +18,12 @@ class AuthServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Register any authentication / authorization services.
+     * Registrasi autentikasi apapun atau autorisasi layanan
      */
+    // publik fungsi boot(): ruang kosong
     public function boot(): void
     {
-        // AuthServiceProvider registrasikan kebijakan
+        // AuthServiceProvider atau penyedia layanan aplikasi registrasikan kebijakan
         $this->registerPolicies();
 
         // Gerbang, denifisikan is_admin

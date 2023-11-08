@@ -19,4 +19,11 @@ class Pengeluaran extends Model
     // agar bisa buat data dan perbarui data secara massal
     // lindungi $penjaga berisi array kosong
     protected $guarded = [];
+
+    // 1 pengeluaran punya banyak PengeluaranDetail
+    public function pengeluaran_detail()
+    {
+        // kembalikkan class pengeluaran memiliki banyak PengeluaranDetail
+        return $this->hasMany(PengeluaranDetail::class, 'pengeluaran_id', 'pengeluaran_detail_id');
+    }
 }

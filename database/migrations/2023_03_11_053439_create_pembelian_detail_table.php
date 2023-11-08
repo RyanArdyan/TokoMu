@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // buat tble pembelian_detail
+        // buat table pembelian_detail
         // skema buat table pembelian_detail, jalankan fungsi, Cetak Biru, $table
         Schema::create('pembelian_detail', function (Blueprint $table) {
-            // buat column pembelian_detail_id yang tipe datanya big increment dan bigINteger
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('pembelian_detail_id');
             // buat tipe foreign key column pembelian_id yang berelasi dengan table pembelian, referensi nya adalah column pembelian_id milik table pembelian
             // onDelete('cascade') ketika suatu pembelian_id di hapus misalnya angka 1 maka hapus semua pembelian_detail yang terkait, maksud nya hapus semua pembelian_detail yang column pembelian_id nya adalah 1
@@ -25,12 +25,14 @@ return new class extends Migration
             $table->foreignId('produk_id')->constrained('produk')->references('produk_id')->onDelete('cascade')->onUpdate('cascade');
             // tipe asing id, column retur_pembelian_id, bolek kosong karena tidak semua pembelian_detail akan di retur
             $table->foreignId('retur_pembelian_id')->nullable();
-            // tipe data string, column nama_produk
-            $table->string('nama_produk');
-            // buat tipe data big Integer
-            $table->bigInteger('harga');
-            $table->integer('jumlah');
-            $table->bigInteger('subtotal');
+            // // tipe data string, column nama_produk
+            // $table->string('nama_produk');
+            // // buat tipe data big Integer
+            // $table->integer('harga');
+            // tipe data smallInteger menyimpan value maksimal 32767, smallInteger jauh lebih mengehemat memori dibandingkan integer karena hanya menggunakan 2 BYTE, kalau integer 4 byte
+            // $meja->kecil_integer, column jumlah
+            $table->smallInteger('jumlah');
+            $table->integer('subtotal');
             $table->timestamps();
         });
     }

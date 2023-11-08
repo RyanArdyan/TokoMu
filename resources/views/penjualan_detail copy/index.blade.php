@@ -7,13 +7,11 @@
     <style>
         /* menyembunyikan baris table / tr terakhir */
         /* panggil #table_penjualan_detail, tbody, tr, anak terakhir */
-        /* tr terakhir berfungsi untuk diambil value jumlah dan subtotal nya lalu disimpan dalam input total_harga dan total_barang */
+        /* tr terakhir berfungsi untuk mengambil value jumlah dan subtotal nya lalu disimpan dalam input total_harga dan total_barang */
         #table_penjualan_detail tbody tr:last-child {
             /* tampilan: tidak-ada */
             /* display: none; */
-        }
-
-        ;
+        };
     </style>
 @endpush
 
@@ -39,7 +37,6 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                {{-- jika tombol Pilih  Produk di click maka fungsi tampilkan_produk() --}}
                                 <button id="tampilkan_produk" class="btn btn-success btn-sm">
                                     <i class="fa fa-shopping-bag"></i>
                                     Pilih Produk
@@ -98,7 +95,6 @@
 
 @push('script')
 <script>
-    console.log("{{ session('penjualan_id') }}");
 
     // jadi nanti value nya akan di tambah jika aku menambah baris baru penjualan detail
     // berisi angka 0
@@ -122,8 +118,29 @@
 
     // jika .tombol_piih_produk di click maka jalankan fungsi berikut
     $(".tombol_pilih_produk").on("click", function() {
-        // berisi panggil .tombol_pilih_produk lalu ambil value attribute data-produk-id
+        // berisi panggil .tombol_pilih_produk lalu ambil value attribute data-produk-id, anggaplah 1
         let produk_id = $(this).data('produk-id');
+
+        // ambil text dari misalnya #stok_1
+        // anggaplah berisi panggil #stok_1 lalu ambil textnya lalu anggaplah hasilnya 3.000
+        let stok_versi_string = $(`#stok_${produk_id}`).text();
+        // ubah 3000 menjadi 3000
+        // berisi menguraikan_integer(stok.ganti(".", ""), 10)
+        let stok = parseInt(stok_versi_string.replace(".", ""), 10) - 1;
+        
+        // jika value stok sama dengan 0 maka
+        if (stok === 0) {
+            // cetak stok sudah 0
+            console.log("Stok sudah 0");
+            //  hapus tombol pilih
+            // anggapalh panggil #pilih_1 lalu hapus
+            $(`#pilih_${produk_id}`).remove();
+            // buat tombol habis
+        };
+
+
+        // panggil misalnya #stok_1 lalu text nya diisi value vaariable stok, ubah dulu 3000 menjadi 3.000
+        $(`#stok_${produk_id}`).text(stok.toLocaleString());
 
         // jquery lakukan ajax
         $.ajax({
@@ -161,15 +178,6 @@
             // panggil #total_bayar lalu value atau nilai nya diisi dengan value variabel total_harga
             $("#harus_bayar").val(total_harga);
 
-
-
-            // // berisi mengubah 1000000 menjadi Rp 1.000.000
-            // let total_harga_versi_rupiah = total_harga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-            // // panggil #total_rp lalu value atau nilai nya diisi dengan nilai variable total_harga_versi_rupiah
-            // $("#total_rp").val(total_harga_versi_rupiah);
-            // // panggil #bayar_rp lalu value atau nilai nya diisi dengan value variable total_harga_versi_rupiah
-            // $("#bayar_rp").val(total_harga_versi_rupiah);
-
             // panggil fungsi update_total_harga_versi_rupiah lalu kirimkan value variable total_harga
             update_total_harga_versi_rupiah(total_harga);
     
@@ -178,8 +186,6 @@
                 // panggil fungsi pilih_member agar mendapat diskon atau value input harus_bayar nya akan terpengaruh
                 pilih_member();
             };
-
-
 
 
             // berisi mengubah 1000 menjadi Rp 1.000
@@ -200,7 +206,7 @@
                 html += `<td class="harga_jual">${harga_jual}</td>`;
                 // attribtue data-baris aku gunakan untuk fitur perubahan subtotal setelah aku mengubah input jumlah, misalnya harga_jualnya 30.000 lalu jumlah nya jadi 2 maka subtotal nya jadi 60.000, anggaplah berisi 1, 2 dan seterusnya
                 // buat attribute data-harga-jual agar bisa menyimpan value detail_produk, column harga_jual
-                html += `<td><input type="number" class="jumlah" data-baris=${baris} data-harga-jual=${response.harga_jual} value=1></td>`;
+                html += `<td><input type="number" class="jumlah" data-baris=${baris} data-harga-jual=${response.harga_jual} data-produk-id="${response.produk_id}" value=1></td>`;
                 // .subtotal aku gunakan di fitur total harga dan menyimpan penjualan_detail
                 // .subtotal_${baris} aku gunakan untuk fitur perubahan subtotal ketika jumlah barang nya di ubah, anggaplah berisi subtotal_1, subtotal_2, dan seterusnya
                 html += `<td class="subtotal subtotal_${baris}">${harga_jual}</td>`;
@@ -266,24 +272,6 @@
             // panggil fungsi pilih_member agar mendapat diskon atau value input harus_bayar nya akan terpengaruh
             pilih_member();
         };
-
-        // // setelah 2 detik jalankan fungsi berikut
-        // setTimeout(function() {
-        //     // lakukan ajax tipe kirim, ke url /penjualan-detail/ lalu kirimkan penjualan_detail_id
-        //     $.post(`/penjualan-detail/${penjualan_detail_id}`, {
-        //         // key _token berisi value dari element meta name="csrf_token", attribute content
-        //         '_token': $('meta[name="csrf-token"]').attr('content'),
-        //         // ubah method post menjadi put
-        //         '_method': 'put',
-        //         // kirikman name jumlah berisi value input jumlah
-        //         'jumlah': jumlah
-        //     })
-        //     // jika selesai dan berhasil maka jalankan fungsi berikut dan kirimkan tanggapan nya
-        //     .done(response => {
-        //         // panggil table_penjualan_detail lalu ajax nya di muat ulang lalu jalankan fungsi berikut lalu panggil fungsi muat_ulang-form lalu kirimkan value #diskon
-        //         table_penjualan_detail.ajax.reload(() => muat_ulang_form($('#diskon').val()));
-        //     })
-        // }, 2000);
     };
 
     // jika document di masukkan angka atau di ubah yang class nya adalah .jumlah maka jalankan fungsi berikut
@@ -293,12 +281,17 @@
         // // panggil .jumlah, value dari attribute data-id
         // let penjualan_detail_id = $(this).data('id');
 
+        // berisi panggil input jumlah
+        let input_jumlah = $(this);
+
         // ambil value dari input jumlah, ubah string menjadi angka menggunakan parseInt
         let jumlah = parseInt($(this).val());
         // panggil .jumlah, lalu ambil value dari attribute data-harga-jual
         let harga_jual = $(this).data('harga-jual');
         // panggil .jumlah lalu ambil value attribute data-baris, baris 1 akan menghasilkan angka 1, baris 2 menghasilkan angka 2, dan seterusnya
         let baris = $(this).data('baris');
+        // berisi panggil .jumlah lalu ambil value dari attribute data-produk-id
+        let produk_id = $(this).data("produk-id");
 
         // jika value jumlah lebih kecil dari 1 berarti dimulai dari 0
         if (jumlah < 1) {
@@ -309,15 +302,15 @@
             // kode selesai dan berhenti
             return;
         }
-        // lain jika jumlah lebih besar dari 1000
-        else if (jumlah > 1000) {
-            // panggil .jumlah lalu value nya diisi dengan 1000
-            $(this).val(1000);
-            // tampilkan peringatan berikut
-            Swal.fire('Jumlah tidak boleh lebih dari 1.000');
-            // kode selesai dan berhenti
-            return;
-        } 
+        // // lain jika jumlah lebih besar dari 1000
+        // else if (jumlah > 1000) {
+        //     // panggil .jumlah lalu value nya diisi dengan 1000
+        //     $(this).val(1000);
+        //     // tampilkan peringatan berikut
+        //     Swal.fire('Jumlah tidak boleh lebih dari 1.000');
+        //     // kode selesai dan berhenti
+        //     return;
+        // } 
         // lain jika tidak ada value dari .jumlah maksudnya ada angka 1 di input jumlah lalu aku seleksi angka nya lalu aku hapus
         else if (!jumlah) {
             // panggil .jumlah, lalu value atau nilai nya di set atau di tetapkan ke 1
@@ -326,15 +319,58 @@
             return;
         };
 
+        // lakukan ajax untuk mengecek jumlah detail_produk, column stok
+        $.ajax({
+            // panggil url: route penjualan_detail.cek_stok_produk
+            url: "{{ route('penjualan_detail.cek_stok_produk') }}",
+            // panggil route tipe POST
+            type: "POST",
+            // kirimkan data berupa object
+            data: {
+                // key jumlah berisi value variable jumlah
+                jumlah: jumlah,
+                // kirimkan value column produk_id milik table penjualan_detail
+                // key produk_id berisi value variable produk_id
+                produk_id: produk_id
+            },
+            // laravel mewajibkan keamanan dari serangan csrf
+            // tajuk-tajuk berisi objeck
+            headers: {
+                // key X-CSRF-TOKEN berisi panggil meta name csrf-token value attribute content
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
+        // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapan nya
+        .done(function(response) {
+            // jika value input jumlah lebih besar dari value detail_produk, column stok, anggaplah value input jumlah nya adalah 1 lalu value detail_produk column stok nya 1, lalu user mengubah value input nya menjadi 2 maka
+            if (jumlah > response.stok_produk) {
+                // tampilkan notifikasi pakai sweetalert
+                // Swal.api() panggil value tanggapan.pesan, tanda backtick bisa mencetak value variable di dalam string
+                Swal.fire(`${response.message}`);
+                // kembalikkan value nya ke jumlah maksimal detail_produk, column stok_produk
+                // panggil .jumlah lalu value nya diisi dengan value tanggapan.stok_produk
+                input_jumlah.val(response.stok_produk);
+                // cetak value dari input_jumlah
+                let stok_produk = input_jumlah.val();
+
+
+                // berisi value variable jumlah anggaplah 2 dikali value harga_jual anggaplah 30.000 berarti 60.000
+                let subtotal = stok_produk * harga_jual;
+                // anggaplah panggil .subtotal_1 lalu ubah text nya mengikuti value variable subtotal lalu ubah anggaplah 60000 akan menjadi Rp 60.000
+                $(`.subtotal_${baris}`).text(subtotal.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }));
+
+
+                // panggil fungsi update_totaL_barang_dan_harga();
+                update_total_barang_dan_harga();
+            };
+        });
+
+        
+
         // berisi value variable jumlah anggaplah 2 dikali value harga_jual anggaplah 30.000 berarti 60.000
         let subtotal = jumlah * harga_jual;
         // anggaplah panggil .subtotal_1 lalu ubah text nya mengikuti value variable subtotal lalu ubah anggaplah 60000 akan menjadi Rp 60.000
         $(`.subtotal_${baris}`).text(subtotal.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }));
-
-        // // panggil total_harga lalu value nya di tambah penjumlahan berikut
-        // total_harga += (jumlah * harga_jual) - harga_jual;
-        // // panggil #total_harga lalu value atau nilai nya diisi dengan value variabel total_harga
-        // $("#total_harga").val(total_harga);
 
 
         // panggil fungsi update_totaL_barang_dan_harga();
@@ -384,99 +420,6 @@
         $("#modal_produk").modal("show");
     });
 
-    // // jika .tombol_pilih_produk di click maka jalankan fungsi berikut
-    // $(".tombol_pilih_produk").on("click", function() {
-    //     let penjualan_id = $("#penjualan_id").val();
-    //     // berisi pangil .tombol_pilih_prdouk lalu ambil value attribute data-produk-id
-    //     let produk_id = $(this).data('produk-id');
-    //     // berisi panggil .tombol_pilih_produk lalu ambil value attribute data-kode-produk
-    //     let kode_produk = $(this).data('kode-produk');
-
-    //     // panggil #kode_produk lalu vaue nya diisi value variable produk_id
-    //     $('#produk_id').val(produk_id);
-    //     // panggil #kode_produk lalu value nya diisi value variable kode_produk
-    //     $('#kode_produk').val(kode_produk);
-    //     // panggil #modal_produk lalu modalnya di sembunyikan
-    //     $('#modal_produk').modal('hide');
-
-    //     // simpan data ke table pmebelian detail
-    //     // jquery lakukan ajax, berisi object
-    //     $.ajax({
-    //         // url panggil route penjualan_detail.store
-    //         url: "{{ route('penjualan_detail.store') }}",
-    //         // panggil route tipe kirim
-    //         type: "POST",
-    //         // tajuk-tajuk berisi object
-    //         headers: {
-    //             // laravel mewajibkan keamanan dari serangan csrf
-    //             // key X-CSRF-TOKEN berisi panggil element meta name="csrf_token" lalu ambil value attribute content
-    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //         },
-    //         // kirimkan data berupa object
-    //         data: {
-    //             // key penjualan_id berisi value variable penjualan_id
-    //             penjualan_id: penjualan_id,
-    //             // key produk_id berisi value variable produk_id
-    //             produk_id: produk_id,
-    //             // key kode_produk berisi value variable kode_produk
-    //             kode_produk: kode_produk  
-    //         },
-    //     })
-    //     // jika selesai dan berhasil maka jalankan fungsi berikut lalu ambil tanggapan nya
-    //     .done(function(resp) {
-    //         // panggil #kode_produk lalu input nya di fokuskan
-    //         $('#kode_produk').focus();
-    //         // reload ajax pada table lalu jalankan fungsi panggil fungsi muat_ulang_form
-    //         // panggil variable table_penjualan_detail lalu ajax nya di muat ulang lalu jalankan fungsi berikut lalu panggil fungsi muat_ulang_form lalu kirimkan value #diskon sebagai argument
-    //         table_penjualan_detail.ajax.reload(() => muat_ulang_form($('#diskon').val()));
-    //     })
-
-    // });
-
-    // // jika document di masukkan angka yang class nya adalah .jumlah maka jalankan fungsi berikut
-    // $(document).on('input', '.jumlah', function() {
-    //     // panggil .jumlah, value dari attribute data-id
-    //     let penjualan_detail_id = $(this).data('id');
-    //     // ambil value dari input jumlah
-    //     let jumlah = parseInt($(this).val());
-
-    //     // jika value jumlah lebih kecil dari 1 berarti dimulai dari 0
-    //     if (jumlah < 1) {
-    //         // value input jumlah diisi dengan 1
-    //         $(this).val(1);
-    //         // tampilkan peringatan berikut
-    //         Swal.fire('Jumlah tidak boleh kurang dari 1');
-    //         // kode selesai dan berhenti
-    //         return;
-    //     }
-    //     // lain jika jumlah lebih besar dari 1000
-    //     else if (jumlah > 1000) {
-    //         // panggil .jumlah lalu value nya diisi dengan 1000
-    //         $(this).val(1000);
-    //         // tampilkan peringatan berikut
-    //         Swal.fire('Jumlah tidak boleh lebih dari 1.000');
-    //         // kode selesai dan berhenti
-    //         return;
-    //     };
-    //     // setelah 2 detik jalankan fungsi berikut
-    //     setTimeout(function() {
-    //         // lakukan ajax tipe kirim, ke url /penjualan-detail/ lalu kirimkan penjualan_detail_id
-    //         $.post(`/penjualan-detail/${penjualan_detail_id}`, {
-    //             // key _token berisi value dari element meta name="csrf_token", attribute content
-    //             '_token': $('meta[name="csrf-token"]').attr('content'),
-    //             // ubah method post menjadi put
-    //             '_method': 'put',
-    //             // kirikman name jumlah berisi value input jumlah
-    //             'jumlah': jumlah
-    //         })
-    //         // jika selesai dan berhasil maka jalankan fungsi berikut dan kirimkan tanggapan nya
-    //         .done(response => {
-    //             // panggil table_penjualan_detail lalu ajax nya di muat ulang lalu jalankan fungsi berikut lalu panggil fungsi muat_ulang-form lalu kirimkan value #diskon
-    //             table_penjualan_detail.ajax.reload(() => muat_ulang_form($('#diskon').val()));
-    //         })
-    //     }, 2000)
-    // });
-
     // jika #button_tampilkan_member di click maka jalankan fungsi berikut
     $("#button_tampilkan_member").on("click", function() {
         // panggil #modal_member lalu modal nya di tampilkan
@@ -512,23 +455,6 @@
         // sembunyikan modal member
         $('#modal_member').modal('hide');
     };
-
-    // // Jika aku memilih member di modal member
-    // function pilih_member(member_id, kode_member) {
-    //     // panggil #member_id lalu value atau nilai nya diisi value dari parameter member_id
-    //     $('#member_id').val(member_id);
-    //     // panggil #kode_member lalu value nya diisi value parameter kode_member
-    //     $('#kode_member').val(kode_member);
-    //     // variable diskon dari PenjualanDetailController, method index, diskon didapatkan dari table pengaturan
-    //     // panggil #diskon lalu value nya diisi dengan variable diskon
-    //     $('#diskon').val("{{ $diskon }}");
-    //     // panggil funggsi muat_ulang_form kirimkan value #diskon
-    //     muat_ulang_form($('#diskon').val());
-    //     // #diterima diisi 0, lalu focuskan
-    //     $('#uang_diterima').val(0).focus().select();
-    //     // sembunyikan modal member
-    //     $('#modal_member').modal('hide');
-    // };
 
     // ada nilai bawaan, jadi jika aku tidak mengirim argumen maka tidak akan error
     function muat_ulang_form(diskon = 0, uang_diterima = 0) {
@@ -599,55 +525,74 @@
 
     // Jika input #uang_diterima dimasukkan angka atau diubah maka jalnkan fungsi berikut
     $('#uang_diterima').on('input', function() {
-        // jika input uang diterima, valuenya ada lalu dihapus sampai kosong maka
+        // jika input #uang_diterima, valuenya ada lalu dihapus sampai kosong maka
         if (!$(this).val()) {
             // input uang diterima diisi dengan 0 lalu ada efek pilih
             $(this).val(0).select();
         };
         
         // panggil value input uang_diterima lalu ubah Rp 100.000 menjadi 100000 lalu simpan ke variable uang_diterima
-        let uang_diterima = parseInt($("#uang_diterima").val().replace(/[^0-9]/g, ''));;
+        let uang_diterima = parseInt($(this).val().replace(/[^0-9]/g, ''));;
         // panggil value input harus_bayar yang hidden lalu dikurangi value variable uang_diterima
         let harus_bayar = $("#harus_bayar").val();
-        let uang_kembalian = harus_bayar - uang_diterima;
-        // hasilnya masuk ke value input uang_kembalian
-        $("#uang_kembalian_pelanggan").val(uang_kembalian);
+
+        // jika value input uang_diterima(pelanggan) misalnya Ro.10.000 lebih kecil dari value input harus_bayar(total_harga) misalnya Rp 120.000(integer) maka 
+        if (uang_diterima < harus_bayar) {
+            // panggil #uang_kembalian lalu vaue nya diatur ke 0, sudah ada Rp nya karena sudah menggunakan package inputmask
+            $("#uang_kembalian_pelanggan").val(0);
+        }
+        // lain jika value input uang_diterima(pelanggan) misalnya 150.000(integer) lebih sama dengan value input harus_bayar 
+        else if (uang_diterima == harus_bayar) {
+            // // panggil #uang_kembalian lalu vaue nya diatur ke 0, sudah ada Rp nya karena sudah menggunakan package inputmask
+            $("#uang_kembalian_pelanggan").val(0);
+        }
+        // lain jika value input uang_diterima(pelanggan) misalnya 150.000(integer) lebih besar dari input harus_bayar misalnya Rp 120.000(integer) maka
+        else if (uang_diterima > harus_bayar) {
+            // ini setelah value input uang_diterima lebih besar dari value input harus_bayar
+            let uang_kembalian = uang_diterima - harus_bayar;
+            // hasilnya masuk ke value input uang_kembalian
+            $("#uang_kembalian_pelanggan").val(uang_kembalian);
+            // console.log(uang_kembalian);
+        };
+
+
+        
     });
-
-    // // Jika input #uang_diterima dimasukkan angka atau diubah maka jalnkan fungsi berikut
-    // $('#uang_diterima').on('input', function() {
-    //     // jika input uang diterima, valuenya ada lalu dihapus sampai kosong maka
-    //     if ($(this).val() === "") {
-    //         // input uang diterima diisi dengan 0 lalu ada efek pilih
-    //         $(this).val(0).select();
-    //     };
-    //     // panggil fungsi muat_ulang_form, kirimkan value dari #diskon dan value dari input uang diterima
-    //     muat_ulang_form($('#diskon').val(), $(this).val());
-    //     // jika focus maka jalankan fungsi
-    // }).focus(function() {
-    //     // input uang diterima kita seleksi valuenya
-    //     $(this).select();
-    // });
-
-    // // Perbarui detail penjualan
-    // // jika #tombol_simpan_penjualan di click maka jalankan fungsi berikut
-    // $('#tombol_simpan_penjualan').on('click', function() {
-    //     // berisi text dari .total_barang yang di buat di PenjualanDetailController, method data
-    //     let total_barang = $(".total_barang").text();
-    //     // jika total_barang sama dengan "0" karena user memilih produk, tipe datanya string bukan integer
-    //     if (total_barang === "0") {
-    //         // tampilkan notifikasi berisi pesan berikut
-    //         Swal.fire('Silahkan pilih produk terlebih dahulu.');
-    //     }
-    //     // lain jika total_barang tidak sama dengan "0" karna user sudah memilih produk dan tidak menghapus semua produk di halaman penjualan detail, misalnya total_barang berisi "10" maka
-    //     else if (total_barang !== "0") {
-    //         $("#form_penjualan").submit();            
-    //     };
-    // });
 
 
     // jika #tombol_simpan_penjualan di click maka jalankan fungsi berikut
     $("#tombol_simpan_penjualan").on("click", function() {
+        // jika value input #keterangan_penjualan sama dengan tidak ada
+        if (!$("#keterangan_penjualan").val()) {
+            // tampilkan notifikasi menggunakan sweetalert yang berisi pesan berikut
+            Swal.fire("Input Keterangan Harus Diisi");
+            // matikan kode dengan cara kembali agar kode dibawahnya tidak berjalan atau agar ajax tidak berjalan
+            return;
+        };
+
+        // jika value input #tanggal_dan_waktu sama dengan tidak ada maka
+        if (!$("#tanggal_dan_waktu").val()) {
+            // tampilkan notifikasi menggunakan sweetalert yang berisi pesan berikut
+            Swal.fire("Input tanggal dan waktu Harus Diisi");
+            // matikan kode dibawah beserta ajax nya dengan cara return
+            return;
+        };
+
+        // jika value input uang_diterima sama dengan tidak ada
+        if (!$("#uang_diterima").val()) {
+            // tampilkan notifikasi menggunakan sweetalert yang berisi pesan berikut
+            Swal.fire('Input Uang Diterima Harus Diisi.');
+            // matikan kode dengan cara kembali agar kode dibawah nya tidak berjalan atau agar ajax tidak berjalan
+            return;
+        }
+        // jika value input uang_diterima sama dengan 0
+        else if ($("#uang_diterima").val() === "0") {
+            // tampilkan notifikasi menggunakan sweetalert yang berisi pesan berikut
+            Swal.fire('Input Uang Diterima tidak boleh sama dengan 0.');
+            // matikan kode dengan cara kembali
+            return;
+        };
+
         // berisi array agar aku bisa menyimpan semua produk_id yang ada di table penjualan_detail.index
         let semua_produk_id = [];
         let semua_kode_produk = [];
@@ -656,7 +601,7 @@
         let semua_jumlah = [];
         let semua_subtotal = [];
 
-        // lakukan pengulangan terhdapat semua .kode_produk
+        // lakukan pengulangan terhadap semua .kode_produk
         // setiap .kode_produk, jalankan fungsi berikut, aku melakukan pengulangan karena pada baris pertama dan seterusnya, .kode_produk di buat di script
         $(".kode_produk").each(function() {
             // mulai pengulangan
@@ -672,7 +617,7 @@
             semua_kode_produk.push(kode_produk);
         });
 
-        // lakukan pengulangan terhdapat semua .nama_produk
+        // lakukan pengulangan terhadap semua .nama_produk
         // setiap .nama_produk, jalankan fungsi berikut, aku melakukan pengulangan karena pada baris pertama dan seterusnya, .nama_produk di buat di script
         $(".nama_produk").each(function() {
             // berisi panggil semua .nama_produk lalu ambil text nya
@@ -681,7 +626,7 @@
             semua_nama_produk.push(nama_produk);
         });
 
-        // lakukan pengulangan terhdapat semua .harga_jual
+        // lakukan pengulangan terhadap semua .harga_jual
         // setiap .harga_jual, jalankan fungsi berikut, aku melakukan pengulangan karena pada baris pertama dan seterusnya, .harga_jual di buat di script
         $(".harga_jual").each(function() {
             // berisi panggil semua .harga_jual lalu ambil text nya, ubah string misalnya Rp 100.000 menjadi 100000
@@ -690,7 +635,7 @@
             semua_harga_jual.push(harga_jual);
         });
 
-        // lakukan pengulangan terhdapat semua .jumlah
+        // lakukan pengulangan terhadap semua .jumlah
         // setiap .jumlah, jalankan fungsi berikut, aku melakukan pengulangan karena pada baris pertama dan seterusnya, .jumlah di buat di script
         $(".jumlah").each(function() {
             // berisi panggil semua .jumlah lalu ambil value nya, lalu ubah string ke integer, misalnya "10" akan menjadi 10
@@ -716,22 +661,25 @@
         let total_harga = $("#total_harga").val();
         // panggil #diskon lalu ambil value nya
         let diskon = $("#diskon").val();
-        // panggil #harus lalu ambil value nya
+        // panggil #harus_bayar lalu ambil value nya
         let harus_bayar = $("#harus_bayar").val();
         // panggil #uang_diterima lalu ambil value nya
         let uang_diterima = $("#uang_diterima").val();
-
+        // panggil #keterangan_penjualan lalu ambil value nya
+        let keterangan_penjualan = $("#keterangan_penjualan").val();
+        // panggil #tanggal_dan_waktu lalu ambil value nya
+        let tanggal_dan_waktu = $("#tanggal_dan_waktu").val();
+        
         // lakukan ajax untuk mengirim semua value input
         $.ajax({
             // url panggil route penjualan_detail.store
             url: "{{ route('penjualan_detail.store') }}",
             // tipe memanggil route tipe post / kirim
             type: 'POST',
-            // kirimkan aata berupa object
+            // kirimkan aata berupa object yang berisi key dan value
             data: {
-                // key penjualan_id berisi value variable $penjualan_id
-                penjualan_id: "{{ $penjualan_id }}",
                 // untuk keamanan dari serangan csrf
+                // key _token berisi cetak fungsi csrf_token()
                 "_token": "{{ csrf_token() }}",
                 // key semua_produk_id berisi value array semua_produk_id
                 semua_produk_id: semua_produk_id,
@@ -745,27 +693,24 @@
                 total_harga: total_harga,
                 diskon: diskon,
                 harus_bayar: harus_bayar,
-                uang_diterima: uang_diterima
+                uang_diterima: uang_diterima,
+                keterangan_penjualan: keterangan_penjualan,
+                tanggal_dan_waktu: tanggal_dan_waktu
             }
         })
         // jika selesai dan berhasil maka jalankan fungsi berikut lalu ambil tanggapan nya
         .done(function(resp) {
-            // // panggil semua input, lalu value nya dikosongkan
-            // $("input").val("");
-            // // panggil setiap .baris_baru lalu hapus element dan turunannya 
-            // $(".baris_baru").each(function() {
-            //     // panggil .baris_baru lalu hapus element dan turunannya
-            //     $(this).remove();
-            // });
-
             // jika value tanggapan.status sama dengan 200 maka
             if (resp.status === 200) {
-                // // tampilkan notifikasi menggunakan package toastr
-                // toastr.success('Berhasil menyimpan beberapa data ke table penjualan_detail lalu berhasil memperbarui table penjualan.');
-
+                // tampilkan notifikasi berisi string berikut
+                alert("Berhasil menjual.");
+                // berisi menangkap value resp.penjualan_id
+                let penjualan_id = resp.penjualan_id;
+                // buka tab baru, panggil route penjualan_detail.index, _kosong 
+                window.open("{{ route('penjualan_detail.index') }}", "_blank");
                 // pindah rute
-                // berisi panggil route yang bernama penjualan.selesai
-                window.location.href = "{{ route('penjualan.selesai') }}";
+                // berisi panggil url /penjualan/nota-kecil/ lalu kirimkan value variable penjualan_id
+                window.location.href = `/penjualan/nota-kecil/${penjualan_id}`;
             };
         });
 

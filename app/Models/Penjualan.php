@@ -19,6 +19,10 @@ class Penjualan extends Model
     // lindungi $penjaga berisi array
     protected $guarded = [];
 
+    // eager loading mencegah kueri N+1, bersemangat memuat secara bawaan, ini penting untuk membuat api, jadi ketika aku mengambil setiap penjualan maka detail_member, detail_user dan detail_penjualan_detail juga ikut terbawa
+    // lindungi $dengan relasi member dan user
+    protected $with = ["member", "user"];
+
     // ingat, belongsTo harus menggunakan pemuatan bersemangat
     // 1 penjualan dapat memilih 1 member agar mendapatkan diskon
     // Jika yang membeli adalah member maka table penjualan, column member_id akan diisi 

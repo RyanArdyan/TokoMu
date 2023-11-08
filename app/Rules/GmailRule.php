@@ -14,7 +14,10 @@ class GmailRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+        // jika user tidak memasukkan .gmail.com di input gmail maka
         if (!preg_match('/@gmail\.com$/', $value)) {
+            // pesan validasi nya adalah "Masukkan gmail anda."
+            // $gagal(')
             $fail('Masukkan gmail anda.');
         };
     }

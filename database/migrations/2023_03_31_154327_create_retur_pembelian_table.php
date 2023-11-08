@@ -13,8 +13,7 @@ return new class extends Migration
     {
         // buat table retur_pembelian
         Schema::create('retur_pembelian', function (Blueprint $table) {
-            // Metode ini bigIncrements membuat kolom setara penambahan otomatis UNSIGNED BIGINT(kunci utama):
-            // $table->peningkatanBesar('return_pembelian_id');
+            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('retur_pembelian_id');
             // buat column foreign key pembelian_id yang berelasi dengan table pembelian, column pembelian_id
             // onUpdate('cascade') berarti jika aku ubah suatu pembelian maka retur pembelian nya akan mengambil data yang berubah
@@ -28,8 +27,9 @@ return new class extends Migration
                 ->references('produk_id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            // tipe data integer, column jumlah_retur
-            $table->integer('jumlah_retur');
+            // tipe data smallInteger menyimpan value maksimal 32767, smallInteger jauh lebih mengehemat memori dibandingkan integer karena hanya menggunakan 2 BYTE, kalau integer 4 byte
+            // $meja->kecil_integer, column jumlah_retur
+            $table->smallInteger('jumlah_retur');
             // Metode date membuat tanggal kolom yang setara:
             $table->dateTime('tanggal_retur');
             $table->string('keterangan');

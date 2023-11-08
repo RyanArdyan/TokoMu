@@ -7,22 +7,26 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Jalankan migrasi
      */
     public function up(): void
     {
         // buat table pengeluaran
         Schema::create('pengeluaran', function (Blueprint $table) {
-            // buat tipe data integer yang auto increment
+            // buat tipe data big integer yang auto increment dan primary key
             $table->bigIncrements('pengeluaran_id');
+            $table->datetime('waktu_pengeluaran');
+            $table->string('diterima_oleh');
             // buat tipe data string
-            // unique berarti value column nama_pengeluaran, tidak boleh sama
-            $table->string('nama_pengeluaran')->unique();
-            // bigInteger karena aku harus menghindari out of range jika valuenya sudah ada 1 M
-            $table->bigInteger('total_pengeluaran');
+            $table->string('nama_pengeluaran');
+            $table->integer('jumlah_pengeluaran');
+            $table->integer('total_pengeluaran');
             $table->timestamps();
         });
     }
+
+
+
 
     /**
      * Reverse the migrations.

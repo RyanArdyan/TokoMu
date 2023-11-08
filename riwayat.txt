@@ -1,0 +1,7 @@
+file: pengeluaran/create
+baris: 211
+tujuan: 
+1. Aku click tombol "Tambah Detail Pengeluaran Baru" maka total jumlah akan diisi
+2. Membaca 
+
+

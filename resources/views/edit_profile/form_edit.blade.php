@@ -25,7 +25,7 @@
     <div class="form-group">
         <label for="email">Email</label>
         <input name="email" type="text" class="input input_email form-control" id="email"
-            placeholder="Edit Email" value="{{ $detail_user_yang_login->email }}" autocomplete="off">
+            placeholder="Edit Email" value="{{ $detail_user_yang_login->email }}" autocomplete="off" readonly>
         {{-- pesan error --}}
         <span class="error error_email text-danger"></span>
     </div>

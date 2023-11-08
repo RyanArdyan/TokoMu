@@ -8,6 +8,7 @@
     </style>
 @endpush
 
+
 {{-- kirim value section title ke @Yield('title') --}}
 @section("title", "Laporan")
 
@@ -41,7 +42,6 @@
 
 @push('script')
 <script>
-
     // read data menggunakan javascript, package laravel datatables dan datatables
     // berisi panggil #table_laporan_pendapatan guanakan datatable
     let table_laporan_pendapatan = $("#table_laporan_pendapatan").DataTable({

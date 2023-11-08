@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// perluas kelas dasar
+use App\Http\Controllers\Controller;    
 use App\Models\Produk;
 use App\Models\Member;
 use App\Models\Pengaturan;
@@ -17,7 +19,7 @@ class PenjualanDetailController extends Controller
     {
         // ambil semua produk, urutkan data dari a ke z
         // produk di pesan oleh column nama_produk, menaik, dapatkan semua data
-        $semua_produk = Produk::orderBy('nama_produk', 'asc')->get();
+        $semua_produk = Produk::select('produk_id', 'kategori_id', 'penyuplai_id', 'kode_produk', 'nama_produk', 'harga_beli', 'diskon', 'harga_jual', 'stok')->orderBy('nama_produk', 'asc')->get();
         // berisi member di pesan oleh column nama_member, urutkan dari a ke z, ambil semua data
         $semua_member = Member::orderBy('nama_member', 'asc')->get();
         // ambil value column diskon_perusahaan dari 1 baris data pertama di table Pengaturan
@@ -32,139 +34,22 @@ class PenjualanDetailController extends Controller
         ]);
     }
 
-    // // tampilkan data table penjualan_detail
-    // public function data($penjualan_id)
-    // {
-
-    //     // karena relasi belongsTo maka aku harus memnggunakan pemuatan bersemangat
-    //     // ambil beberapa baris data dari table penjualan_detail yang sesuai dengan penjualan_id 
-    //     // logikanya seperti ini, table penjualan_detail, column penjualan_detail_id value 1, menjual produk_id 1
-    //     // berisi table penjualan_detail yang berelasi dengan table produk, dimana value column penjualan_id sama dengan value parameter $penjualan_id, dapatkan semua data
-    //     $beberapa_penjualan_detail = PenjualanDetail::with('produk')
-    //         ->where('penjualan_id', $penjualan_id)
-    //         ->get();
-
-    //     // berisi inisialisasi array
-    //     $data = array();
-    //     // nanti value nya akan di tambah misalnya, 0 + 100 = 100 lalu di tambah lagi 100 menjadi 200
-    //     $total_harga = 0;
-    //     $total_barang = 0;
-
-    //     // lakukan pengulangan kepada value $bberapa_penjualan_detail
-    //     foreach ($beberapa_penjualan_detail as $penjualan_detail) {
-    //         // berisi inisialisasi array
-    //         $row = array();
-    //         // 1 penjualan detail bisa menjual 1 produk
-    //         // table penjualan detail, column id_penjualan_detail misalnya 1 milik column id_produk misalnya 1
-    //         $row['kode_produk'] = '<span class="badge badge-success">' . $penjualan_detail->produk['kode_produk'] . '</span';
-    //         $row['nama_produk'] = $penjualan_detail->produk['nama_produk'];
-    //         $row['harga_jual']  = rupiah_bentuk($penjualan_detail->harga_jual);
-    //         $row['jumlah']      = '<input type="number" class="form-control input-sm jumlah" data-id="' . $penjualan_detail->penjualan_detail_id . '" value="' . $penjualan_detail->jumlah . '">';
-    //         $row['diskon']      = $penjualan_detail->diskon . '%';
-    //         $row['subtotal']    = rupiah_bentuk($penjualan_detail->subtotal);
-    //         $row['aksi']        = '<div class="btn-group">
-    //                                 <button onclick="hapus_data(`' . route('penjualan_detail.destroy', $penjualan_detail->penjualan_detail_id) . '`)" class="btn btn-xs btn-danger btn-flat"><i class="fa fa-trash"></i></button>
-    //                             </div>';
-    //         // push $row ke $data
-    //         $data[] = $row;
-
-    //         // table penjualan_detail column subtotal + column subtotal
-    //         $total_harga += $penjualan_detail->harga_jual * $penjualan_detail->jumlah - (($penjualan_detail->diskon * $penjualan_detail->jumlah) / 100 * $penjualan_detail->harga_jual);
-    //         // jumlah pembelian_detail baris 1 adalah 5, di tambah jumlah pembelian_detail baris 2 berisi 5, berarti jumlahnya 10
-    //         $total_barang += $penjualan_detail->jumlah;
-    //     };
-    //     // buat tr terakhir untuk menyimpan $total_harga dan $total_barang, lalu sembunyikan
-    //     $data[] = [
-    //         'kode_produk' => '',
-    //         'nama_produk' => '',
-    //         'harga_jual'  => '',
-    //         'jumlah'      => '
-    //             <div class="total_barang hide">' . $total_barang . '</div>
-    //         ',
-    //         'diskon'      => '',
-    //         'subtotal'    => '
-    //             <div class="total_harga hide">' . $total_harga . '</div>
-    //         ',
-    //         'aksi'        => '',
-    //     ];
-
-    //     // kembalikkan datatables
-    //     return datatables()
-    //         // dari value $data yang berisi tbody, tr, td dan data table pembelian_detail terkait
-    //         // dari $data
-    //         ->of($data)
-    //         // lakukan pengulangan nomor
-    //         // tambahIndexKolom
-    //         ->addIndexColumn()
-    //         // jika
-    //         // mentahKolomKolom dari kode_produk, jumlah dan aksi
-    //         ->rawColumns(['kode_produk', 'jumlah', 'subtotal', 'aksi',])
-    //         // buat benar
-    //         ->make(true);
-    // }
-
     // parameter $request menangkap value dari key produk_id milik script
     public function ambil_detail_produk(Request $request)
     {   
         // berisi ambil value dari key produk_id yang di kirim script
         $produk_id = $request->produk_id;
         
-        // ambil detail_produk dan relasi nya seperti kategori dan penyuplai nya
-        // berisi table produk dimana value column produk_id sama dengan value $produk_Id, ambil data baris pertama
-        $detail_produk = Produk::where('produk_id', $produk_id)->first();
+        // ambil detail_produk dan relasi nya seperti kategori dan penyuplai nya, relasi sudah pemuatan bersemangat karena aku sudah atur di models/produk
+        // berisi table produk, pilih value column produk_id, dan lain-lain,, dimana value column produk_id sama dengan value $produk_Id, ambil data baris pertama
+        $detail_produk = Produk::select('produk_id', 'kategori_id', 'penyuplai_id', 'kode_produk', 'nama_produk', 'harga_beli', 'diskon', 'harga_jual', 'stok')->where('produk_id', $produk_id)->first();
 
         // kembalikkan tanggapan berupa json lalu kirimkna data berupa array
         // kembalikkan tanggapan()->json()
         return response()->json($detail_produk);
     }
 
-    // // simpan pembelian_detail setelah aku memilih produk di modal pilih produk
-    // public function store(Request $request)
-    // {
-    //     // ambil detail produk berdasarkan value name produk_id yang dikirimkan
-    //     // berisi produk dimana value column produk_id sama dengan value $request->produk_id, data baris pertama
-    //     $detail_produk = Produk::where('produk_id', $request->produk_id)->first();
-
-    //     // jika tidak ada produk, sudah pasti ada
-    //     if (! $detail_produk) {
-    //         // kembalikkan tanggapan berupa json
-    //         return response()->json([
-    //             // key status berisi value 400
-    //             'status' => 400,
-    //             // key message berisi value 'Data Gagal Disimpan'
-    //             'message' => 'Data Gagal Disimpan.'
-    //         ]);
-    //     };
-
-    //     // simpan data ke table penjualan_detail
-    //     // PenjualanDetail::buat([])
-    //     PenjualanDetail::create([
-    //         // column penjualan_id berisi value $request->penjualan_id
-    //         'penjualan_id' => $request->penjualan_id,
-    //         // key produk_id berisi value detail_produk, column produk_id
-    //         'produk_id' => $detail_produk->produk_id,
-    //         'kode_produk' => $detail_produk->kode_produk,
-    //         'nama_produk' => $detail_produk->nama_produk,
-    //         // key harga_jual berisi value detail_produk, column harga_jual
-    //         'harga_jual' => $detail_produk->harga_jual,
-    //         // column jumlah akan diiisi angka 1 secara bawaan
-    //         'jumlah' => 1,
-    //         // key diskon berisi value detail_produk, column diskon
-    //         'diskon' => $detail_produk->diskon,
-    //         // KUKABATAKU, kurung, kali, bagi, tambah, kurang
-    //         'subtotal' => $detail_produk->harga_jual - ($detail_produk->diskon / 100 * $detail_produk->harga_jual)
-    //     ]);
-
-    //     // kembalikkan tanggapan berupa json
-    //     return response()->json([
-    //         // key status berisi value 200
-    //         'status' => 200,
-    //         // key message berisi value Pembelian Detail Berhasil Disimpan
-    //         'message' => 'Pembelian Detail Berhasil Disimpan'
-    //     ]);
-    // }
-
-    // simpan beberapa penjualan_detail dan perbarui detail_penjualan
+    // simpan detail penjualan dan simpan beberapa penjualan_detail
     public function store(Request $request)
     {
         // berisi ambil value semua_produk_id nama yang didapatkan dari script, angapalh berisi [1, 2]
@@ -184,10 +69,23 @@ class PenjualanDetailController extends Controller
         $diskon = $request->diskon;
         $harus_bayar = $request->harus_bayar;
         $uang_diterima = $request->uang_diterima;
+        $keterangan_penjualan = $request->keterangan_penjualan;
+        $tanggal_dan_waktu = $request->tanggal_dan_waktu;
 
-        // ambil value column nama_member berdasarkan member_id
-        // Mmmber dimana value column member_id sama dengan value $request->member_id, ambil data baris pertama, column nama_member
-        $nama_member = Member::where('member_id', $member_id)->first()->nama_member;
+        // jika ada value di #member_id atau ada angka atau aku memilih member maka ambil detail_member
+        if ($member_id) {
+            // ambil nama_member
+            // berisi table member dimana value column member_id sama dengan value variable member_id, ambil data baris pertama, column nama_member
+            $nama_member = Member::where('member_id', $member_id)->first()->nama_member;
+            // berisi 5
+            $diskon = 5;
+        } 
+        // lain jika tidak ada nilai di #member_id atau input member_id
+        else if (!$member_id) {
+            // $nama_member diisi NULL
+            $nama_member = NULL;
+            $diskon = 0;
+        };
 
 
         // simpan detail_penjualan secara sementara
@@ -197,14 +95,13 @@ class PenjualanDetailController extends Controller
             'member_id' => $request->member_id,
             // berisi id user yang login
             'user_id' => Auth::id(),
-            'nama_member' => $nama_member,
-            // berisi value column nama_user yang login
-            'name_user' => Auth::user()->name,
             'total_barang' => $total_barang,
             'total_harga' => $total_harga,
             'diskon' => $diskon,
             'harus_bayar' => $harus_bayar,
-            'uang_diterima' => $uang_diterima
+            'uang_diterima' => $uang_diterima,
+            'keterangan_penjualan' => $keterangan_penjualan,
+            'tanggal_dan_waktu' => $tanggal_dan_waktu
         ]);
 
         // lakukan pengulangan
@@ -217,9 +114,6 @@ class PenjualanDetailController extends Controller
             // misalnya panggil table penjualan_detail, column produk_id diisi array semua_produk_id, index 0, index 1, dst.
             // column semua_produk_id di table penjualan_detail diisi $semua_produk_id[$i]
             $penjualan_detail->produk_id = $semua_produk_id[$i];
-            $penjualan_detail->kode_produk = $semua_kode_produk[$i];
-            $penjualan_detail->nama_produk = $semua_nama_produk[$i];
-            $penjualan_detail->harga_jual = $semua_harga_jual[$i];
             $penjualan_detail->jumlah = $semua_jumlah[$i];
             $penjualan_detail->subtotal = $semua_subtotal[$i];
             // penjualan_detail disimpan
@@ -232,24 +126,15 @@ class PenjualanDetailController extends Controller
             $detail_produk->update();
         };
 
-        // jika ada value di #member_id atau ada angka maka ambil detail_member
-        if ($member_id) {
-            // ambil nama_member
-            // berisi table member dimana value column member_id sama dengan value variable member_id, ambil data baris pertama, column nama_member
-            $nama_member = Member::where('member_id', $member_id)->first()->nama_member;
-        } 
-        // lain jika tidak ada nilai di #member_id atau input member_id
-        else if (!$member_id) {
-            // $nama_member diisi NULL
-            $nama_member = NULL;
-        };
 
-        // kembalikkan data berupa json lalu kirimkan data berupa array
+        // kembalikkan tanggapan berupa json lalu kirimkan data berupa array
         return response()->json([
             // key status berisi value 200
             'status' => 200,
             // key message berisi value berikut
-            'message' => 'Berhasil menyimpan beberapa data ke table penjualan_detail lalu berhasil memperbarui table penjualan'
+            'message' => 'Berhasil menyimpan beberapa data ke table penjualan_detail lalu berhasil memperbarui table penjualan',
+            // kirimkan key penjualan_id berisi value detail_penjualan, column penjualan_id anggaplah berisi 1
+            'penjualan_id' => $detail_penjualan->penjualan_id
         ]);
     }
 
@@ -305,7 +190,7 @@ class PenjualanDetailController extends Controller
         return response('Berhasil menghapus 1 baris data di table penjualan_detail');
     }
 
-    // $permintaan menangkap value key jumlah yang dikirimkan script
+    // $permintaan menangkap value key jumlah dan produk_id yang dikirimkan script
     public function cek_stok_produk(Request $request)
     {
         // tangkap value input jumlah
@@ -314,21 +199,18 @@ class PenjualanDetailController extends Controller
         // berisi $permintaan->produk_id
         $produk_id = $request->produk_id;
 
-        // berisi ambil detail_stok_produk berdasarkan produk_id
-        // berisi Produk dimana value column produk_id sama dengan value $produk_id, ambil data baris pertama, column stok
-        $detail_stok_produk = Produk::where('produk_id', $produk_id)->first()->stok;
+        // berisi ambil value detail_produk, column stok berdasarkan produk_id
+        // berisi Produk dimana value column produk_id sama dengan value variable $produk_id, ambil data baris pertama, column stok
+        $stok_produk = Produk::where('produk_id', $produk_id)->first()->stok;
 
-        // jika value input jumlah lebih besar dari value $detail_stok_produk
-        if ($jumlah > $detail_stok_produk) {
+        // jika value input jumlah lebih besar dari value $stok_produk misalnya value input jumlah berisi 1000 lalu value $stok_produk berisi 80 maka
+        if ($jumlah > $stok_produk) {
             // kembalikkan tanggapan berupa json kirimkan data berupa array
-            // key pesan berisi "
-            // kembalikkan tanggpan berupa json lalu kirimkan data
             return response()->json([
                 // key pesan berisi pesan berikut
-                'message' => "Stok produk nya tersisa $detail_stok_produk",
-                // key stok_produk berisi value $detail_stok_produk
-                'stok_produk' => $detail_stok_produk,
-                
+                'message' => "Stok produk nya tersisa $stok_produk",
+                // key stok_produk berisi value $stok_produk
+                'stok_produk' => $stok_produk,
             ]);
         };
     }
