@@ -311,12 +311,15 @@ class MemberController extends Controller
         // jika Anda perlu memanipulasi data dengan metode seperti pengurutan, pengelompokkan, atau pemfilteran, maka koleksi mungkin lebih sesuai untuk kebutuhan Anda.
         $beberapa_data_member = collect(array());
 
-        // lakukan pengulangan pada id
+        // lakukan pengulangan pada id, anggaplah ada 2 pengulangan, berisi 1 dan 2
         foreach($request->member_ids as $member_id) {
             // looping ambil detail member dengan cara mengambil detail_member berdasarkan member_id
             // Member dimana value column member_id sama dengan value $member_id, ambil yang pertama
             $detail_member = Member::where('member_id', $member_id)->first();
-            // push data ke koleksi array $datamember
+            // push data ke koleksi array $datamember, anggaplah berisi [
+                // ['member_id' => '1', 'nama_member' => 'admin', dst],
+                // [data index 1]
+            // ]
             $beberapa_data_member[] = $detail_member;
         };
 
@@ -329,11 +332,13 @@ class MemberController extends Controller
         // // hasil :
         // // [[1, 2, 3, 4], [5, 6, 7]]
 
+        // inisialisasi angka 
         $no = 1;
         // aku menggunakan package barryvdh/laravel-dompdf
         // berisi pdf muat tampilan member.cetak_kartu lalu kirimkan data
         $pdf = Pdf::loadView('member.cetak_kartu', [
-            // key beberapa_data_member berisi beberapa data member
+            // key some_data_member contains several member data for example containing [['member_id' => 1, etc], ['member_id' => 2]]
+            // key beberapa_data_member berisi beberapa data member misalnya berisi [['member_id' => 1, dst], ['member_id' => 2]]
             'beberapa_data_member' => $beberapa_data_member, 
             // key no berisi value $no yaitu 1
             'no' => $no,

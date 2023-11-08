@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -55,11 +54,14 @@
 <body>
     <h1>Cetak Kartu Member</h1>
 
+
+    {{-- tinggal aku cut --}}
+
     {{-- looping beberapa_data_memebr sebagai member --}}
     @foreach ($beberapa_data_member as $member)
         <div class="card red">
-            {{-- public_path() akan memanggil folder public --}}
-            <img src="{{ public_path('storage/logo_perusahaan.png') }}" alt="Gambar Card">
+            {{-- coba aku cetak dibawahnya, kalau tidak bisa maka mungkin bermaasalah dicss --}}
+            <img src="{{ public_path('storage/logo_web/logo.jpg') }}" height="50px" width="50px" alt="Gambar Card">
             {{-- aku menggunakan package milon/barcode --}}
             <img src='data:image/png;base64, {{ DNS2D::getBarcodePNG("$member->kode_member", 'QRCODE') }}'
                 alt="qrcode" height="45" width="45" style="float: right">

@@ -303,9 +303,6 @@
                 });
         });
 
-
-
-
         // pilih semua
         $("#select_all").on("click", function() {
             if ($("#select_all").prop("checked")) {
@@ -314,8 +311,6 @@
                 $(".pilih").prop("checked", false);
             };
         });
-
-
 
         // Delete
         // jika #tombol_hapus di click maka jalankan fungsi berikut lalu ambil event
@@ -373,7 +368,7 @@
                 $("#form_member").attr("target", "_blank")
                     // buat attribute action dan method
                     .attr({
-                        //  memanggil url /cetak-kartu-member
+                        //  memanggil route berikut
                         "action": `{{ route('member.cetak_kartu') }}`,
                         // panggil route tipe kirim
                         "method": "POST",
