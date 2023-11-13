@@ -5,6 +5,7 @@ namespace App\Exports;
 // ini digunakan untuk mencetak data table penjualan
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 // Ini untuk membuat thead, tr, th
 use Maatwebsite\Excel\Concerns\WithHeadings;
 // agar aku bisa mengirim value argument dari controller dan mengangkap nya
@@ -32,13 +33,13 @@ class PenjualanExport implements FromCollection, WithHeadings, ShouldAutoSize, W
         // buat colum-column
         // kembalikkan array numeric
         return [
-            'Nama Member',
-            'Nama Kasir',
+            'tanggal dan waktu',
+            'Member',
+            'Keterangan Pengeluaran',
             'Total Barang',
             'Total Harga',
             'Diskon',
-            'Harus Bayar',
-            'Uang Diterima',
+            'Harus Bayar'
         ];
     }
 
@@ -59,7 +60,6 @@ class PenjualanExport implements FromCollection, WithHeadings, ShouldAutoSize, W
     {
         // panggil property tanggal_awal yang berada diluar diisi dengan value parameter $tanggal_awal
         $this->tanggal_awal = $tanggal_awal;
-        // panggil property tanggal_akhir yang berada diluar lalu isi dengan value parameter $tanggal_akhir
         $this->tanggal_akhir = $tanggal_akhir;
     }
 
@@ -68,15 +68,28 @@ class PenjualanExport implements FromCollection, WithHeadings, ShouldAutoSize, W
     public function collection()
     {
         // dapatkan data table penjualan berdasarkan range atau jangkauan yang dikirimkan
-        // kembalikkan data penjualan, pilih kolom-kolom berikut dimanaAntara value column created_at berisi dari value $this->tanggal_awal sampai value $this->tanggal_akhir, dapatkan semua data terkait
-        return Penjualan::select('member.nama_member', 'users.name', 'total_barang', 'total_harga', 'diskon', 'harus_bayar', 'uang_diterima')
+        // kembalikkan data penjualan, pilih kolom-kolom berikut
+        return Penjualan::select('tanggal_dan_waktu', 'member.nama_member', 'keterangan_penjualan', 'total_barang', 'total_harga', 'diskon', 'harus_bayar')
             // berelasi dengan table member lewat column member_id
             // gabung table, value table member, column member_id sama dengan value table penjualan.member_id
             ->join('member', 'member.member_id', '=', 'penjualan.member_id')
-            ->join('users', 'users.user_id', '=', 'penjualan.user_id')
             // misalnya user memasukkan tanggal awal nya adalah 01-01-2023 lalu tanggal_akhir nya adalah 01-01-2024 maka cetak beberapa baris penjualan dari periode itu
-            // diamana antara value detail_penjualan, column dibuat_pada, tanggal_awal sampai tanggal_akhir
-            ->whereBetween('penjualan.created_at', [$this->tanggal_awal, $this->tanggal_akhir])
+            // diamana antara value penjualan, column dibuat_pada, tanggal_awal sampai tanggal_akhir
+            ->whereBetween('penjualan.tanggal_dan_waktu', [$this->tanggal_awal, $this->tanggal_akhir])
             ->get();
+
+
+        // // dapatkan data table penjualan berdasarkan range atau jangkauan yang dikirimkan
+        // // kembalikkan data penjualan, pilih kolom-kolom berikut dimanaAntara value column created_at berisi dari value $this->tanggal_awal sampai value $this->tanggal_akhir, dapatkan semua data terkait
+        // return PenjualanDetail::select('', 'member.nama_member', 'users.name', 'total_barang', 'total_harga', 'diskon', 'harus_bayar', 'uang_diterima')
+        //     // berelasi dengan table member lewat column member_id
+        //     // gabung table, value table member, column member_id sama dengan value table penjualan.member_id
+        //     ->join('member', 'member.member_id', '=', 'penjualan.member_id')
+        //     ->join('penjualan', 'penjualan.penjualan_id', '=', 'penjualan_detail.penjualan_id')
+        //     ->join('users', 'users.user_id', '=', 'penjualan.user_id')
+        //     // misalnya user memasukkan tanggal awal nya adalah 01-01-2023 lalu tanggal_akhir nya adalah 01-01-2024 maka cetak beberapa baris penjualan dari periode itu
+        //     // diamana antara value detail_penjualan, column dibuat_pada, tanggal_awal sampai tanggal_akhir
+        //     ->whereBetween('penjualan.created_at', [$this->tanggal_awal, $this->tanggal_akhir])
+        //     ->get();
     }
 }

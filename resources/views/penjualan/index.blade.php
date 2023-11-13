@@ -246,8 +246,10 @@ function retur_penjualan(penjualan_detail_id, produk_id, penjualan_id) {
     });
 };
 
-// jika #tombol_ubah_periode di click maka jalankan fungsi
+//  if #change_period button is clicked then run following function
+// jika #tombol_ubah_periode di click maka jalankan fungsi berikut
 $("#tombol_ubah_periode").on("click", function() {
+    // call #modal_ubah_period then the modal is displayed
     // panggil #modal_ubah_periode lalu modal nya di tampilkan
     $("#modal_ubah_periode").modal("show");
 });

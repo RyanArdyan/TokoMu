@@ -1,4 +1,4 @@
-{{-- memperluas parentnya yaitu layouts.app --}}
+    {{-- memperluas parentnya yaitu layouts.app --}}
 @extends('layouts.app')
 
 {{-- dorong css lalu tangkap menggunakan $stack('css') --}}
@@ -39,10 +39,11 @@
                     Hapus
                 </button>
 
-                {{-- export semua data pengeluran ke file excel --}}
-                {{-- panggil route pengeluaran.export_excel --}}
-                <a href="{{ route('pengeluaran.export_excel') }}" class="btn btn-sm btn-success">
-                    <i class="mdi mdi-file-excel"></i> Excel</a>
+                {{-- termasuk ada jika modal ubah periode dipanggil --}}
+                @includeIf('pengeluaran.modal_ubah_periode')
+
+                <button id="tombol_ubah_periode" class="btn btn-sm btn-success">
+                        <i class="mdi mdi-file-excel"></i> Export Excel</button>
             </div>
 
         </div>
@@ -90,12 +91,6 @@
                 data: 'total_pengeluaran',
                 name: 'total_pengeluaran'
             },
-            {
-                data: 'action',
-                name: 'action',
-                sortable: false,
-                searchable: false
-            }
         ],
         // menggunakan bahasa indonesia di package datatables
         // bahasa berisi object
@@ -162,6 +157,14 @@
                 };
             });
         };
+    });
+
+    //  if #change_period button is clicked then run following function
+    // jika #tombol_ubah_periode di click maka jalankan fungsi berikut
+    $("#tombol_ubah_periode").on("click", function() {
+        // call #modal_ubah_period then the modal is displayed
+        // panggil #modal_ubah_periode lalu modal nya di tampilkan
+        $("#modal_ubah_periode").modal("show");
     });
 </script>
 @endpush

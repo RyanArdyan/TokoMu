@@ -11,7 +11,6 @@
             /* lebar: 100% tidak penting */
             width: 100% !important;
         }
-
     </style>
 @endpush
 
@@ -25,13 +24,13 @@
         <div class="col-md-12 mt-2">
             {{-- termasuk ada jika modal dipanggil --}}
             {{-- panggil modal penyuplai --}}
-            {{-- @includeIf('pembelian.modal_penyuplai') --}}
-
+            @includeIf('pembelian.modal_penyuplai')
 
             <div class="mb-3">
-                <a href="/pembelian/create" id="tombol_pembelian_baru" class="btn btn-purple btn-sm mr-1">
+                {{-- jika tombol di click maka panggil fungsi pilih_penyuplai --}}
+                <button id="tombol_pembelian_baru" class="btn btn-purple btn-sm mr-1">
                     <i class="mdi mdi-plus"></i> Pembelian Baru
-                </a>
+                </button>
                 @if (session('id_pembelian'))
                     <a href="{{ url('/pembelian-detail') }}" class="btn btn-info mr-1"><i class="fa fa-money-bill"></i>
                         Transaksi Aktif</a>
@@ -53,6 +52,8 @@
 
 @push('script')
     <script>
+        // untuk mengecilkan sidebar
+
         // lakukan ajax untuk mengecek apakah ada penyuplai dan produk jika tidak ada maka tampilkan notifikasi "Anda harus menambahkan minimal 1 penyuplai terlebih dahulu", lalu arahkan ke menu penyuplai
         $.ajax({
                 // panggil route pembelian.cek_pemyuplai_dan_produk
@@ -95,7 +96,6 @@
                 };
             });
 
-
         // berisi panggil #table_pembelian lalu gunakan datatable
         let table = $("#table_pembelian").DataTable({
             // ketika data masih dimuat maka tampilkan animasi processing
@@ -129,7 +129,7 @@
                     data: 'tanggal'
                 },
                 {
-                    data: 'keterangan_pembelian'
+                    data: 'penyuplai'
                 },
                 {
                     data: 'total_barang'
@@ -206,6 +206,60 @@
                 }
             ]
         });
+
+        // read data penyuplai
+        // panggil #table_penyuplai lalu gunakan datatable
+        $("#table_penyuplai").DataTable({
+            // Jika penyuplai sedang dimaut maka tampilkan processing nya dulu
+            processing: true,
+            // server side akan menangani data yang lebih besar dari 10.000
+            serverSide: true,
+            // lakukan ajax, dan panggil route pembelian.penyuplai
+            ajax: "{{ route('pembelian.penyuplai') }}",
+            // buat tbody, tr dan td lalu isi datanya
+            columns: [{
+                    // pengulangan nomor
+                    // DT_RowIindex didapatkan ari laravel datatable
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    sortable: false
+                },
+                {
+                    data: 'nama_penyuplai',
+                    name: 'nama_penyuplai'
+                },
+                {
+                    data: 'telepon_penyuplai',
+                    name: 'telepon_penyuplai'
+                },
+                {
+                    data: 'alamat_penyuplai',
+                    name: 'alamat_penyuplai'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    sortable: false,
+                    searchable: false
+                }
+            ],
+            // gunakan bahasa indonesia di package datatable
+            language: {
+                // panggil folder public/terjemahan_datatable
+                url: "/terjemahan_datatable/indonesia.json"
+            }
+        });
+
+        function pilih_penyuplai() {
+            $("#modal_penyuplai").modal("show");
+        };
+
+        // Jika #tombol_pembelian_baru di click maka jalankan fungsi berikut
+        $("#tombol_pembelian_baru").on("click", function() {
+            // panggil #modal_penyuplai lalu modal nya di munculkan
+            $("#modal_penyuplai").modal("show");
+        })
+
 
         // jika modal tambah dikirim
         $("#form_tambah").on("submit", function(e) {

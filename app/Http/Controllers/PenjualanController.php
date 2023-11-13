@@ -61,8 +61,19 @@ class PenjualanController extends Controller
                 return rupiah_bentuk($penjualan->harus_bayar);
             })
             ->addColumn('tanggal', function ($penjualan) {
-                // kembalikkan panggil fungsi tanggal_indonesia, lalu kirimkan dua argument berikut
-                return tanggal_indonesia($penjualan->created_at, false);
+                // // an example date is: tuesday, february, 7 2023
+                // // contoh tanggal nya adalah: Selasa, 7 Februari 2023
+                // return $penjualan->tanggal_dan_waktu->isoFormat('dddd, D MMMM Y');
+                // create a CARBON object from the date you want to change
+                // buat objek CARBON dari tanggal yang ingin diubah
+                // karbom, createFromFormat, the first argument is time format, the second argument is the time you want to change, the third argument is time zone you want to use.
+                // karbon, buatDariBentuk, argument pertama adalah format waktu, argument kedua adalah waktu yang ingin diubah, argument ketiga adalah zona waktu yang ingin dipakai
+                $tanggal = Carbon::createFromFormat('Y-m-d H:i:s', $penjualan->tanggal_dan_waktu, 'Asia/Jakarta');
+                // to change the format date and use indonesian
+                // untuk mengubah format tanggal dan menggunakan bahasa indonesia
+                // The first argument in the Translation format is the name of the day in the string, date, month and year, the second argument is to use Indonesian
+                // argument pertama pada formatTerjemahan adalah nama hari dalam string, tanggal bulan dan tahun, argument kedua adalah menggunakan bahasa indonesia
+                return $tanggal->translatedFormat('l, d F Y', 'id');
             })
             ->addColumn('kode_member', function ($penjualan) {
                 // berisi value detail_penjualan, column member_id, jika null berarti dia adalah pelanggan umum atau bukan member
@@ -124,7 +135,7 @@ class PenjualanController extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['aksi', 'kode_member'])
+            ->rawColumns(['total_barang', 'total_harga', 'harus_bayar', 'tanggal', 'kode_member', 'diskon', 'kasir', 'aksi'])
             ->make(true);
     }
 
@@ -472,8 +483,10 @@ class PenjualanController extends Controller
         ]);
     }
 
+    // export to excel based on period
     // export ke excel berdasarkan periode
-    // $request akan menangkap data yang dikirim formulir
+    // $request will retrieve the data the form sends
+    // $request akan mengambil data yang dikirim formulir
     public function export_excel(Request $request)
     {
         // dump and die atau cetak dan matikan semua value formulir
@@ -483,9 +496,9 @@ class PenjualanController extends Controller
         // "tanggal_awal" => "2023-04-23"
         // "tanggal_hari_ini" => "2023-04-26"
 
-        // berisi tangkap value input name="tanggal_awal"
+        // contains takes input value name="start_date"
+        // berisi mengambil value input name="tanggal_awal"
         $tanggal_awal = $request->tanggal_awal;
-        // berisi tangkap value input name="tanggal_akhir"
         $tanggal_akhir = $request->tanggal_akhir;
 
         // kembalikkan excel::unduh(new panggil PenjualanExport.php lalu kirimkan value parameter $tanggal_awal dan $tanggal_akhir, nama file nya adalah 'penjualan.xlsx')

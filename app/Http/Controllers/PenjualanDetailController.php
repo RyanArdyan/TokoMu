@@ -44,8 +44,7 @@ class PenjualanDetailController extends Controller
         // berisi table produk, pilih value column produk_id, dan lain-lain,, dimana value column produk_id sama dengan value $produk_Id, ambil data baris pertama
         $detail_produk = Produk::select('produk_id', 'kategori_id', 'penyuplai_id', 'kode_produk', 'nama_produk', 'harga_beli', 'diskon', 'harga_jual', 'stok')->where('produk_id', $produk_id)->first();
 
-        // kembalikkan tanggapan berupa json lalu kirimkna data berupa array
-        // kembalikkan tanggapan()->json()
+        // kembalikkan tanggapan berupa json lalu kirimkan data berupa array
         return response()->json($detail_produk);
     }
 

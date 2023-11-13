@@ -84,6 +84,7 @@
 @endsection
 
 
+{{-- dorong script berikut ke dalam @stack('script') --}}
 @push('script')
 <script>
     // jadi nanti value nya akan di tambah jika aku menambah baris baru penjualan detail
@@ -94,6 +95,7 @@
     // untuk menyimpan total harga, jadi pada awalnya 0 lalu aku click tombol pilih di modal pilih produk maka variable total_harga ditambah value detail_produk, column harga_jual, aku click lagi jadi 2
     let total_harga = 0;
 
+    // fitur mengisi input tanggal & waktu secara otomatis berdasarkan waktu saat ini
     // jika document siap maka jalankan fungsi berikut
     $(document).ready(function() {
         // Dapatkan waktu sekarang dalam format yang sesuai dengan datetime-local (YYYY-MM-DDTHH:mm)
@@ -231,6 +233,7 @@
         });
     });
 
+    // ini untuk mendapatkan total barang dan total harga dengan cara looping semua value dari input jumlah dan td subtotal
     function update_total_barang_dan_harga() {
         // atur total_barang kembali ke 0 agar program nya benar
         total_barang = 0;

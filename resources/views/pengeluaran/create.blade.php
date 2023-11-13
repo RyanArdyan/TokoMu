@@ -19,7 +19,7 @@
                 {{-- is-invalid --}}
                 {{-- waktu_pengeluaran --}}
                 <div class="form-group">
-                    <label for="waktu_pengeluaran">Waktu Pengeluaran<span class="text-danger"> *</span></label>
+                    <label for="waktu_pengeluaran">Waktu Pengeluaran (bulan/tanggal/waktu)<span class="text-danger"> *</span></label>
                     {{-- attribute name digunakan untuk mengirim value attribute value --}}
                     <input id="waktu_pengeluaran" name="waktu_pengeluaran" class="waktu_pengeluaran_input input form-control"
                         type="datetime-local" style="width: 250px">
@@ -90,10 +90,8 @@
         </div>
     </form>
 
-    <button id="tombol_tambah_detail_pengeluaran_baru" class="btn btn-success btn-sm" type="button">Tambah Detail Pengeluaran Baru</button>
-
-    <button id="tombol_uji" class="btn btn-sm btn-primary">Sayang sekali aku tidak percaya kebaikan ada di hidup ku</button>
-
+    <button id="tombol_tambah_detail_pengeluaran_baru" class="btn btn-success btn-sm" type="button">Tambah Detail Pengeluaran Baru</button> 
+    <a href="{{ route('pengeluaran.index') }}" class="btn btn-sm btn-danger">Kembali</a>
     <h4 class="my-3 text-center text-bold">Detail Pengeluaran</h4>
     
     {{-- aku menyimpan formulir pengeluaran detail di dalam table beriut --}}

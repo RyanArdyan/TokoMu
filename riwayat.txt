@@ -1,7 +1,17 @@
 file: pengeluaran/create
 baris: 211
 tujuan: 
-1. Aku click tombol "Tambah Detail Pengeluaran Baru" maka total jumlah akan diisi
-2. Membaca 
+1. Aku ingin perbaiki export excel di fitur penjualan
 
 
+mengurus fitur cetak excel table penjualan:
+waktu:
+member:
+keterangan_penjualan: 
+total_barang: 
+total_harga:
+diskon:
+harus_bayar: 
+
+
+dimulai dari views/penjualan/index.

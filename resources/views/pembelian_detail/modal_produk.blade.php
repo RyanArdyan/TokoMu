@@ -12,6 +12,7 @@ aria-labelledby="label_judul" aria-hidden="true">
                         </button>
                     </div>
                     <div class="modal-body">
+                        <button type="button" class="btn btn-sm btn-danger mb-3" data-dismiss="modal">Tutup Modal Produk</button>
                         <div class="table-responsive">
                             <table id="table_produk" class="table table-striped table" width="100%">
                                 <thead width="100%">
@@ -32,3 +33,4 @@ aria-labelledby="label_judul" aria-hidden="true">
     </div>
     <!-- /.modal-dialog -->
 </div>
+

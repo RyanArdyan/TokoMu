@@ -1,14 +1,20 @@
 Tema kita adalah berpikir dan merancang alur aplikasi sebelum koding:
 Tidak boleh dihapus:
-YANG INGIN AKU LAKUKAN
-1. Setelah berhasil menyimpan data ke table pengeluaran dan pengeluaran_detail maka RESET FORMULIR dan tampilkan notifikasi "Berhasil menyimpan data"
-2. Reset Formulir bisa menggunakan script, tampilkan notifikasi bisa aku kirimkan dari controller lalu aku tangkap pake ajax lalu aku tampilan notifikasi nya.
-3. aku juga akan komentarkan console.log agar bisa tau debugging.
+Aku ingin coba membuat export data pengeluaran berdasarkan periode misalnya dari tanggal 1 sampai tanggal 3:
+terdiri dari th:
+Nama Admin:
+Nama Member:
+nama_pengeluaran:
+jumlah:
+harga_satuan:   
+subtotal:
+
+diakhir, terdiri dari th:
+total jumlah:
+total pengeluaran:
 
 
 
 
-BOLEH HAPUS:
-ANALISI:
-1. AKU CENTANG 1 MEMBER LALU AKU CLICK TOMBOL "CETAK KARTU" MAKA DIA RELOAD LALU LANGSUNG DOWNLOAD FILE PDF nya
-2. BERARTI DIMULAI DARI TOMBOL CETAK KARTU
+BOLEH DIHAPUS:
+aku ingin ada 2 baris data yaitu: tanggal 11 dan 12, berarti aku akan ekspor ke excel dari tanggal 10 samapi tanggal 13, lalu tanggal 13 diabaikan.

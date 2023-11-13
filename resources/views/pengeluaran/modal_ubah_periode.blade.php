@@ -3,8 +3,8 @@ aria-labelledby="label_latar_belakang_statis" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             {{-- when the form is sent then call the sales.export_excel route, method post --}}
-            {{-- ketika form dikirim maka panggil route penjualan.export_excel method post --}}
-            <form action="{{ route('penjualan.export_excel') }}" method="POST">
+            {{-- ketika form dikirim maka panggil route pengeluaran.export_excel method post --}}
+            <form action="{{ route('pengeluaran.export_excel') }}" method="POST">
                 {{-- laravel requires security from csrf attacks --}}
                 {{-- laravel mewajibkan keamanan dari serangan csrf --}}
                 @csrf
@@ -27,11 +27,10 @@ aria-labelledby="label_latar_belakang_statis" aria-hidden="true">
                         <input name="tanggal_awal" class="form-control" type="date" required>
                     </div>
                     {{-- is-invalid --}}
-                    {{-- enda date --}}
+                    {{-- end date --}}
                     {{-- tanggal akhir --}}
                     <div class="form-group">
                         <label for="tanggal_akhir">Tanggal akhir (bulan/tanggal/tahun)<span class="text-danger"> *</span></label>
-                        {{-- kirimkan value input lewat name --}}
                         <input name="tanggal_akhir" class="form-control" type="date" required>
                     </div>
                 </div>

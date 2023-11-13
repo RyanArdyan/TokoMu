@@ -13,6 +13,7 @@ use App\Models\ReturPembelian;
 use Carbon\Carbon;
 // gunakan package datatable
 use DataTables;
+use Illuminate\Support\Facades\DB;
 
 class PembelianController extends Controller
 {
@@ -39,37 +40,50 @@ class PembelianController extends Controller
     // memanggil data milik table pembelian 
     public function data()
     {
-        // tampilkan semua pembelian yang column total harga nya tidak sama dengan 0 lalu urutkan data dimulai dari yang paling baru
-        // berisi pembelian dimana value column total_harga tidak sama dengan 0, dipesan oleh colum updated_at, menurun, dapatkan semua data
-        $semua_pembelian = Pembelian::where('total_harga', '!=', 0)->orderBy('updated_at', 'desc')->get();
+        // display all purchasse, select the value from the purchase_id, etc column, sort the data starting from the most recent
+        // tampilkan semua pembelian, pilih value dari column pembelian_id dan lain-lain, urutkan data dimulai dari yang paling baru
+        // contains purchases ordered by column updated-at, descending, get all data
+        // berisi pembelian dipesan oleh colum updated_at, menurun, dapatkan semua data
+        $semua_pembelian = Pembelian::orderBy('updated_at', 'desc')->get();
+        // Yajra's syntax, here I repeat
         // syntax punya yajra, disini aku melakukan pengulangan
+        // return datatables off all_purchases
         // kembalikkan datatables dari semua_pembelian
         return DataTables::of($semua_pembelian)
+            // number repetition
             // pengulangan nomor
             ->addIndexColumn()
-            // ulang
-            // tambahColumn('tanggal', jalankan fungsi, parameter $pembelelian)
+            // add date column, run the following function, purchase parameters contains each purchase details
+            // tambahColumn tanggal, jalankan fungsi berikut, parameter pembelian berisi setiap pembelian detail
             ->addColumn('tanggal', function ($pembelian) {
-                // contoh tanggal nya adalah: Selasa, 7 Februari 2023
-                return $pembelian->updated_at->isoFormat('dddd, D MMMM Y');
+                // // an example date is: tuesday, february, 7 2023
+                // // contoh tanggal nya adalah: Selasa, 7 Februari 2023
+                // return $pembelian->tanggal_dan_waktu->isoFormat('dddd, D MMMM Y');
+                // create a CARBON object from the date you want to change
+                // buat objek CARBON dari tanggal yang ingin diubah
+                // karbom, createFromFormat, the first argument is time format, the second argument is the time you want to change, the third argument is time zone you want to use.
+                // karbon, buatDariBentuk, argument pertama adalah format waktu, argument kedua adalah waktu yang ingin diubah, argument ketiga adalah zona waktu yang ingin dipakai
+                $tanggal = Carbon::createFromFormat('Y-m-d H:i:s', $pembelian->tanggal_dan_waktu, 'Asia/Jakarta');
+                // to change the format date and use indonesian
+                // untuk mengubah format tanggal dan menggunakan bahasa indonesia
+                // The first argument in the Translation format is the name of the day in the string, date, month and year, the second argument is to use Indonesian
+                // argument pertama pada formatTerjemahan adalah nama hari dalam string, tanggal bulan dan tahun, argument kedua adalah menggunakan bahasa indonesia
+                return $tanggal->translatedFormat('l, d F Y', 'id');
             })
-            ->addColumn('penyuplai', function ($pembelian) {
-                // panggil table pembelian yang berelesi dengan table penyuplai
-                // panggil models pembelian yang berelasi dengan models penyuplai, lalu ambil value column nama_penyuplai
-                return $pembelian->penyuplai->nama_penyuplai;
-            })
-            // ulang detail pembelian
             ->addColumn('total_barang', function ($pembelian) {
+                // call the helpers form number function to change 1000 to 1.000, then pass $purchase->item_total as argument
                 // panggil fungsi angka_bentuk milik helpers agar mengubah 1000 menjadi 1.000, lalu kirimkan $pembelian->total_barang sebagai argumen
                 return angka_bentuk($pembelian->total_barang);
             })
             ->addColumn('total_harga', function ($pembelian) {
                 return rupiah_bentuk($pembelian->total_harga);
             })
+            // create buttons to view purchase details, delete and return purchases
             // Buat tombol lihat pembelian detail, hapus dan retur pembelian
-            // tambahColumn action, jalankan fungsi, parameter pembelian berisi semua pembelian detail
             ->addColumn('action', function ($pembelian) {
+                // Check whether two days have passed since the purchase time. If two days have passed after the buyer received the goods then I will not be able to return the goods purchased.
                 // cek apakah waktu pembelian sudah lewat dua hari, Jika sudah lewat dua hari setelah barang di terima pembeli maka aku tidak akan bisa retur barang yang di beli nya
+                // The Carbon::parse() function is a function provided by the Carbon library in Laravel, which is used to convert a date or time string into a Carbon object.
                 // Fungsi Carbon::parse() adalah fungsi yang disediakan oleh library Carbon di Laravel, yang digunakan untuk mengubah string tanggal atau waktu menjadi objek Carbon. 
                 // karbon::uraikan($pembelian->dibuat_pada)
                 $tanggal_pembelian = Carbon::parse($pembelian->created_at);
@@ -103,7 +117,7 @@ class PembelianController extends Controller
             })
             // jika aku membuat sebuah element di dalam colum maka harus dimasukkan ke dalam rawColumns
             // mentah column-column action
-            ->rawColumns(['action'])
+            ->rawColumns(['tanggal', 'total_barang', 'total_harga', 'action'])
             // buat nyata
             ->make(true);
     }
@@ -140,31 +154,40 @@ class PembelianController extends Controller
      * Setelah user memilih penyuplai maka simpan satu baris data ke table pembelian
      * $penyuplai_id berisi value column penyuplai_id yang didapatkan dari url anggaplah berisi angka 1
      */
-    public function create($penyuplai_id)
+    // public function create($penyuplai_id)
+    // {
+    //     // Simpan Pembelian secara sementara
+    //     // berisi pembelian buat
+    //     $detail_pembelian = Pembelian::create([
+    //         // column penyuplai_id berisi penyuplai_id yang di kirimkan lewat url
+    //         'penyuplai_id' => $penyuplai_id,
+    //         // total_barang diisi 0 secara sementara 
+    //         'total_barang' => 0,
+    //         // total_harga diisi 0 secara sementara
+    //         'total_harga' => 0
+    //     ]);
+
+    //     // Membuat Session
+    //     // session berfungsi menyimpan data, jika browser ditutup maka data sessi nya hilang\
+    //     // aku membuat ini agar aku bisa menampilkan detail penyuplai di halaman pembelian detail
+    //     // sessi penyuplai_id berisi penyuplai_id anggaplah 1 yaitu smartfren
+    //     session(['penyuplai_id' => $penyuplai_id]);
+    //     // sessi pembelian_id berisi value dari detail_pembelian, column pembelian_id, anggaplah 1
+    //     session(['pembelian_id' => $detail_pembelian->pembelian_id]);
+
+    //     // kembalikkan alihkan ke route pembelian_detail.index
+    //     // aku tak bisa mengirim session menggunakan route()->with('penyuplai_id' => $penyuplai_id)
+    //     return redirect()->route('pembelian_detail.index');
+    // }
+
+    public function create()
     {
-        // Simpan Pembelian secara sementara
-        // berisi pembelian buat
-        $detail_pembelian = Pembelian::create([
-            // column penyuplai_id berisi penyuplai_id yang di kirimkan lewat url
-            'penyuplai_id' => $penyuplai_id,
-            // total_barang diisi 0 secara sementara 
-            'total_barang' => 0,
-            // total_harga diisi 0 secara sementara
-            'total_harga' => 0
-        ]);
-
-        // Membuat Session
-        // session berfungsi menyimpan data, jika browser ditutup maka data sessi nya hilang\
-        // aku membuat ini agar aku bisa menampilkan detail penyuplai di halaman pembelian detail
-        // sessi penyuplai_id berisi penyuplai_id anggaplah 1 yaitu smartfren
-        session(['penyuplai_id' => $penyuplai_id]);
-        // sessi pembelian_id berisi value dari detail_pembelian, column pembelian_id, anggaplah 1
-        session(['pembelian_id' => $detail_pembelian->pembelian_id]);
-
-        // kembalikkan alihkan ke route pembelian_detail.index
-        // aku tak bisa mengirim session menggunakan route()->with('penyuplai_id' => $penyuplai_id)
-        return redirect()->route('pembelian_detail.index');
+        // return to purchase_detail.index view
+        // kembalikkan ke tampilan pembelian_detail.index
+        return view('pembelian_detail.index');         
     }
+
+
 
     /**
      * Perbarui column total_barang dan total_harga di table pembelian ketika tombol Simpan Pembelian di click
@@ -205,6 +228,28 @@ class PembelianController extends Controller
         // kembali alihkan ke route pembelian.index
         return redirect()->route('pembelian.index');
     }
+
+    // $request menangkap pembelian_id yang dikirimkan url, anggaplah berisi angka 1
+    public function nota_kecil($pembelian_id) {
+        // ambil detail_pembelian berdasaran pembelian_id
+        // berisi model pembelian dimana value column pembelian_id sama dengan value parameter $pembelian_id, ambil data baris pertama
+        $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
+        // ambil beberapa data table pembelian_detail berdasarkan column pembelian_id
+        // berisi model pembelianDetail dimana value column pembelian_id sama dengan value variable $pembelian_id, ambil beberapa baris data
+        $semua_pembelian_detail = PembelianDetail::where('pembelian_id', $pembelian_id)->get();
+
+        // kembalikkan ke tampilan pembelian.nota_kecil, kirimkan value variable $detail_pembelian
+        return view('pembelian.nota_kecil', [
+            // key detail_pembelian berisi value variable $detail_pembelian
+            'detail_pembelian' => $detail_pembelian,
+            // key semua_pembelian_detail berisi value variable $semua_pembelian_detail
+            'semua_pembelian_detail' => $semua_pembelian_detail,
+            // key nama_perusahaan berisi panggil database table pengaturan, ambil data baris pertama lalu ambil value column nama_perusahaan
+            'nama_perusahaan' => DB::table('pengaturan')->first()->nama_perusahaan,
+            'alamat_perusahaan' => DB::table('pengaturan')->first()->alamat_perusahaan,
+        ]);
+    }
+
 
     // mengambil daftar data penyuplai untuk di tampilkan di modal pilih penyuplai
     public function penyuplai()
@@ -292,22 +337,6 @@ class PembelianController extends Controller
         return response()->json('Berhasil menghapus 1 baris di table pembelian dan beberapa baris data di table pembelian_detail');
     }
 
-    // jadi jika aku di halaman pembelian_detail.index lalu aku tidak memilih produk penyuplai lalu aku kembali pembelian.index maka detail pembelian di table pembelian yang baru tadi akan di hapus dan semua pembelian detail terkait nya juga akan terhapus
-    public function kembali($pembelian_id)
-    {
-        // ambil detail pembelian
-        // pembelian dimana value column pembelian_id sama dengan value paramter $pembelian_id, baris data pertama
-        $detail_pembelian = Pembelian::where('pembelian_id', $pembelian_id)->first();
-
-        // jika value detail_pembelian, column total_harga sama dengan - maka
-        if ($detail_pembelian->total_harga === 0) {
-            // detail_pembelian dihapus
-            $detail_pembelian->delete();
-        };
-
-        // kembalikan lalu alihkan ke route pembelian.index
-        return redirect()->route('pembelian.index');
-    }
 
     // method retur_pembelian agar aku bisa retur pembelian atau mengembalikkan pembelian
     // anggaplah parameter $pembelian_id berisi angka 1

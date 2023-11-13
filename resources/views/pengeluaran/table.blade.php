@@ -15,7 +15,6 @@
                     <th scope="col" width="22%">Tanggal pengeluaran</th>
                     <th scope="col">Nama Pengeluaran</th>
                     <th scope="col" width="18%">Total Pengeluaran</th>
-                    <th scope="col">Action</th>
                 </tr>
             </thead>
         </table>

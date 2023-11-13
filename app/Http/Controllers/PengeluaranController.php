@@ -11,6 +11,7 @@ use App\Models\PengeluaranDetail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PengeluaranImport;
 use App\Exports\PengeluaranExport;
+use Carbon\Carbon;
 // package laravel datatables
 use DataTables;
 
@@ -31,7 +32,7 @@ class PengeluaranController extends Controller
     public function read()
     {
         // ambil semua value dari column pengeluaran_id, nama_pengeluaran, total_pengeluaran dan updated_at
-        $semua_pengeluaran = Pengeluaran::select('pengeluaran_id', 'nama_pengeluaran', 'total_pengeluaran', 'updated_at')->get();
+        $semua_pengeluaran = Pengeluaran::select('waktu_pengeluaran', 'pengeluaran_id', 'nama_pengeluaran', 'total_pengeluaran', 'updated_at')->get();
         // syntax punya yajra
         // kembalikkan datatables dari semua_pengeluaran
         return DataTables::of($semua_pengeluaran)
@@ -49,24 +50,27 @@ class PengeluaranController extends Controller
                 ';
             })
             ->addColumn('tanggal_pengeluaran', function(Pengeluaran $pengeluaran) {
-                // isoFormat() akan membuat tanggal mudah dibaca
-                return $pengeluaran->updated_at->isoFormat('dddd, D MMMM Y');
+                // an example date is: tuesday, february, 7 2023
+                // contoh tanggal nya adalah: Selasa, 7 Februari 2023
+                // return $pengeluaran->tanggal_dan_waktu->isoFormat('dddd, D MMMM Y');
+                // create a CARBON object from the date you want to change
+                // buat objek CARBON dari tanggal yang ingin diubah
+                // karbom, createFromFormat, the first argument is time format, the second argument is the time you want to change, the third argument is time zone you want to use.
+                // karbon, buatDariBentuk, argument pertama adalah format waktu, argument kedua adalah waktu yang ingin diubah, argument ketiga adalah zona waktu yang ingin dipakai
+                $tanggal = Carbon::createFromFormat('Y-m-d H:i:s', $pengeluaran->waktu_pengeluaran, 'Asia/Jakarta');
+                // to change the format date and use indonesian
+                // untuk mengubah format tanggal dan menggunakan bahasa indonesia
+                // The first argument in the Translation format is the name of the day in the string, date, month and year, the second argument is to use Indonesian
+                // argument pertama pada formatTerjemahan adalah nama hari dalam string, tanggal bulan dan tahun, argument kedua adalah menggunakan bahasa indonesia
+                return $tanggal->translatedFormat('l, d F Y', 'id');
             })
             ->addColumn('total_pengeluaran', function(Pengeluaran $pengeluaran) {
                 // panggil fungsi rupiah_bentuk milik helpers dan dikirimkan $pengeluaran->total_pengeluaran sebagai argumnen
                 return rupiah_bentuk($pengeluaran->total_pengeluaran);
             })
-            // buat tombol edit
-            ->addColumn('action', function(Pengeluaran $pengeluaran) {
-                return  '
-                    <button data-id="' . $pengeluaran->pengeluaran_id . '" class="tombol_edit btn btn-warning btn-sm">
-                        <i class="fas fa-pencil-alt"></i> Edit
-                    </button>
-                ';
-            })
         // jika sebuah column berisi relasi antar table dan membuat elemnt html maka harus dimasukkan ke dalam rawColumns
         // column-column mentah dari select dan lain-lain
-        ->rawColumns(['select', 'tanggal_pengeluaran', 'total_pengeluaran', 'action'])
+        ->rawColumns(['select', 'tanggal_pengeluaran', 'total_pengeluaran'])
         // buat nyata
         ->make(true);
     }
@@ -123,9 +127,9 @@ class PengeluaranController extends Controller
             // key status berisi value 200
             'status' => 200,
             // the data key contains the value of variable $detail_expense_form_data
-            'data' =>  $data_formulir_pengeluaran_detail
-            // // key pesan berisi pesan berikut contohnya "Pengeluaran gaji karyawan berhasil di simpan"
-            // 'pesan' => "Pengeluaran $request->nama_pengeluaran berhasil di simpan.",
+            'data' =>  $data_formulir_pengeluaran_detail,
+            // key pesan berisi pesan berikut
+            'pesan' => "Pengeluaran berhasil di simpan.",
         ]);
     }
 
@@ -242,10 +246,25 @@ class PengeluaranController extends Controller
         return back();
     }
 
-    // export
+    // export to excel based on period
+    // export ke excel berdasarkan periode
+    // $request will retrieve the data the form sends
+    // $request akan mengambil data yang dikirim formulir
     public function export_excel(Request $request)
     {
-        // kembalikkan excel::unduh(new PengeluranExport, 'pengeluran.xlsx')
-        return Excel::download(new PengeluaranExport, 'pengeluaran.xlsx');
+        // dump and die atau cetak dan matikan semua value formulir
+        // dd($request->all());
+        // hasil dari dd adalah
+        // "_token" => "g44mj6FNhUC8OcXibLgp8dBClErkjQ02bTaM67F7"
+        // "tanggal_awal" => "2023-04-23"
+        // "tanggal_hari_ini" => "2023-04-26"
+
+        // contains takes input value name="start_date"
+        // berisi mengambil value input name="tanggal_awal"
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        // kembalikkan excel::unduh(new panggil PengeluaranExport.php lalu kirimkan value parameter $tanggal_awal dan $tanggal_akhir, nama file nya adalah 'Pengeluaran.xlsx')
+        return Excel::download(new PengeluaranExport($tanggal_awal, $tanggal_akhir), 'pengeluaran.xlsx');
     }
 }

@@ -23,13 +23,15 @@ return new class extends Migration
             // onDelete('cascade') berarti jika suatu produk dihapus maka semua pembelian_detail terkait juga akan terhapus
             // anggaplah aku hapus produk smartfren unlimited maka semua pembelian_detail yang terkait dengan smartfren unlimited juga akan terhapus
             $table->foreignId('produk_id')->constrained('produk')->references('produk_id')->onDelete('cascade')->onUpdate('cascade');
+            // buat column foreign key penyuplai_id yang berelasi dengan table penyuplai, column penyuplai_id
+            // onUpdate('cascade') berarti jika aku ubah suatu penyuplai maka pembelian nya akan mengambil data yang berubah
+            // onDelete('cascade') berarti jika aku hapus suatu penyuplai maka pembelian nya yang terkait juga akan terhapus
+            $table->foreignId('penyuplai_id')->constrained('penyuplai')
+                ->references('penyuplai_id')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             // tipe asing id, column retur_pembelian_id, bolek kosong karena tidak semua pembelian_detail akan di retur
             $table->foreignId('retur_pembelian_id')->nullable();
-            // // tipe data string, column nama_produk
-            // $table->string('nama_produk');
-            // // buat tipe data big Integer
-            // $table->integer('harga');
-            // tipe data smallInteger menyimpan value maksimal 32767, smallInteger jauh lebih mengehemat memori dibandingkan integer karena hanya menggunakan 2 BYTE, kalau integer 4 byte
             // $meja->kecil_integer, column jumlah
             $table->smallInteger('jumlah');
             $table->integer('subtotal');

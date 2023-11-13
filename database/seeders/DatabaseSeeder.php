@@ -89,25 +89,28 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Pembelian::create([
-            'penyuplai_id' => 1,
+            'user_id' => 1,
             'total_barang' => 10,
-            'total_harga' => 1050000
+            'total_harga' => 1050000,
+            'keterangan_pembelian' => 'Pembelian Peralatan',
+            'tanggal_dan_waktu' => now()
         ]);
 
         PembelianDetail::create([
             'pembelian_id' => 1,
             'produk_id' => 1,
+            'penyuplai_id' => 1,
             'jumlah' => 10,
             'subtotal' => 770000
         ]);
 
         PembelianDetail::create([
             'pembelian_id' => 1,
-            'produk_id' => 2,
+            'produk_id' => 1,
+            'penyuplai_id' => 1,
             'jumlah' => 10,
-            'subtotal' => 280000
+            'subtotal' => 770000
         ]);
-
 
         Pengeluaran::create([
             'waktu_pengeluaran' => now(),

@@ -8,21 +8,9 @@
     <div class="card-body">
         {{-- input hidden --}}
         {{-- produk id --}}
-        {{-- <div class="form-group">
+        <div class="form-group">
             <label for="produk_id">Produk ID</label>
             <input name="produk_id" id="produk_id" type="number" placeholer="Akan diisi jika aku sudah click tombol pilih di modal pilih produk" class="form-control" readonly>
-        </div> --}}
-
-        {{-- Keterangan --}}
-        <div class="form-group">
-            <label for="keterangan_pembelian">Keterangan</label>
-            <input id="keterangan_pembelian" name="keterangan_pembelian" class="form-control" type="text" autocomplete="off">
-        </div>
-
-        {{-- Tanggal pembelian --}}
-        <div class="form-group">
-            <label for="tanggal_dan_waktu">Tanggal & Waktu</label>
-            <input id="tanggal_dan_waktu" name="tanggal_dan_waktu" class="form-control" type="datetime-local">
         </div>
 
         {{-- total barang --}}
@@ -44,4 +32,3 @@
     <!-- /.card-body -->   
 </form>
 {{-- akhir form pembelian untuk memperbarui ke table pembelian --}}
-
