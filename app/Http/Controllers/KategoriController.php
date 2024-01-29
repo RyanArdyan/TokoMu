@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Kategori;
-use App\Models\Produk;
 
 class KategoriController extends Controller
 {
@@ -21,8 +20,8 @@ class KategoriController extends Controller
         // jika $pemintaan memiliki ajax
         if ($request->ajax()) {
             // ambil semua kategori
-            // Models/Kategori pilih value column kategori_id, nama_kategori, deskripsi_kategori dan di updated_at, ambil dari urutan Z ke A.
-            $semua_kategori = Kategori::select('kategori_id', 'nama_kategori', 'deskripsi_kategori', 'updated_at')->latest()->get();
+            // Models/Kategori pilih value column kategori_id, nama_kategori dan di updated_at, ambil dari urutan Z ke A.
+            $semua_kategori = Kategori::select('kategori_id', 'nama_kategori', 'updated_at')->latest()->get();
 
             // buat elemnt table di dalam $data
             // kita akan menjahit menggunakan tanda .
@@ -30,12 +29,8 @@ class KategoriController extends Controller
                 <table class="table">
                 <thead class="bg-primary">
                     <tr>
-                        <th scope="col" width="5%">
-                            <input id="pilih_semua" type="checkbox">
-                        </th>
                         <th scope="col" width="6%">No</th>
                         <th scope="col">Kategori</th>
-                        <th scope="col">Deskripsi</th>
                         <th scope="col">Diperbarui Pada</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -52,12 +47,8 @@ class KategoriController extends Controller
                 // aku menggunkana iso format agar mudah di baca manusia
                 $data .=
                     '<tr>
-                        <td>
-                            <input class="pilih form-check-input mx-auto" type="checkbox" name="kategori_ids" value="' . $detail_kategori->kategori_id . '">
-                        </td>
                         <th>' . $nomor++ . '</th>
                         <td>' . $detail_kategori->nama_kategori . '</td>
-                        <td>' . $detail_kategori->deskripsi_kategori . '</td>
                         <td>' . $detail_kategori->updated_at->isoFormat('dddd, D MMMM Y') . '</td>
                         <td>
                             <button data-id="' . $detail_kategori->kategori_id . '" class="tombol_edit btn btn-sm btn-warning">
@@ -191,7 +182,7 @@ class KategoriController extends Controller
             $detail_kategori->nama_kategori = $request->nama_kategori;
             $detail_kategori->deskripsi_kategori = $request->deskripsi_kategori;
             $detail_kategori->save();
-            
+
 
             return response()->json([
                 'status' => 200,
@@ -203,10 +194,10 @@ class KategoriController extends Controller
     // hapus kategori yang dipilih
     // $request berisi semua_kategori_id, contoh ["1", "2"]
     public function destroy(Request $request)
-    {   
+    {
         // hapus beberapa kategori
         Kategori::whereIn('kategori_id', $request->semua_kategori_id)->delete();
-        
+
         // kembalikkan tanggapan berupa json
         return response()->json([
             // key status berisi 200

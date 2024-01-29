@@ -12,7 +12,7 @@
             <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <img src="{{ asset('storage/foto_profil') }}/{{ auth()->user()->gambar }}" alt="Foto Profile" class="rounded-circle foto_profil">
                 <span class="pro-user-name ml-1 nama_user">
-                    {{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i> 
+                    {{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i>
                 </span>
             </a>
             <div class="dropdown-menu dropdown-menu-right profile-dropdown ">

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penyuplai', function (Blueprint $table) {
             // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('penyuplai_id');
+            // buat column varchar, nama columnya adalah nama_penyuplai dan value nya harus unik
             $table->string('nama_penyuplai')->unique();
             $table->string('telepon_penyuplai')->unique();
             $table->string('alamat_penyuplai');

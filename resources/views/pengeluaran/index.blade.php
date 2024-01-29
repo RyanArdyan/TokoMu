@@ -42,6 +42,7 @@
                 {{-- termasuk ada jika modal ubah periode dipanggil --}}
                 @includeIf('pengeluaran.modal_ubah_periode')
 
+                {{-- jika #tombol_ubah_periode di click maka panggil script --}}
                 <button id="tombol_ubah_periode" class="btn btn-sm btn-success">
                         <i class="mdi mdi-file-excel"></i> Export Excel</button>
             </div>
@@ -107,7 +108,7 @@
         if ($("#select_all").prop("checked")) {
             // panggil .pilih lalu centang nya benar
             $(".pilih").prop("checked", true);
-        } 
+        }
         // jika #pilih_semua tidak di centang maka
         else {
             // panggil .pilih lalu centang nya dihapus atau salah
@@ -139,11 +140,11 @@
             .then((result) => {
                 // jika hasilnya di konfirmasi
                 if (result.isConfirmed) {
-                    // .serialize akan mengirimkan semua data pada table karena table disimpan di dalam form 
+                    // .serialize akan mengirimkan semua data pada table karena table disimpan di dalam form
                     // sebenarnya aku mengirim beberapa value input name="pengeluaran_ids" yang di centang
                     // jquery lakukan ajax tipe kirim, ke url /pengeluarn/destroy, panggil #form_pengeluaran, kirimkan value input
                     $.post('/pengeluaran/destroy', $('#form_pengeluaran').serialize())
-                        // 
+                        //
                         .done(function(resp) {
                             // notifkasi
                             Swal.fire(

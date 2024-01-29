@@ -30,6 +30,7 @@ class Produk extends Model
         // argumen kedua adalah foreign key di table produk
         // argumen ketiga adalah primary key di table kategori
         return $this->belongsTo(Kategori::class, 'kategori_id', 'kategori_id');
+
     }
 
     // relasi

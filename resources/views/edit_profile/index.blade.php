@@ -113,7 +113,7 @@
             $(this).removeClass("fa-eye-slash");
             // .lihat_password tambah class .fa-eye
             $(this).addClass("fa-eye");
-            // logikanya sama saja, hanya saja terbalik secara kode 
+            // logikanya sama saja, hanya saja terbalik secara kode
         };
     });
 
