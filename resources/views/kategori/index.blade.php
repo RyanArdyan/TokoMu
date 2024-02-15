@@ -48,25 +48,25 @@
     function read() {
         // lakukan ajax
         $.ajax({
-                // url ke route kategori.index
-                url: "{{ route('kategori.index') }}",
-                // panggil route tipe dapatkan
-                type: "GET",
+            // url ke route kategori.index
+            url: "{{ route('kategori.index') }}",
+            // panggil route tipe dapatkan
+            type: "GET",
 
-            })
-            // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil response berupa element table html
-            .done(function(resp) {
-                // panggil #loading, lalu isi dengan table
-                $("#loading").html(resp);
-                // pangil table lalu gunakan datatables client side
-                $("table").DataTable({
-                    // gunakan bahasa indonesia di datatable
-                    language: {
-                        // panggil folder public
-                        url: '{{ asset('terjemahan_datatable/indonesia.json') }}'
-                    }
-                });
+        })
+        // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil response berupa element table html
+        .done(function(resp) {
+            // panggil #loading, lalu isi dengan table
+            $("#loading").html(resp);
+            // pangil table lalu gunakan datatables client side
+            $("table").DataTable({
+                // gunakan bahasa indonesia di datatable
+                language: {
+                    // panggil folder public
+                    url: '{{ asset('terjemahan_datatable/indonesia.json') }}'
+                }
             });
+        });
     };
     read();
 
@@ -157,7 +157,7 @@
                 // panggil route type dapatkan
                 type: "GET"
             })
-            // jika 
+            // jika
             .done(function(resp) {
                 // isi input
                 // panggil id e_nama_kategori lalu diisi dengan tanggapan.nama_kategori
@@ -245,12 +245,13 @@
         // buat array uuntuk menyimpan semua kategori_id
         let semua_kategori_id = [];
         // lakukan pengulangan
-        // ambil input nam="kategori_ids" yang dicentang
-        $("input:checkbox[name=kategori_ids]:checked").each(function() {
-            // dorong value input name="kateegori_ids" ke array semua_kategori_id
+        // ambil setiap input name="kategori_ids" yang dicentang, lalu jalanikan fungsi berikut
+        $(".pilih:checked").each(function() {
+            // dorong value input name="kategori_ids" ke array semua_kategori_id
             semua_kategori_id.push($(this).val());
         });
-
+        
+        // jika value variable sesmua_kategori_id.panjangnya sama dengan 0 maka
         if (semua_kategori_id.length === 0) {
             // tampilkan notifikasi menggunakna sweetalert
             Swal.fire('Anda belum memilih kategori');
@@ -265,29 +266,33 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, hapus!'
-            }).then((result) => {
+            })
+            // kemudian hasilnya jalankan fungsi berikut
+            .then((result) => {
                 // jika hasilnya di konfirmasi maka
                 if (result.isConfirmed) {
                     // lakukan ajax
                     $.ajax({
-                            // url memanggil route kategori.destroy
-                            url: "{{ route('kategori.destroy') }}",
-                            // panggil route tipe 
-                            type: 'DELETE',
-                            // kirimkan data berupa object
-                            data: {
-                                // kirim 
-                                semua_kategori_id: semua_kategori_id
-                            },
-                            // buat csrf token untuk keamanan
-                            headers: {
-                                // panggil value meta name="csrf-token" attribute conntent
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                                    'content')
-                            },
-                            // success
-                        })
+                        // url memanggil route kategori.destroy
+                        url: "{{ route('kategori.destroy') }}",
+                        // panggil route tipe
+                        type: 'DELETE',
+                        // kirimkan data berupa object
+                        data: {
+                            // key semua_kategori_id berisi value array variable semua_kategori_id
+                            semua_kategori_id: semua_kategori_id
+                        },
+                        // buat csrf token untuk keamanan
+                        headers: {
+                            // panggil value meta name="csrf-token" attribute conntent
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
+                                'content')
+                        },
+                        // success
+                    })
+                    // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapannya
                         .done(function(resp) {
+                            // jika tanggapan.statusnya sama dengan 200 maka
                             if (resp.status === 200) {
                                 // console.log(resp.semua_kategori);
 

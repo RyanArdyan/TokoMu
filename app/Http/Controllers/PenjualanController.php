@@ -28,19 +28,29 @@ class PenjualanController extends Controller
         // hapus beberapa baris dari table penjualan yang column total_barang nya sama dengan 0
         // penjualan dimana value column total_barang sama dengan 0 maka hapus
         Penjualan::where('total_barang', 0)->delete();
-        
+
         // kembalikkan ke tampilan penjualan.index
         return view('penjualan.index');
     }
 
-    // menampilkan data table penjualan ke dalam table 
-    public function data()
+    // melakukan read atau baca atau menampilkan data table penjualan ke dalam table
+    // parameter $request untuk mendangkap data yg dikirim oleh ajax
+    public function data(Request $request)
     {
         // setiap penjualan bisa memilih member untuk mendapatkan diskon dari table pengaturan
         // berisi model penjualan berelasi dengan model member, urutkan data berdasarkan column updated_at dari z ke a, dapatkan beberapa datanya
-        $semua_penjualan = Penjualan::with('member')->orderBy('penjualan_id', 'desc')->get();
+        $semua_penjualan = Penjualan::with('member')->orderBy('updated_at', 'desc')->get();
 
-        // kembalikkkan datatables 
+        // from aate atau dari tanggal dan to_date atau ke tanggal berfungsi menangkap property form_date di dalam objek date dibuat oleh objek d.
+        // metode filled atau dipenuhi berfungsi untuk menentukan apakah suatu nilai ada pada permintaan dan bukan merupakan string kosong
+        // berarti jika ada permintaan from_date dan to_date yg dikirim
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            // berisi ambil beberapa penjualan berdasarkan jangkauan request from_date sampai request to_date
+            // berisi $semua_penjualan->dimanaAntara('tanggal_dan_waktu', $permintaan->dari_tanggal, $permintaan->ke_tanggal)
+            $semua_penjualan = $semua_penjualan->whereBetween('tanggal_dan_waktu', [$request->from_date, $request->to_date]);
+        };
+
+        // kembalikkkan datatables
         return datatables()
             // dari $semua_penjualan
             ->of($semua_penjualan)
@@ -60,20 +70,28 @@ class PenjualanController extends Controller
             ->addColumn('harus_bayar', function ($penjualan) {
                 return rupiah_bentuk($penjualan->harus_bayar);
             })
+            // lakukan pengulangan terhadap setiap detail_penjualan
             ->addColumn('tanggal', function ($penjualan) {
-                // // an example date is: tuesday, february, 7 2023
-                // // contoh tanggal nya adalah: Selasa, 7 Februari 2023
-                // return $penjualan->tanggal_dan_waktu->isoFormat('dddd, D MMMM Y');
-                // create a CARBON object from the date you want to change
-                // buat objek CARBON dari tanggal yang ingin diubah
-                // karbom, createFromFormat, the first argument is time format, the second argument is the time you want to change, the third argument is time zone you want to use.
-                // karbon, buatDariBentuk, argument pertama adalah format waktu, argument kedua adalah waktu yang ingin diubah, argument ketiga adalah zona waktu yang ingin dipakai
-                $tanggal = Carbon::createFromFormat('Y-m-d H:i:s', $penjualan->tanggal_dan_waktu, 'Asia/Jakarta');
-                // to change the format date and use indonesian
-                // untuk mengubah format tanggal dan menggunakan bahasa indonesia
-                // The first argument in the Translation format is the name of the day in the string, date, month and year, the second argument is to use Indonesian
-                // argument pertama pada formatTerjemahan adalah nama hari dalam string, tanggal bulan dan tahun, argument kedua adalah menggunakan bahasa indonesia
-                return $tanggal->translatedFormat('l, d F Y', 'id');
+                // // // an example date is: tuesday, february, 7 2023
+                // // // contoh tanggal nya adalah: Selasa, 7 Februari 2023
+                // // return $penjualan->tanggal_dan_waktu->isoFormat('dddd, D MMMM Y');
+                // // create a CARBON object from the date you want to change
+                // // buat objek CARBON dari tanggal yang ingin diubah
+                // // karbom, createFromFormat, the first argument is time format, the second argument is the time you want to change, the third argument is time zone you want to use.
+                // // karbon, buatDariBentuk, argument pertama adalah format waktu, argument kedua adalah waktu yang ingin diubah, argument ketiga adalah zona waktu yang ingin dipakai
+                // $tanggal = Carbon::createFromFormat('Y-m-d H:i:s', $penjualan->tanggal_dan_waktu, 'Asia/Jakarta');
+                // // to change the format date and use indonesian
+                // // untuk mengubah format tanggal dan menggunakan bahasa indonesia
+                // // The first argument in the Translation format is the name of the day in the string, date, month and year, the second argument is to use Indonesian
+                // // argument pertama pada formatTerjemahan adalah nama hari dalam string, tanggal bulan dan tahun, argument kedua adalah menggunakan bahasa indonesia
+                // return $tanggal->translatedFormat('l, d F Y', 'id');
+
+                // Berisi setiap detail dari value detail_penjualan, column tanggal_dan_waktu
+                $tanggal_dan_waktu = $penjualan->tanggal_dan_waktu;
+                // berfungsi mengubah tanggal dan waktu menjadi tanggal saja
+                $tanggal_baru = date("Y-m-d", strtotime($tanggal_dan_waktu));
+                // mengambalikkan value dari variable tanggal_baru
+                return $tanggal_baru;
             })
             ->addColumn('kode_member', function ($penjualan) {
                 // berisi value detail_penjualan, column member_id, jika null berarti dia adalah pelanggan umum atau bukan member
@@ -105,7 +123,7 @@ class PenjualanController extends Controller
                 // kirimkan penjualan_id lewat url
 
                 // cek apakah waktu penjualan sudah lewat dua hari, Jika sudah lewat dua hari setelah barang di terima pembeli maka pembeli tidak akan bisa retur barang yang di beli nya
-                // Fungsi Carbon::parse() adalah fungsi yang disediakan oleh library Carbon di Laravel, yang digunakan untuk mengubah string tanggal atau waktu menjadi objek Carbon. 
+                // Fungsi Carbon::parse() adalah fungsi yang disediakan oleh library Carbon di Laravel, yang digunakan untuk mengubah string tanggal atau waktu menjadi objek Carbon.
                 // karbon::uraikan($penjualan->dibuat_pada)
                 $tanggal_penjualan = Carbon::parse($penjualan->created_at);
                 // jika sudah lewat dua hari setelah tanggal_penjualan atau di buat maka aku akan berikan attribute disabled atau matikan tombol nya
@@ -113,7 +131,7 @@ class PenjualanController extends Controller
                     $retur_penjualan = '<button data-toggle="keterangan_alat" data-placement="top" title="Retur Penjualan" class="btn btn-danger btn-sm" disabled>
                     <i class="mdi mdi-credit-card-refund"></i>
                 </button>';
-                } 
+                }
                 // jika belum lewat dari dua hari setelah tanggal_penjualan di buat maka cek apakah penjualan belum pernah di retur, jika belum pernah di retur maka pelanggan boleh melakukan retur, jika sudah pernah retur maka pelanggan tidak boleh retur laig
                 // ketika di click maka panggil fungsi data_retur
                 else {
@@ -191,7 +209,7 @@ class PenjualanController extends Controller
         if (!$detail_member) {
             // berisi 'Bukan Member';
             $nama_member = 'Bukan Member';
-        } 
+        }
         // lain jika ada detail_member karena kasir memilih member di penjualan_detail/index
         else if ($detail_member) {
             // berisi value dari $detail_member, column nama_member
@@ -340,7 +358,7 @@ class PenjualanController extends Controller
     // method retur_penjualan agar aku bisa retur penjualan atau mengembalikkan penjualan
     // anggaplah parameter $penjualan_id berisi angka 1
     public function data_retur($penjualan_id)
-    {   
+    {
         // karena relasi nya adalah belongsTo atau milik maka aku harus menggunakan pemuatan bersemangat menggunakan syntax ::with()
         // model PenjualanDetail berelasi dengan model produk jadi 1 penjualan detail hanya bisa membeli 1 produk
         // table PenjualanDetail yang berelasi dengan table produk dimana value column penjualan_id sama dengan $penjualan_id, dapatkan semua data terkait
@@ -367,7 +385,7 @@ class PenjualanController extends Controller
 
                     <span class='jumlah_retur_error_$penjualan_detail->produk_id pesan_error_$penjualan_detail->produk_id text-danger'></span>
                     ";
-                } 
+                }
                 // lain jika value $penjualan_detail, column retur_penjualan_id tidak sama dengan NULL berarti sudah diisi dengan retur_penjualan_id maka berikan attribute disabled agar aku tidak bisa retur penjualan_detail lagi
                 else if ($penjualan_detail->retur_penjualan_id !== NULL) {
                     // anggaplah berisi .jumlah_retur_1, .jumlah_retur_1, dst.
@@ -403,7 +421,7 @@ class PenjualanController extends Controller
                     <i class='mdi mdi-credit-card-refund'></i>
                     </button>";
                 };
-                
+
             })
             // jika aku membuat element html di addColumn maka aku wajib memasukkan ke dalam rawColumns([]) atau mentahKolom
             // mentah column-column
@@ -422,7 +440,7 @@ class PenjualanController extends Controller
         // berisi vaidator buat semua permintaan
         $validator = Validator::make($request->all(), [
             // input name="jumlah_retur" harus mengikuti aturan berikut
-            // max berarti jika aku jual 10 produk maka maksimal produk yg bisa diretur adalah 10   
+            // max berarti jika aku jual 10 produk maka maksimal produk yg bisa diretur adalah 10
             'jumlah_retur' => "required|integer|min:1|max:$detail_penjualan_detail->jumlah",
             'keterangan' => 'required|max:255',
         ], [
@@ -461,7 +479,7 @@ class PenjualanController extends Controller
             'tanggal_retur' => now(),
             'keterangan' => $keterangan
         ]);
-        
+
         // value $detail_penjualan_detail, colum retur_penjualan_id diisi value $detail_retur_penjualan, column retur_penjualan_id
         $detail_penjualan_detail->retur_penjualan_id = $detail_retur_penjualan->retur_penjualan_id;
         // detail_penjualan_detail diperbarui

@@ -1,13 +1,13 @@
 <div class="left-side-menu">
-
     <div class="slimscroll-menu">
-
         <!-- User box -->
         <div class="user-box text-center">
             <div class="dropdown">
                 <a href="#" class="nama_user text-dark dropdown-toggle h5 mt-2 mb-1 d-block"
+                {{-- cetak detail_user yang autentikasi atau login, column name --}}
                     data-toggle="dropdown">{{ auth()->user()->name }}</a>
             </div>
+            {{-- cetak detail_user yang autentikasi atau login, column email --}}
             <p class="text-muted">{{ auth()->user()->email }}</p>
             <ul class="list-inline">
                 <li class="list-inline-item">
@@ -26,9 +26,7 @@
 
         <!--- Sidemenu -->
         <div id="sidebar-menu">
-
             <ul class="metismenu" id="side-menu">
-
                 <li class="menu-title">Navigasi</li>
                 {{-- jika kasir yang login --}}
                 {{-- jika user yang login, value column is_admin nya adalah 0 maka --}}

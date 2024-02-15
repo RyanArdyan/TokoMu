@@ -17,7 +17,7 @@ class KategoriController extends Controller
     public function index(Request $request)
     {
         // jika script memninta data kategori lewat permintaan ajax
-        // jika $pemintaan memiliki ajax
+        // jika $pemintaan memiliki ajax atau ini untuk read atau mengambil data kategori
         if ($request->ajax()) {
             // ambil semua kategori
             // Models/Kategori pilih value column kategori_id, nama_kategori dan di updated_at, ambil dari urutan Z ke A.
@@ -29,7 +29,10 @@ class KategoriController extends Controller
                 <table class="table">
                 <thead class="bg-primary">
                     <tr>
-                        <th scope="col" width="6%">No</th>
+                        <th>
+                            <input type="checkbox" name="select_all" id="pilih_semua">
+                        </th>
+                        <th scope="col" width="5%">No</th>
                         <th scope="col">Kategori</th>
                         <th scope="col">Diperbarui Pada</th>
                         <th scope="col">Action</th>
@@ -44,9 +47,12 @@ class KategoriController extends Controller
             foreach ($semua_kategori as $detail_kategori) {
                 // .= berarti menyambung data
                 // cetak value detail_kategori, column kategori_id, dan kawan-kawan.
-                // aku menggunkana iso format agar mudah di baca manusia
+                // aku menggunakan iso format agar mudah di baca manusia
                 $data .=
                     '<tr>
+                        <td width="5%">
+                            <input name="kategori_ids[]" value="' . $detail_kategori->kategori_id . '" class="pilih form-check-input mx-auto" type="checkbox">
+                        </td>
                         <th>' . $nomor++ . '</th>
                         <td>' . $detail_kategori->nama_kategori . '</td>
                         <td>' . $detail_kategori->updated_at->isoFormat('dddd, D MMMM Y') . '</td>
@@ -59,10 +65,12 @@ class KategoriController extends Controller
                     </tr>';
             };
 
+            // panggil value variable data lalu digabung dengan element html
             $data .= '
                 </tbody>
                 </table>';
 
+            // kembalikkan tanggapan berupa json dari variable $data
             return response()->json($data);
         };
 
@@ -196,6 +204,7 @@ class KategoriController extends Controller
     public function destroy(Request $request)
     {
         // hapus beberapa kategori
+        // table kategori dimana didalam column kategori_id berisi array yang di dalamnya berisi $kategori->kategori_id, hapus beberapa data
         Kategori::whereIn('kategori_id', $request->semua_kategori_id)->delete();
 
         // kembalikkan tanggapan berupa json
@@ -204,7 +213,6 @@ class KategoriController extends Controller
             'status' => 200,
             // kry succcess berisi value berikut
             'success' => "Berhasil menghapus kategori yang dipilih.",
-            'semua_kategori' => $request->semua_kategori_id
         ]);
     }
 }

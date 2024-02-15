@@ -1,0 +1,5 @@
+BIKIN FITUR:
+1. MISALNYA PAGI MULAI berjualan LALU SORE KARYAWAN SHIFT PAGI SUDAH TUTUP MAKA TUTUP PENJUALAN DAN TAMPILKAN NAMA PRODUK YANG DIJUAL, jumlah barang, satuan, subtotal, LALU CETAK TOTAL BARANG DAN TOTAL HARGA YG DIJUAL. keterangan diatasnya: nama penjual.
+berarti aku harus kirim tanggal hari ini, jam mulai di jam 07.00 contoh nya seperti 2024-02-09 07:00:00 lalu jika kasir menekan tombol pada jam 15.00 maka cetak tanggal hari ini dan di jam 15.00, contohnya 2024-02-04 16:00:00. lalu mengambil data dari table penjualan_detail yang berada di rentang jam 7 sampai jam karyawan tutup harusnya jam 16.00.
+
+

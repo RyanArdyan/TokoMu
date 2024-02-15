@@ -32,3 +32,55 @@ Bagaimana cara screenshot layar web versi mobile menggunakan laptop?
 aku mau tanya harga web di
 
 buat katalog dulu gaes versi 1:1 lalu ubah gradasi warna nya ya, itu jangan lupa
+
+
+seingat ku adalah:
+1. bikin catatan pembelian dan penjualan untuk hari ini.
+misal di penjualan:
+Ada 1 orang yg beli 2 nasi gigit
+ada lagi 1 orang yang beli pisang krispi 2
+lalu di akhir nanti ada penutupan penjualan untuk shif sore.
+Lalu juga ada penutupan penjualan untuk shift malam.
+
+lalu nanti tiap bisa cetak penjualan dalam format excel, bisa memilih hari.
+
+
+aku butuh table penjualan_harian:
+1. penjualan_id
+2. produk_id\
+3. jumlah
+4. total (dari value input jumlah * column harga_jual milik table produk)
+aku akan buat seperti tunggal saja jadi jika sudah input data penjualan maka formulir nya kena reset.
+Kalau masalah total tinggal diambil dari data table penjualan_harian, column total lalu tinggal dilakukan oporasi SUM.
+
+Kalau masalah cetak excel itu aku akan menampilkan column:
+Nama produk, harga jual, jumlah, total.
+lalu diakhir ada total jumlah dan total harga nya.
+
+
+Dibuka bimbingan membuat project menggunakan bahasa pemrograman PHP dan framework laravel, langsung praktek dengan cara membuat project. Yang mau bergabung silahkan hubungi nomor WA yang ada di poster.
+
+
+
+
+
+Hello, name,
+let me introduce myself, my name is ardyan.
+I want to work for you as a job title.
+If you agree, please contact me, thank you.
+
+
+
+Penjualan
+
+No	Tanggal	Kode Member	Total Barang	Total Harga	Diskon	Total Barang	Kasir	Action
+1	2024-01-28	M-00001	1	Rp 33.000	5%	Rp 31.350	Admin
+2	2024-01-02	M-00001	20	Rp 1.150.000	5%	Rp 1.092.500	Admin
+3	2023-11-12	M-00001	30	Rp 1.970.000	5%	Rp 1.871.500	Admin
+4	2023-11-13	Pelanggan Umum	40	Rp 2.300.000	0%	Rp 2.300.000	Admin
+5	2023-11-11	M-00001	15	Rp 740.000	5%	Rp 703.000	Admin
+
+
+
+
+

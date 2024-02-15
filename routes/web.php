@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     // logout
-    // route tipe dapatkan, ke url logout, ke controller dan method berikut, dan punya name 
+    // route tipe dapatkan, ke url logout, ke controller dan method berikut, dan punya name
 	Route::get('/logout', [AutentikasiController::class, 'logout'])->name('logout');
 
     // edit profile
@@ -98,6 +98,8 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/penjualan-detail/ambil-detail-produk', [PenjualanDetailController::class, 'ambil_detail_produk'])->name('penjualan_detail.ambil_detail_produk');
     // route tipe kirim, jika user diarahkan ke url berikut maka arahkan ke PenjualanDetailController, method cek_stok_produk, name nya adalah penjualan_detail.cek_stok_produk
     Route::post('/penjualan-detail/cek-stok-produk', [PenjualanDetailController::class, 'cek_stok_produk'])->name('penjualan_detail.cek_stok_produk');
+    // route tipe kirim, jika user diarahkan ke url berikut maka arahkan ke PenjualanController, method tutup_penjualan, name nya adalah penjualan.tutup_penjualan
+    Route::post('/penjualan-detail/tutup-penjualan', [PenjualanDetailController::class, 'tutup_penjualan'])->name('penjualan_detail.tutup_penjualan');
 });
 
 
@@ -107,7 +109,7 @@ Route::middleware(['auth'])->group(function() {
 // hanya admin yang sudah login yang bisa mengakses url berikut
 Route::middleware(['can:is_admin', 'auth'])->group(function() {
     // pengaturan
-    // Route tipe dapatkan, ke url pengauran, ke PengaturanController, method index, namenya adalah pengaturan.index 
+    // Route tipe dapatkan, ke url pengauran, ke PengaturanController, method index, namenya adalah pengaturan.index
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
     // Route tipe kirim, ke url pengaturan, ke PengaturanController, method update, namenya pangaturan.update
     Route::post('/pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
@@ -236,7 +238,7 @@ Route::middleware(['can:is_admin', 'auth'])->group(function() {
     Route::put('/pembelian-detail/{pembelian_detail_id}', [PembelianDetailController::class, 'update'])->name('pembelian_detail.update');
     Route::post('/pembelian-detail/destroy/{pembelian_detail_id}', [PembelianDetailController::class, 'destroy'])->name('pembelian_detail.destroy');
 
-    
+
 
     // Laporan
     // route tipe dapatkam, jika user diarahkan ke url /laporan, ke LaporanController, method index, name nya adalah laporan.index

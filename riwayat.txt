@@ -1,17 +1,2 @@
-file: pengeluaran/create
-baris: 211
-tujuan: 
-1. Aku ingin perbaiki export excel di fitur penjualan
-
-
-mengurus fitur cetak excel table penjualan:
-waktu:
-member:
-keterangan_penjualan: 
-total_barang: 
-total_harga:
-diskon:
-harus_bayar: 
-
-
-dimulai dari views/penjualan/index.
+file: PenjualanDetailController
+nama file sudah benar tingal bikin file pdf untuk ekspor dan bikin logika kode nya saja

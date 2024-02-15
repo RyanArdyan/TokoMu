@@ -37,7 +37,7 @@
                     {{-- ke route pengaturan.index --}}
                     {{-- jika permintaan adalah url pengaturan dan apapun setelah itu maka aktifkan menu nya, kalau bukan maka ksongkan --}}
                     <a href="{{ route('pengaturan.index') }}" class="{{ Request()->is('pengaturan*') ? 'adropdown-item' : 'dropdown-item' }} notify-item">
-                        <i class="fe-settings"></i>
+                        <i class="dripicons-gear"></i>
                         <span>Pengaturan</span>
                     </a>
                 @endif
