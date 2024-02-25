@@ -10,8 +10,13 @@ use App\Models\Member;
 use App\Models\Pengaturan;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
+use App\Models\Karyawan;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\TutupPenjualanExport;
+use App\Exports\TutupPenjualanVersi2Export;
+// agar bisa berhubungan dengan excel
+use Maatwebsite\Excel\Facades\Excel;
 // untuk membuat fitur yang berkatiran dengan waktu seperti tanggal dan jam
 use Carbon\Carbon;
 
@@ -220,58 +225,94 @@ class PenjualanDetailController extends Controller
     // $request kan menangkap data objek yg dikirim oleh javascript
     public function tutup_penjualan(Request $request)
     {
+        // berisi ambil detail user yg login, column user_id
+        $user_id = Auth::user()->user_id;
+        // ambil detail karyawan yang column user_id nya berisi $detail_user_yg_login, column_user_id, ambil detal datanya dan value column jam_masuk
+        $jam_masuk_karyawan = Karyawan::where('user_id', $user_id)->first()->jam_masuk;
+        $jam_keluar_karyawan = Karyawan::where('user_id', $user_id)->first()->jam_keluar;
+
+        // berisi tanggal hari ini
+        // berisi karbon::sekarang->lokal('indonesia')->bentuk('Y-m-d')
+        $tanggal_hari_ini = Carbon::now()->locale('id')->format('Y-m-d');
+
+        // berisi tangal dan jam mausk karyawan
+        // berisi value variable $tanggal_hari_ini digabung dengan spasi lalu digabung dengan value variable $jam_masuk_karyawan
+        $tanggal_dan_jam_masuk_karyawan = $tanggal_hari_ini . ' ' . $jam_masuk_karyawan;
+        $tanggal_dan_jam_keluar_karyawan = $tanggal_hari_ini . ' ' . $jam_keluar_karyawan;
+        // dd($tanggal_dan_jam_keluar_karyawan);
+
+
         // berisi value dari $permintaan->waktu_jam_7
-        $waktu_jam_7 = $request->waktu_jam_7;
-        $waktu_tutup = $request->waktu_tutup;
-        // dapatkan data table PenjualanDetail berdasarkan range atau jangkauan yang dikirimkan
-        // kembalikkan data PenjualanDetail, pilih kolom-kolom berikut seperti table produk column nama_produk dan harga_jual dan table penjualan_detail, column jumlah dan subtotal
-        $beberapa_penjualan_detail = PenjualanDetail::select('produk.nama_produk', 'produk.harga_jual', 'penjualan_detail.jumlah', 'penjualan_detail.subtotal')
-        // berelasi dengan table produk lewat column produk_id
-        // table penjualan_detail digabung dengan table produk, value table produk, column produk_id sama dengan value table penjualan_detail, column produk_id
-        ->join('produk', 'produk.produk_id', '=', 'penjualan_detail.produk_id')
-        // ambil beberapa table penjualan_detail, yg column updated_at nya berada di jangkauan $permintaan->waktu_jam_7 sampai $permintaan->waktu_tutup
-        // diamana antara value penjualan_detail, column updated_at, waktu_jam_7 sampai waktu_tutup
-        ->whereBetween('penjualan_detail.updated_at', [$waktu_jam_7, $waktu_tutup])
-        // dapatkan data
-        ->get();
+        // $waktu_jam_7 = $request->waktu_jam_7;
+        // $waktu_tutup = $request->waktu_tutup;
+
+        // berisi value dari input name="hasil_pilihan"
+        $hasil_pilihan = $request->hasil_pilihan;
 
         // berisi table PenjualanDetail, pilih value table penjualan_detail, column jumlah
         $total_produk = PenjualanDetail::select('penjualan_detail.jumlah')
         // ambil beberapa table penjualan_detail, yg column updated_at nya berada di jangkauan $permintaan->waktu_jam_7 sampai $permintaan->waktu_tutup
         // diamana antara value penjualan_detail, column updated_at, waktu_jam_7 sampai waktu_tutup
-        ->whereBetween('penjualan_detail.updated_at', [$waktu_jam_7, $waktu_tutup])
+        ->whereBetween('penjualan_detail.updated_at', [$tanggal_dan_jam_masuk_karyawan, $tanggal_dan_jam_keluar_karyawan])
         // lakukan pertambahan pada beberapa value column subtotal
         ->sum('jumlah');
 
         $total_harga = PenjualanDetail::select('penjualan_detail.subtotal')
-        ->whereBetween('penjualan_detail.updated_at', [$waktu_jam_7, $waktu_tutup])
+        ->whereBetween('penjualan_detail.updated_at', [$tanggal_dan_jam_masuk_karyawan, $tanggal_dan_jam_keluar_karyawan])
         ->sum('subtotal');
-
-
-        // cetak semua permintaan yang dikirim
-        // dd($beberapa_penjualan_detail);
 
         // berisi menyetel waktu Karbon yaitu sekarang lalu setel Lokal nya ke Asia/Jakarta
         $tanggal_hari_ini = Carbon::now('Asia/Jakarta');
 
-        $nama_file = "laporan_tutup_penjualan_{$tanggal_hari_ini->format('d-m-Y')}_{$tanggal_hari_ini->format('H-i')}.pdf";
+        // cetak semua permintaan yang dikirim
+        // dd($beberapa_penjualan_detail);
 
-        // berisi PDF muat tampilan file berikut dan kirimkan data berupa array
-        $pdf = PDF::loadView('penjualan.pdf_tutup_penjualan', [
-            // kunci name berisi detail user yg login, column name
-            'name' => Auth::user()->name,
-            // kunci beberapa_penjualan_detail berisi value variable $beberapa_penjualan_detail
-            'beberapa_penjualan_detail' => $beberapa_penjualan_detail,
-            // contoh hasilnya adalah 13 Februari 2023
-            'tanggal_hari_ini' => $tanggal_hari_ini->format('d F Y'),
-            'waktu_tutup' => $waktu_tutup,
-            'total_produk' => $total_produk,
-            'total_harga' => $total_harga
-        ]);
+        // jika value variable hasil_pilihan nya berisi "PDF"
+        if ($hasil_pilihan === "PDF") {
+            // dapatkan data table PenjualanDetail berdasarkan range atau jangkauan yang dikirimkan
+            // kembalikkan data PenjualanDetail, pilih kolom-kolom berikut seperti table produk column nama_produk dan harga_jual dan table penjualan_detail, column jumlah dan subtotal
+            $beberapa_penjualan_detail = PenjualanDetail::select('produk.nama_produk', 'produk.harga_jual', 'penjualan_detail.jumlah', 'penjualan_detail.subtotal')
+            // berelasi dengan table produk lewat column produk_id
+            // table penjualan_detail digabung dengan table produk, value table produk, column produk_id sama dengan value table penjualan_detail, column produk_id
+            ->join('produk', 'produk.produk_id', '=', 'penjualan_detail.produk_id')
+            // ambil beberapa table penjualan_detail, yg column updated_at nya berada di jangkauan $permintaan->tanggal_dan_jam_masuk_karyawan sampai $permintaan->tanggal_dan_jam_keluar_karyawan
+            // diamana antara value penjualan_detail, column updated_at, tanggal_dan_jam_masuk_karyawan sampai tanggal_dan_jam_keluar_karyawan
+            ->whereBetween('penjualan_detail.updated_at', [$tanggal_dan_jam_masuk_karyawan, $tanggal_dan_jam_keluar_karyawan])
+            // dapatkan data
+            ->get();
 
-        // atur kertas menggunakan A4, bentuk potrait atau lebih ke horizontal
-        $pdf->setPaper('a4', 'potrait');
-        // kembalikkan $pdf, stream itu berfungsi untuk mendownload file dengan nama yg sesuai dari value variable $nama_file
-        return $pdf->stream($nama_file);
+            // menyesuaikan nama file yg akan di download
+            $nama_file = "laporan_tutup_penjualan_{$tanggal_hari_ini->format('d-m-Y')}_{$tanggal_hari_ini->format('H-i')}.pdf";
+
+            // berisi PDF muat tampilan file berikut dan kirimkan data berupa array
+            $pdf = PDF::loadView('penjualan.pdf_tutup_penjualan', [
+                // kunci name berisi detail user yg login, column name
+                'name' => Auth::user()->name,
+                // kunci beberapa_penjualan_detail berisi value variable $beberapa_penjualan_detail
+                'beberapa_penjualan_detail' => $beberapa_penjualan_detail,
+                // contoh hasilnya adalah 13 Februari 2023
+                'tanggal_hari_ini' => $tanggal_hari_ini->format('d F Y'),
+                'waktu_tutup' => $tanggal_dan_jam_keluar_karyawan,
+                'total_produk' => $total_produk,
+                'total_harga' => $total_harga
+            ]);
+
+            // atur kertas menggunakan A4, bentuk potrait atau lebih ke horizontal
+            $pdf->setPaper('a4', 'potrait');
+            // kembalikkan $pdf, stream itu berfungsi untuk mendownload file dengan nama yg sesuai dari value variable $nama_file
+            return $pdf->stream($nama_file);
+        }
+        // lain jika value variable hasil_pilihan berisi "EXCEL:
+        else if ($hasil_pilihan === "EXCEL") {
+            // menyesuaikan nama file yg akan di download
+            $nama_file = "laporan_tutup_penjualan_{$tanggal_hari_ini->format('d-m-Y')}_{$tanggal_hari_ini->format('H-i')}.xlsx";
+            // // kembalikkan excel::unduh(new panggil TutupPenjualanExport.php lalu kirimkan value parameter $tanggal_dan_jam_masuk_karyawan dan $tanggal_dan_jam_keluar_karyawan, nama file nya adalah value variable $nama_file
+            // return Excel::download(new TutupPenjualanExport($tanggal_dan_jam_masuk_karyawan, $tanggal_dan_jam_keluar_karyawan), $nama_file);
+            // kembalikkan excel::unduh(new panggil TutupPenjualanExport.php lalu kirimkan value parameter $tanggal_dan_jam_masuk_karyawan dan $tanggal_dan_jam_keluar_karyawan, nama file nya adalah value variable $nama_file
+            return Excel::download(new TutupPenjualanVersi2Export($tanggal_dan_jam_masuk_karyawan, $tanggal_dan_jam_keluar_karyawan), $nama_file);
+
+        };
+
     }
 }
+

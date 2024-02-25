@@ -9,6 +9,7 @@ use DataTables;
 use Illuminate\Support\Facades\Hash;
 use App\Rules\GmailRule;
 use App\Models\User;
+use App\Models\Karyawan;
 
 class ManajemenKasirController extends Controller
 {
@@ -60,6 +61,7 @@ class ManajemenKasirController extends Controller
         $validator = Validator::make($request->all(), [
             // validasi input name name, email, password, password_confirmation
             'name' => ['required', 'string', 'unique:users', 'min:3', 'max:20'],
+            // email akan memanggil file GmailRule untuk mempeluas validasi nya
             'email' => [new GmailRule, 'required', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', 'min:6', 'max:20'],
             // value input password harus sama dengan input password_confirmation
@@ -80,10 +82,10 @@ class ManajemenKasirController extends Controller
                 'errors' => $validator->errors()
             ]);
         // jika validator berhasil atau lolos dari validasi
-        } else {            
+        } else {
             // Simpan user dengan cara memanggil Models/User
             // Models/User buat
-            User::create([
+            $detail_user = User::create([
                 // column table berisi value attribute name
                 // column name berisi name="name"
                 'name' => $request->name,
@@ -92,6 +94,30 @@ class ManajemenKasirController extends Controller
                 // column password, berisi input name="password" yang di hash
                 'password' => Hash::make($request->password)
             ]);
+
+            // jika $request->shift berisi "pagi" maka
+            if ($request->shift === "pagi") {
+                // $jam_masuk berisi "08:00:00"
+                $jam_masuk = "08:00:00";
+                $jam_keluar = "15:59:00";
+            }
+            // lain jika $request->shift berisi "malam" maka
+            else if ($request->shift === "malam") {
+                // $jam_masuk berisi "16:00:00"
+                $jam_masuk = "16:00:00";
+                $jam_keluar = "23:59:00";
+            };
+
+
+            // Simpan baris data baru ke table karyawan
+            Karyawan::create([
+                // column user_id berisi value detail_user, column user_id
+                'user_id' => $detail_user->user_id,
+                // column jam_masuk berisi value variable $jam_masuk
+                'jam_masuk' => $jam_masuk,
+                'jam_keluar' => $jam_keluar
+            ]);
+
             // return response berupa json
             return response()->json([
                 // key status berisi 200
@@ -124,7 +150,7 @@ class ManajemenKasirController extends Controller
         return response()->json([
             // key status berisi value 200
             'status' => 200,
-            // key pesan berisi value 
+            // key pesan berisi value
             'pesan' => 'Berhasil menghapus user yang dipilih'
         ]);
     }

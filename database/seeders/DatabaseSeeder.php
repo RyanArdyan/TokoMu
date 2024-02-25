@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+// import class yang dibutuhkan
 use App\Models\Pengaturan;
 use App\Models\User;
 use App\Models\Penyuplai;
@@ -14,7 +15,12 @@ use App\Models\PembelianDetail;
 use App\Models\Pengeluaran;
 use App\Models\PengeluaranDetail;
 use App\Models\Member;
+use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Karyawan;
+// agar bisa mendapatkan waktu menggunakan package Carbon
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -38,6 +44,23 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('pontianak1104')
         ]);
 
+        User::create([
+            // 1 adalah true berarti dia adalah admin, kalau 0 berarti false berarti dia adalah kasir
+            // column is_admin diisi 0
+            'is_admin' => 0,
+            // column gambar diisi 'gambar_default.jpg'
+            'gambar' => 'gambar_default.png',
+            'name' => 'Ardyan',
+            'email' => 'ryanardyan437@gmail.com',
+            'password' => Hash::make('pontianak1104')
+        ]);
+
+        Karyawan::create([
+            'user_id' => 2,
+            'jam_masuk' => '16:00:00',
+            'jam_keluar' => '23:59:00'
+        ]);
+
         // tambahkan 1 baris data ke table pengaturan menggunakan perintah php artisan db:seed
         Pengaturan::create([
             'pengaturan_id' => 1,
@@ -45,7 +68,7 @@ class DatabaseSeeder extends Seeder
             'alamat_perusahaan' => 'Jl. Kibandang Samaran Ds. Slangit',
             'telepon_perusahaan' => '0123456789',
             // 1 berarti nota kecil
-            // 2 berarti nota besar 
+            // 2 berarti nota besar
             'tipe_nota_perusahaan' => 1,
             // default diskon untuk pelanggan adalah 5%
             'diskon_perusahaan' => 5,
@@ -68,11 +91,11 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => 1,
             'penyuplai_id' => 1,
             'kode_produk' => 'P-00001',
-            'nama_produk' => 'Paket Smartfren Unlimited 2 GB Perhari Selama Sebulan',
-            'merk' => 'Smartfren',
-            'harga_beli' => 77000,
+            'nama_produk' => 'Nasi Gigit',
+            'merk' => 'None',
+            'harga_beli' => 3000,
             'diskon' => 0,
-            'harga_jual' => 82000,
+            'harga_jual' => 5000,
             'stok' => 100
         ]);
 
@@ -80,11 +103,11 @@ class DatabaseSeeder extends Seeder
             'kategori_id' => 1,
             'penyuplai_id' => 1,
             'kode_produk' => 'P-00002',
-            'nama_produk' => 'Paket Smartfren 6 GB Selama Sebulan',
-            'merk' => 'Smartfren',
-            'harga_beli' => 28000,
+            'nama_produk' => 'Pisang Krispi',
+            'merk' => 'None',
+            'harga_beli' => 4000,
             'diskon' => 0,
-            'harga_jual' => 33000,
+            'harga_jual' => 7000,
             'stok' => 100
         ]);
 
@@ -131,9 +154,41 @@ class DatabaseSeeder extends Seeder
 
         Member::create([
             'kode_member' => 'M-00001',
-            'nama_member' => 'Ardyan',
+            'nama_member' => 'John Doe',
             'telepon_member' => '088705968716',
             'alamat_member' => 'Jalan Tanjung Raya 1'
+        ]);
+
+        // untuk mendapatkan tahun-bulan-tanggal jam:menit:detik
+        // berisi karbon::sekarang()->lokal('id')->bentukIso('tahun-bulan-tanggal jam:menit:detik');
+        $waktu_saat_ini = Carbon::now()->locale('id')->isoFormat('YYYY-MM-DD HH:mm:ss');
+
+        Penjualan::create([
+            'member_id' => 1,
+            'user_id' => 2,
+            // 'produk_id' => 1,
+            'total_barang' => 10,
+            'total_harga' => 60000,
+            'diskon' => 0,
+            'harus_bayar' => 60000,
+            'uang_diterima' => 60000,
+            'keterangan_penjualan' => 'Penjualan seperti biasa',
+            // berisi value variable $waktu_saat_ini
+            'tanggal_dan_waktu' => $waktu_saat_ini
+        ]);
+
+        PenjualanDetail::create([
+            'penjualan_id' => 1,
+            'produk_id' => 1,
+            'jumlah' => 5,
+            'subtotal' => 25000,
+        ]);
+
+        PenjualanDetail::create([
+            'penjualan_id' => 1,
+            'produk_id' => 2,
+            'jumlah' => 5,
+            'subtotal' => 35000,
         ]);
     }
 }

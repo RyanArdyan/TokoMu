@@ -1,2 +1,13 @@
-file: PenjualanDetailController
-nama file sudah benar tingal bikin file pdf untuk ekspor dan bikin logika kode nya saja
+File: PenjualanDetailController
+baris: 226
+
+
+
+Kan sudah ada $jam_masuk_karyawan jadi tinggal digabung dengan tanggal hari ini misalnya 23-02-2024 08:00:00
+
+
+https://docs.laravel-excel.com/3.1/exports/from-view.html
+BAGIAN: From View
+
+Setelah baca dokumentasi diatas maka sudah selesai baca dokumentasi nya dan langsung kerjakan project. yaitu:
+FILE: excel_tutup_laporan.blade.php

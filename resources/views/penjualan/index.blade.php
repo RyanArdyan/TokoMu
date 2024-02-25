@@ -331,7 +331,6 @@ $("#tombol_ubah_periode").on("click", function() {
 
 // jika #tombol_tutup_penjualan di click maka jalankan fungsi berikut
 $("#tombol_tutup_penjualan").on("click", function() {
-    // console.log("Kau sudah dibenci");
 
     // moment.locale("id");
 
@@ -385,8 +384,8 @@ $("#tombol_tutup_penjualan").on("click", function() {
     // mendefinisikan fungsi tangani_setelah_dapat_hasil_pilihan, ada 1 parameter yaitu hasil_pilihan untuk menangkap argument
     function tangani_setelah_dapat_hasil_pilihan(hasil_pilihan) {
         // panggil #waktu_jam_7 lalu diisi dengan value variable waktu_jam_7
-        $("#waktu_jam_7").val(waktu_jam_7);
-        $("#waktu_tutup").val(waktu_tutup);
+        // $("#waktu_jam_7").val(waktu_jam_7);
+        // $("#waktu_tutup").val(waktu_tutup);
         // panggil #hasil_pilihan lalu value nya diisi value parameter hasil_pilihan
         $("#hasil_pilihan").val(hasil_pilihan);
         // panggil #form_tutup_penjualan lalu kita kirim dan ada reloadnya

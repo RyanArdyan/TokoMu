@@ -2,10 +2,9 @@
 
 namespace App\Exports;
 
-// ini digunakan untuk mencetak data table penjualan
 use Maatwebsite\Excel\Concerns\FromCollection;
+// ini digunakan untuk mencetak data table penjualan
 use App\Models\Penjualan;
-use App\Models\PenjualanDetail;
 // Ini untuk membuat thead, tr, th
 use Maatwebsite\Excel\Concerns\WithHeadings;
 // agar aku bisa mengirim value argument dari controller dan mengangkap nya

@@ -18,7 +18,7 @@
             {{-- termasuk ada jika modal dipanggil --}}
             @includeIf('manajemen_kasir.modal_create')
 
-            
+
 
             <div class="table-responsive">
                 {{-- aku membungkus table menggunakan form agar aku bisa mengirim value table --}}
@@ -112,7 +112,7 @@
         // simpan kasir baru
         // jika #form_tambah dikirim maka jalankan fungsi berikut dan ambil tanggapannya
         $("#form_tambah").on("submit", function(e) {
-            // cegah bawaannya yaitu reload 
+            // cegah bawaannya yaitu reload
             e.preventDefault();
             // lakukan ajax
             $.ajax({
@@ -129,6 +129,7 @@
                     // sebelum kirim, jalankan fungsi berikut
                     beforeSend: function() {
                         // jadi secara default input tidak memiliki .is-invalid tapi ketika error maka .is-invalid akan dibuat
+                        // panggil semua class input lalu hapus class is-invalid
                         $(".input").removeClass("is-invalid");
                         // panggil .pesan_error lalu kosognkan textnya
                         $(".pesan_error").text("");
@@ -165,7 +166,7 @@
                 });
         });
 
-        
+
         // ketika modal tambah ditutup maka reset formulir, dan hapus error validasi
         $(".tutup").on("click", function() {
             // reset semua value pada input formulir
@@ -182,7 +183,7 @@
             if ($("#select_all").prop("checked")) {
                 // panggil .pilih lalu centangnya adalah true
                 $(".pilih").prop("checked", true);
-            } 
+            }
             // lain jika #pilih_all tidak dicentang
             else {
                 // panggil .pilih lalu centangnya adalah false
@@ -225,7 +226,7 @@
                                     );
                                     // reload ajax table
                                     table.ajax.reload();
-                                }; 
+                                };
                             });
                     };
                 });
@@ -255,7 +256,7 @@
                 $(this).removeClass("fa-eye-slash");
                 // #lihatPassword tambah class .fa-eye
                 $(this).addClass("fa-eye");
-                // logikanya sama saja, hanya saja terbalik secara kode 
+                // logikanya sama saja, hanya saja terbalik secara kode
             };
         });
     </script>

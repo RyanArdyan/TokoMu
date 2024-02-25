@@ -4,9 +4,9 @@
             {{-- aku kasi container agar ada jarak kiri, atas, kanan, bawah --}}
             <div class="container">
                 <form id="form_tambah">
-                    {{-- untuk keamanan --}}
+                    {{-- laravel mewajibkan keamanan dari serangan CSRF --}}
                     @csrf
-                    {{-- method POST --}}
+                    {{-- method POST, jadi akan memamnggil rute tipe post --}}
                     @method('POST')
                     <div class="modal-header">
                         <h4 class="modal-title" id="staticBackdropLabel">Tambah Kasir</h4>
@@ -34,6 +34,15 @@
                             {{-- pesan error --}}
                             <span class="email_error pesan_error text-danger"></span>
                         </div>
+                        {{-- shift --}}
+                        <div class="form-group">
+                            <label for="shift">Shift</label>
+                            <select class="form-control" name="shift" id="shift">
+                                {{-- jika user memilih shift pagi maka $request->shift akan berisi value pagi --}}
+                                <option value="pagi">Pagi</option>
+                                <option value="malam">Malam</option>
+                            </select>
+                        </div>
                         {{-- passsword --}}
                         <div class="form-group">
                             <label for="password">Password<span class="text-danger"> *</span></label>
@@ -51,7 +60,7 @@
                             {{-- pesan error --}}
                             <span class="password_confirmation_error pesan_error text-danger"></span>
                         </div>
-    
+
                         <small>
                             <div class="lihat_password jadikan_pointer fa fa-eye">Lihat Password</div>
                         </small>

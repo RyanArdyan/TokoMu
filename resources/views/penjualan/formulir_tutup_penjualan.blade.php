@@ -4,16 +4,16 @@
     @csrf
     {{-- is-invalid --}}
     {{-- waktu_jam_7 --}}
-    <div class="form-group">
+    {{-- <div class="form-group">
         <label for="waktu_jam_7">Jam 7<span class="text-danger"> *</span></label>
         <input id="waktu_jam_7" name="waktu_jam_7" class="form-control" type="text" autocomplete="off" placeholder="Masukkan jam 7">
-    </div>
+    </div> --}}
     {{-- waktu_tutup --}}
-    <div class="form-group">
+    {{-- <div class="form-group">
         <label for="waktu_tutup">Waktu Tutup<span class="text-danger"> *</span></label>
         <input id="waktu_tutup" name="waktu_tutup" class="form-control" type="text"
         placeholder="Masukkan waktu tutup"  autocomplete="off">
-    </div>
+    </div> --}}
     {{-- hasil_pilihan --}}
     <div class="form-group">
         <label for="hasil_pilihan">Hasil Pilihan<span class="text-danger"> *</span></label>

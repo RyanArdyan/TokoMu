@@ -4,6 +4,7 @@
             <div class="container">
                 {{-- aku butuh attribute enctype agar aku bisa mengirim data input type file --}}
                 <form id="form_tambah" class="form-horizontal">
+                    {{-- laravel mewajibkan keamanan dari serangan CSRF --}}
                     @csrf
                     <div class="modal-header">
                         <h4 class="modal-title" id="staticBackdropLabel">Tambah Data</h4>
@@ -47,7 +48,7 @@
                                 <span class="merk_error pesan_error text-danger"></span>
                             </div>
                         </div>
-    
+
                         {{-- harga_beli --}}
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" for="harga_beli">Harga Beli</label>
@@ -59,7 +60,7 @@
                                 <span class="harga_beli_error pesan_error text-danger"></span>
                             </div>
                         </div>
-    
+
                         {{-- harga_jual --}}
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" for="harga_jual">Harga Jual</label>
