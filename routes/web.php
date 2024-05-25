@@ -18,6 +18,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PenjualanDetailController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UjiController;
+use App\Http\Controllers\Pembeli\RegistrasiController;
 
 
 // hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
@@ -33,6 +34,12 @@ Route::middleware(['guest'])->group(function() {
                 ->name('login.index');
     // route tipe kirim, ke url /login, ke AutentikasiController, ke method store, name nya adalah login.store
     Route::post('/login', [AutentikasiController::class, 'store'])->name('login.store');
+
+    // Registrasi
+    // route tipe dapatkan, ke url /registrasi, ke RegistrasiController, ke method index, name nya adalah registrasi.index
+    Route::get('/registrasi', [RegistrasiController::class, 'index'])->name('registrasi.index');
+    // route tipe kirim, ke url /registrasi, ke RegistrasiController, ke method store, name nya adalah registrasi.store
+    Route::post('/registrasi', [RegistrasiController::class, 'store'])->name('registrasi.store');
 });
 
 
@@ -103,11 +110,11 @@ Route::middleware(['auth'])->group(function() {
 });
 
 
-// middleware untuk admin yang sudah login
+// middleware untuk admin dan pembeli yang sudah login
 // auth di dapatkan dari Kernel.php
-// is_admin di dapatkan dari App/Providers/AuthServiceProvider.php
-// hanya admin yang sudah login yang bisa mengakses url berikut
-Route::middleware(['can:is_admin', 'auth'])->group(function() {
+// is_admin_dan_is_pembeli di dapatkan dari App/Providers/AuthServiceProvider.php
+// hanya admin dan pembeli yang sudah login yang bisa mengakses url berikut
+Route::middleware(['can:is_admin_dan_is_pembeli', 'auth'])->group(function() {
     // pengaturan
     // Route tipe dapatkan, ke url pengauran, ke PengaturanController, method index, namenya adalah pengaturan.index
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

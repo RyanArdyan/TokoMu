@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Models\User;    
+use App\Models\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,11 +26,11 @@ class AuthServiceProvider extends ServiceProvider
         // AuthServiceProvider atau penyedia layanan aplikasi registrasikan kebijakan
         $this->registerPolicies();
 
-        // Gerbang, denifisikan is_admin
+        // Gerbang, denifisikan is_admin_dan_is_pembeli
         // $user berisi detail user yang login
-        Gate::define('is_admin', function(User $user) {
-            // jadi jika detail user yang login, value column is_admin nya adalah 1 maka dia adalah admin
-            return $user->is_admin === 1;
+        Gate::define('is_admin_dan_is_pembeli', function(User $user) {
+            // jadi jika detail user yang login, value column is_admin nya adalah 1 atau 2 maka, 1 berarti adalah admin, 2 berarti adalah pembeli
+            return $user->is_admin === 1 || $user->is_admin === 2;
         });
     }
 }

@@ -1,0 +1,28 @@
+########### PENTING ###########
+Aku ingin buat fitur pembayaran.
+Pembeli membeli barang ku lewat online menggunakan payment gateway lalu nanti dikirim menggunakan kurir yg menggunakan API.
+ada role admin, kasir dan pembeli berarti aku harus buat role baru untuk pembeli.
+
+mari rancang menu untuk pembeli
+Daftar Produk
+Berfungsi untuk menampilkan produk pakai table saja dan ada tombol masukkan keranjang dan tombol beli.
+########### PENTING ###########
+
+
+
+
+mari rancang tampilan table produk untuk pembeli:
+1. Nomor
+2. Nama Produk
+3. Kategori
+4. Merk
+5. Harga
+6. Diskon
+7. Stok
+8. Action (Masukkkan ke keranjang & Beli)
+
+
+
+
+
+Jika yg login adalah pembeli yg value column is_admin nya sama dengan 2 maka arahkan pindah rute lagi di DashboardController

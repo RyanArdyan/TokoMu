@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             // buat tipe data big integer yang auto increment dan primary key atau kunci utama
             $table->bigIncrements('user_id');
-            // defaultnya adalah 0, 0 berarti kasir, 1 berarti admin
+            // defaultnya adalah 0, 0 berarti kasir, 1 berarti admin, 2 berarti pembeli
             $table->tinyInteger('is_admin')->default(0);
             // tipe data text karena kemungkinan nama gambar nya panjang
             $table->text('gambar')->nullable();

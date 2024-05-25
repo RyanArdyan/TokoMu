@@ -19,6 +19,7 @@ class AutentikasiController extends Controller
     }
 
     // logic login
+    // $request berisi semua input dari data ajax yang dikirim atau data dari value input name=""
     public function store(Request $request)
 	{
         // validasi untuk semua input yang punya attribute name
@@ -46,6 +47,7 @@ class AutentikasiController extends Controller
             // buat ulang sessi
 			$request->session()->regenerate();
 
+            // berisi ambil detail user dimana value column email sama dengan value input name="email", ambil value column name
 			$name = User::where('email', $request->email)->value('name');
 			$is_admin = User::where('email', $request->email)->value('is_admin');
 
@@ -56,7 +58,7 @@ class AutentikasiController extends Controller
 				'is_admin' => $is_admin,
 				'name' => $name
 			]);
-		}; 
+		};
 
         // fitur password salah
         foreach(User::all() as $detail_user) {

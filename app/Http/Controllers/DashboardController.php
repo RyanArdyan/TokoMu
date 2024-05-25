@@ -62,7 +62,7 @@ class DashboardController extends Controller
 
 
         // jika yg login adalah admin
-        // jika value column is_admin dari user yang login sama dengan 1 maka 
+        // jika value column is_admin dari user yang login sama dengan 1 maka
         if (auth()->user()->is_admin === 1) {
             // kembalikan ke tampilan admin.index dan kirimkan data
             return view('dashboard.admin', [
@@ -78,5 +78,12 @@ class DashboardController extends Controller
             ]);
             // jika yang login ada kasir
         };
+
+        // jika yg login adalah pembeli
+        // jika value column is_admin dari user yang login sama dengan 2 maka
+        if (auth()->user()->is_admin === 2) {
+            // kembalikkan lalu alihkan ke rute produk.index
+            return redirect()->route('produk.index');
+        }
     }
 }

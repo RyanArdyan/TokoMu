@@ -20,7 +20,7 @@
         </div>
 
         {{-- Tanggal pembelian --}}
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label for="tanggal_dan_waktu">Tanggal & Waktu</label>
             <input id="tanggal_dan_waktu" name="tanggal_dan_waktu" class="form-control" type="datetime-local">
         </div>
@@ -41,7 +41,7 @@
         </div>
         </div>
     </div>
-    <!-- /.card-body -->   
+    <!-- /.card-body -->
 </form>
 {{-- akhir form pembelian untuk memperbarui ke table pembelian --}}
 

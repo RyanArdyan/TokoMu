@@ -73,8 +73,8 @@
                                 @include('penjualan_detail.form_penjualan')
                             </div>
                         </div>
-                        
-                        
+
+
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
         // misalnya ubah 3.000 menjadi 3000 lalu dikurangi 1 maka akan menjadi 2999
         // berisi menguraikan_integer(stok.ganti(".", ""), 10)
         let stok = parseInt(stok_versi_string.replace(".", ""), 10) - 1;
-        
+
         // jika value stok sama dengan 0 maka
         if (stok === 0) {
             //  hapus tombol pilih
@@ -186,7 +186,7 @@
 
             // panggil fungsi update_total_harga_versi_rupiah lalu kirimkan value variable total_harga
             update_total_harga_versi_rupiah(total_harga);
-    
+
             // jika value #diskon tidak sama dengan 0 berarti aku sudah click tombol pilih di modal pilih member agar mendapat diskon maka value input harus_bayar akan berubah value nya karena sudah dikurangi diskon
             if ($("#diskon").val() != 0) {
                 // panggil fungsi pilih_member agar mendapat diskon atau value input harus_bayar nya akan terpengaruh
@@ -224,10 +224,10 @@
                 // attribute data-rows anggaplah berisi baris1, baris2, dst.
                 html += "<td><button class='hapus btn btn-danger' data-row='baris"+ baris +"'>-</button></td>";
                 html += "</tr>";
-            
+
             // panggil #tbody_penjualan_detail lalu tambahkan value variable html sebagai anak terakhir
             $("#tbody_penjualan_detail").append(html);
-            
+
             // tampilkan notifikasi menggunakan package toastr
             toastr.success('Berhasil memilih produk.');
         });
@@ -368,7 +368,7 @@
             };
         });
 
-        
+
 
         // berisi value variable jumlah anggaplah 2 dikali value harga_jual anggaplah 30.000 berarti 60.000
         let subtotal = jumlah * harga_jual;
@@ -533,18 +533,18 @@
             // input uang_diterima diisi dengan 0 lalu ada efek pilih
             $(this).val(0).select();
         };
-        
+
         // panggil value input uang_diterima lalu ubah misalnya value nya Rp 100.000 menjadi 100000 lalu simpan ke variable uang_diterima
         let uang_diterima = parseInt($(this).val().replace(/[^0-9]/g, ''));;
         // panggil value input harus_bayar yang hidden atau panggil #harus_bayar lalu ambil value input nya
         let harus_bayar = $("#harus_bayar").val();
 
-        // jika value input uang_diterima(pelanggan) misalnya Ro.10.000 lebih kecil dari value input harus_bayar(total_harga) misalnya Rp 120.000(integer) maka 
+        // jika value input uang_diterima(pelanggan) misalnya Ro.10.000 lebih kecil dari value input harus_bayar(total_harga) misalnya Rp 120.000(integer) maka
         if (uang_diterima < harus_bayar) {
             // panggil #uang_kembalian lalu vaue nya diatur ke 0, sudah ada Rp nya karena sudah menggunakan package inputmask
             $("#uang_kembalian_pelanggan").val(0);
         }
-        // lain jika value input uang_diterima(pelanggan) misalnya 150.000(integer) sama dengan value input harus_bayar 
+        // lain jika value input uang_diterima(pelanggan) misalnya 150.000(integer) sama dengan value input harus_bayar
         else if (uang_diterima == harus_bayar) {
             //  panggil #uang_kembalian lalu value nya diatur ke 0, sudah ada Rp nya karena sudah menggunakan package inputmask
             $("#uang_kembalian_pelanggan").val(0);
@@ -675,7 +675,7 @@
         let keterangan_penjualan = $("#keterangan_penjualan").val();
         // panggil #tanggal_dan_waktu lalu ambil value nya
         let tanggal_dan_waktu = $("#tanggal_dan_waktu").val();
-        
+
         // lakukan ajax untuk mengirim semua value input
         $.ajax({
             // url panggil route penjualan_detail.store
@@ -722,7 +722,7 @@
                     // jika aku click oke pada pop up sweetalert maka
                     // jika hasilnya dikonfirmasi maka
                     if (result.isConfirmed) {
-                        // buka tab baru, panggil route penjualan_detail.index, _kosong 
+                        // buka tab baru, panggil route penjualan_detail.index, _kosong
                         window.open("{{ route('penjualan_detail.index') }}", "_blank");
                         // pindah rute
                         // berisi panggil url /penjualan/nota-kecil/ lalu kirimkan value variable penjualan_id

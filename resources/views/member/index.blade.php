@@ -141,7 +141,7 @@
                 url: "{{ route('member.store') }}",
                 // berisi memanggil route tipe POST
                 type: "POST",
-                // berisi kirimkan formulir data dari #form_tambah 
+                // berisi kirimkan formulir data dari #form_tambah, this adalah semua value dari input dari #form_data
                 data: new FormData(this),
                 // aku memanggil ketiga baris kode dibawah
                 processData: false,
@@ -159,7 +159,7 @@
             // jika selesai dan berhasil maka jalankan fungsi berikut dan ambil tanggapannya
             .done(function(resp) {
                 // jika user tidak memasukkan data yang benar di formulir maka tampilkan validasi error
-                // jika value tanggapan.status sama dengan 0 
+                // jika value tanggapan.status sama dengan 0
                 if (resp.status === 0) {
                     // lakukan pengulangan terhadap tangapan.errors lalu jalankan fungsi berikut
                     // key berisi semua value attribute name yang error
@@ -249,7 +249,7 @@
                     url: `/member/${member_id}`,
                     // aku mengubah methodnya menjadi PUT di modal_edit.blade menggunakan #method('PUT')
                     type: "POST",
-                    // kirimkan Form Data dari #form_edit
+                    // kirimkan Form Data dari #form_edit, this adalah semua value dari input dari #form_data
                     data: new FormData(this),
                     // aku butuh 3 baris kode dibawah
                     processData: false,
@@ -357,7 +357,7 @@
         // Cetak kartu member
         // jika #cetak_kartu_member di click maka jalankan fungsi berikut
         $("#cetak_kartu_member").on("click", function() {
-            // jika input class pilih yang dicentang panjangnya lebih kecil atau sama dengan 0 maka 
+            // jika input class pilih yang dicentang panjangnya lebih kecil atau sama dengan 0 maka
             if ($("input.pilih:checked").length <= 0) {
                 // tampilkan notifkasi yang menyatakan "Silahkan pilih member"
                 Swal.fire('Silahkan pilih member');

@@ -22,7 +22,7 @@ return new class extends Migration
                 // referensi column kategori_id milik table kategori
                 ->references('kategori_id')
                 ->onUpdate('cascade')
-                // ketika di hapus mengalir, jadi jika aku hapus kategori maka semua postingan terkait nya juga akan terhapus
+                // ketika di hapus mengalir, jadi jika aku hapus kategori maka semua produk terkait nya juga akan terhapus
                 ->onDelete('cascade');
             $table->foreignId('penyuplai_id')->constrained('penyuplai')
                 ->references('penyuplai_id')

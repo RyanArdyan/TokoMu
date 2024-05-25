@@ -93,7 +93,7 @@ class MemberController extends Controller
             'telepon_member.unique' => 'Telepon ini sudah digunakan orang lain.'
         ]);
 
-        // jika validasi gagal karena user tidak benar mengisi datanya 
+        // jika validasi gagal karena user tidak benar mengisi datanya
         if ($validator->fails()) {
             // kembalikkan tanggapan berupa json
             return response()->json([
@@ -127,7 +127,7 @@ class MemberController extends Controller
             // jika tidak ada baris data member yang terakhir karena belum ada member maka $kode_member_yg_terakhir diisi 00001
             if (!$baris_data_member_yg_terakhir) {
                 $kode_member = '00001';
-            } 
+            }
             // lain jika ada baris data member
             else if ($baris_data_member_yg_terakhir) {
                 // anggaplah berisi "M-00001"
@@ -145,11 +145,11 @@ class MemberController extends Controller
                 // panggil fungsi helper kode_berurutan
                 // 5 berarti jumlah digit kode_membernya
                 $kode_member = kode_berurutan($ubah_string_kode_member_menjadi_integer, 5);
-                
+
             };
-            
+
             // Simpan member
-            // member buat 
+            // member buat
             Member::create([
                 // panggil column kode_member milik table member diisi dengan "M-" digabung dengan misalnya 00001 maka akan menjadi "M-00001"
                 'kode_member' => 'M-' . $kode_member,
@@ -219,7 +219,7 @@ class MemberController extends Controller
         if ($request->telepon_member === $detail_member->telepon_member) {
             // input name="telepon_member" harus mengikuti aturan berikut
             $validasi_telepon_member = 'required|min:10|max:13';
-        } 
+        }
         // lain jika value name="telepon_member" tidak sama dengan value column telepon_member milik detail member di table member
         else if ($request->telepon_member !== $detail_member->telepon_member) {
             $validasi_telepon_member = 'required|unique:member|min:10|max:13';
@@ -332,14 +332,14 @@ class MemberController extends Controller
         // // hasil :
         // // [[1, 2, 3, 4], [5, 6, 7]]
 
-        // inisialisasi angka 
+        // inisialisasi angka
         $no = 1;
         // aku menggunakan package barryvdh/laravel-dompdf
         // berisi pdf muat tampilan member.cetak_kartu lalu kirimkan data
         $pdf = Pdf::loadView('member.cetak_kartu', [
             // key some_data_member contains several member data for example containing [['member_id' => 1, etc], ['member_id' => 2]]
             // key beberapa_data_member berisi beberapa data member misalnya berisi [['member_id' => 1, dst], ['member_id' => 2]]
-            'beberapa_data_member' => $beberapa_data_member, 
+            'beberapa_data_member' => $beberapa_data_member,
             // key no berisi value $no yaitu 1
             'no' => $no,
         ]);

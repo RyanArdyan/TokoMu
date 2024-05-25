@@ -19,77 +19,88 @@ class ProdukController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // $request aku gunakan untuk mengambil permintaan ajax
+    // $request aku gunakan untuk mengambil permintaan ajax milik script
     public function index(Request $request)
     {
-        // jika $permintaan memiliki ajax
-        if ($request->ajax()) {
-            // syntax punya laravel
-            // Bersemangat memuat banyak hubungan dengan kategori dan penyuplai, , ini wajib jika relasi nya adalah belongsTo atau miliki
-            // produk berelasi dengan kategori dan penyuplai, ambil semuanya datanya, urutannya dari Z sampai A.
-            $data_produk = Produk::with(['kategori', 'penyuplai'])->latest()->get();
-            // syntax punya yajra
-            // kembalikkan datatables dari $data_produk
-            return DataTables::of($data_produk)
-                // fitur centang menggunakan checkbox agar aku bisa menghapus dan cetak barcode berdasarkan data yang dipilih
-                // $produk berarti ulang detail produk
-                ->addColumn('select', function (Produk $produk) {
-                    // return element html
-                    // name="produk_ids[]" karena dia akan menyimpan banyak produk_id
-                    return '
-                            <input name="produk_ids[]" value="' . $produk->produk_id . '" class="pilih input form-check-input mx-auto" type="checkbox">
-                    ';
-                })
-                // untuk membuat pengulangan nomor
-                // tambah index column
-                ->addIndexColumn()
-                ->addColumn('kode_produk', function (Produk $produk) {
-                    // $produk->kode_produk ambil value column kode_produk dari table produk
-                    return '<span class="badge badge-success">' . $produk->kode_produk . '</span>';
-                })
-                // relasi table produk ke table kategori
-                // berdasarkan addColumn('nama_kategori')
-                // tambah column nama_kategori, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
-                ->addColumn('nama_kategori', function (Produk $produk) {
-                    // panggil semua value column nama_kategori milik table kategori yang berelsasi dengan table produk
-                // panggil Models/Produk, method kategori
-                    return $produk->kategori->nama_kategori;
-                })
-                // tambah column nama_penyuplai, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
-                ->addColumn('nama_penyuplai', function (Produk $produk) {
-                    // panggil semua value column nama_penyuplai milik table penyuplai yang berelsasi dengan table produk
-                    return $produk->penyuplai->nama_penyuplai;
-                })
-                ->addColumn('harga_beli', function (Produk $produk) {
-                    // panggil fungsi rupiah_bentuk di helpers
-                    return rupiah_bentuk($produk->harga_beli);
-                })
-                ->addColumn('harga_jual', function (Produk $produk) {
-                    return rupiah_bentuk($produk->harga_jual);
-                })
-                ->addColumn('diskon', function (Produk $produk) {
-                    return $produk->diskon . "%";
-                })
-                ->addColumn('stok', function (Produk $produk) {
-                    return angka_bentuk($produk->stok);
-                })
-                // buat tombol edit
-                ->addColumn('action', function (Produk $produk) {
-                    $btn = '
-                        <button data-id="' . $produk->produk_id . '" class="tombol_edit btn btn-warning btn-sm">
-                            <i class="fas fa-pencil-alt"></i> Edit
-                        </button>
-                    ';
-                    return $btn;
-                })
-                // jika column berisi elemnt html, relasi antar table, memanggil helpers dan melakukan concatenation
-                ->rawColumns(['select', 'kode_produk', 'nama_kategori', 'nama_penyuplai', 'harga_beli', 'harga_jual', 'stok', 'action'])
-                // buat nyata
-                ->make(true);
-        };
+        // jika yang login value column is_admin nya adalah 1 berarti dia adalah admin maka ke tampilan produk.index
+        if (auth()->user()->is_admin === 1) {
+            // jika yang login adalah admin maka
+            // jika $permintaan memiliki ajax
+            if ($request->ajax()) {
+                // syntax punya laravel
+                // Bersemangat memuat banyak hubungan dengan kategori dan penyuplai, , ini wajib jika relasi nya adalah belongsTo atau miliki
+                // produk berelasi dengan kategori dan penyuplai, ambil semuanya datanya, urutannya dari Z sampai A.
+                $data_produk = Produk::with(['kategori', 'penyuplai'])->latest()->get();
+                // syntax punya yajra
+                // kembalikkan datatables dari $data_produk
+                return DataTables::of($data_produk)
+                    // fitur centang menggunakan checkbox agar aku bisa menghapus dan cetak barcode berdasarkan data yang dipilih
+                    // $produk berarti ulang detail produk
+                    ->addColumn('select', function (Produk $produk) {
+                        // return element html
+                        // name="produk_ids[]" karena dia akan menyimpan banyak produk_id
+                        return '
+                                <input name="produk_ids[]" value="' . $produk->produk_id . '" class="pilih input form-check-input mx-auto" type="checkbox">
+                        ';
+                    })
+                    // untuk membuat pengulangan nomor
+                    // tambah index column
+                    ->addIndexColumn()
+                    ->addColumn('kode_produk', function (Produk $produk) {
+                        // $produk->kode_produk ambil value column kode_produk dari table produk
+                        return '<span class="badge badge-success">' . $produk->kode_produk . '</span>';
+                    })
+                    // relasi table produk ke table kategori
+                    // berdasarkan addColumn('nama_kategori')
+                    // tambah column nama_kategori, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
+                    ->addColumn('nama_kategori', function (Produk $produk) {
+                        // panggil semua value column nama_kategori milik table kategori yang berelasi dengan table produk
+                    // panggil Models/Produk, method kategori
+                        return $produk->kategori->nama_kategori;
+                    })
+                    // tambah column nama_penyuplai, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
+                    ->addColumn('nama_penyuplai', function (Produk $produk) {
+                        // panggil semua value column nama_penyuplai milik table penyuplai yang berelsasi dengan table produk
+                        return $produk->penyuplai->nama_penyuplai;
+                    })
+                    ->addColumn('harga_beli', function (Produk $produk) {
+                        // panggil fungsi rupiah_bentuk di helpers
+                        return rupiah_bentuk($produk->harga_beli);
+                    })
+                    ->addColumn('harga_jual', function (Produk $produk) {
+                        return rupiah_bentuk($produk->harga_jual);
+                    })
+                    ->addColumn('diskon', function (Produk $produk) {
+                        return $produk->diskon . "%";
+                    })
+                    ->addColumn('stok', function (Produk $produk) {
+                        return angka_bentuk($produk->stok);
+                    })
+                    // buat tombol edit
+                    ->addColumn('action', function (Produk $produk) {
+                        $btn = '
+                            <button data-id="' . $produk->produk_id . '" class="tombol_edit btn btn-warning btn-sm">
+                                <i class="fas fa-pencil-alt"></i> Edit
+                            </button>
+                        ';
+                        return $btn;
+                    })
+                    // jika column berisi elemnt html, relasi antar table, memanggil helpers dan melakukan concatenation
+                    ->rawColumns(['select', 'kode_produk', 'nama_kategori', 'nama_penyuplai', 'harga_beli', 'harga_jual', 'stok', 'action'])
+                    // buat nyata
+                    ->make(true);
+            };
 
-        // jika $request tidak memiliki tidak ajax maka kembalikan ke tampilan produk.index
-        return view('produk.index');
+            // jika $request tidak memiliki ajax maka kembalikan ke tampilan produk.index
+            return view('produk.index');
+        }
+        // lain jika autentikasi pengguna, value column is_admin nya adalah 2 maka
+        elseif (auth()->user()->is_admin === 2) {
+            // kembalikkan ke tampilan pembeli.produk.index
+            return view('pembeli.produk.index');
+        }
+
+
     }
 
     // berfungsi untuk menampilkan semua kategori dan penyuplai di modal tambah produk
@@ -115,7 +126,7 @@ class ProdukController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // parameter $permintaan semua value input
+    // parameter $permintaan berisi semua value data yang dikirim oleh ajax javascript
     public function store(Request $request)
     {
         // buat validasii kepada semua element input yang memiliki attribute name
@@ -133,7 +144,8 @@ class ProdukController extends Controller
             'nama_produk.unique' => 'Produk sudah ada',
         ]);
 
-        // jika validator gagal maka 
+
+        // jika validator gagal maka
         if ($validator->fails()) {
             // kembalikkan tanggapan berupa json
             return response()->json([
@@ -152,9 +164,6 @@ class ProdukController extends Controller
             // jika baris data produk yang terakhir tidak ada karena belum ada produk maka $kode_produk_yg_terakhir diisi P-00001
             // jika tidak ada baris data produk yang terakhir
             if (!$baris_data_produk_yg_terakhir) {
-                // berisi 00001
-                $kode_produk = '00001';
-
                 // Simpan produk dengan cara produk buat
                 produk::create([
                     // column kategori_id di table produk diisi dengan value select name="kategori_id"
@@ -169,10 +178,10 @@ class ProdukController extends Controller
                     'harga_jual' => $request->harga_jual,
                     'stok' => 0
                 ]);
-            } 
+            }
             // jiKA ada baris data produk yang terakhir, anggaplah ada P-00001
             else if ($baris_data_produk_yg_terakhir) {
-                // anggaplah berisi "P-00001"
+                // berisi mengambil detail_produk yang terakhir, column kode_produk, anggaplah berisi "P-00001"
                 $kode_produk_yg_terakhir = $baris_data_produk_yg_terakhir->kode_produk;
                 // anggaplah data terakhir berisi "P-00001"
                 // maka saya tidak akan bisa melakukan "P-00001" + 1 karena string + integer = string
@@ -181,7 +190,7 @@ class ProdukController extends Controller
                 // explode akan memecah string berdasarkan argumen pertama yang dikirim
                 // anggaplah menghasilkan ["P", "00001"]
                 $explode_kode_produk = explode("-", $kode_produk_yg_terakhir);
-                // "00001" akan menjadi 1 lalu di tambah 1 maka menjadi 2
+                // "00001" akan menjadi 1 lalu di tambah 1 maka menjadi 2 untuk data selanjutnya
                 $ubah_string_kode_produk_menjadi_integer = (int) $explode_kode_produk[1] + 1;
 
                 // panggil fungsi helper kode_berurutan agar menjadi P-00002
@@ -204,7 +213,7 @@ class ProdukController extends Controller
                 ]);
             };
 
-            
+
             // kembalikkan tanggapan berupa json
             return response()->json([
                 // key status berisi value 200
@@ -289,7 +298,7 @@ class ProdukController extends Controller
                 // key errors berisi semua value attribute name yang error dan pesan errornya
                 'errors' => $validator->errors()->toArray()
             ]);
-        } 
+        }
         // jika validasi berhasil
         else {
             // Perbarui produk
@@ -329,7 +338,7 @@ class ProdukController extends Controller
         ]);
     }
 
-    // request berisi beberapa value dari column produk_id, 
+    // request berisi beberapa value dari column produk_id,
     public function cetak_barcode(Request $request)
     {
         // dd($request);

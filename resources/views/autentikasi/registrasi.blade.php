@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8" />
-    <title>Login Form</title>
+    <title>Registrasi Form</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Halaman Login" name="description" />
+    <meta content="Halaman registrasi" name="description" />
     <meta content="Coderthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     {{-- cetak csrf_token() milik laravel agar ajax jquery tipe kirim dan update nya berfungsi --}}
@@ -39,12 +38,21 @@
                         <div class="card-body p-4">
 
                             <div class="text-center mb-4">
-                                <h4 class="text-uppercase mt-0">Login</h4>
+                                <h4 class="text-uppercase mt-0">Formulir Registrasi</h4>
                             </div>
 
-                            <form id="form_login">
+                            <form id="form_registrasi">
                                 {{-- laravel mewajibkan keamanan dari serangan csrf --}}
                                 @csrf
+                                <div class="form-group mb-3">
+                                    <label for="name">Nama Lengkap</label>
+                                    {{-- untuk membuat efek error di input, aku butuh is-invalid --}}
+                                    <input name="name" class="input name_input form-control" type="text" id="name"
+                                        placeholder="Nama Lengkap" autocomplete="off">
+                                    {{-- untuk menampilkan pesan error --}}
+                                    <p class="name_error pesan_error text-danger"></p>
+                                </div>
+
                                 <div class="form-group mb-3">
                                     <label for="email">Email</label>
                                     {{-- untuk membuat efek error di input, aku butuh is-invalid --}}
@@ -57,36 +65,40 @@
                                 <div class="form-group mb-3">
                                     <label for="password">Password</label>
                                     {{-- Untuk membuat efek validasi error di input, aku butuh is-invalid --}}
-                                    <input name="password" class="input password_input form-control" type="password"
-                                        id="password" placeholder="Password" autocomplete="off">
+                                    <input name="password" class="input lihat_dan_sembunyikan_password password_input form-control" type="password" id="password" placeholder="Password" autocomplete="off">
                                     {{-- untuk menampilkan pesan error --}}
                                     <p class="password_error pesan_error text-danger"></p>
-                                    <small id="lihat_password" class="text-primary jadikan_pointer">Lihat password</small>
-
                                 </div>
 
+                                <div class="form-group mb-2">
+                                    <label for="password_confirmation">Konfirmasi Password</label>
+                                    {{-- Untuk membuat efek validasi error di input, aku butuh is-invalid --}}
+                                    <input name="password_confirmation" class="input lihat_dan_sembunyikan_password password_confirmation_input form-control" type="password" id="password_confirmation" placeholder="Konfirmasi Password" autocomplete="off">
+                                    {{-- untuk menampilkan pesan error --}}
+                                    <p class="password_confirmation_error pesan_error text-danger"></p>
+                                </div>
 
+                                <div id="lihat_password" class="mb-3 text-primary jadikan_pointer">Lihat password</div>
 
                                 <div class="form-group mb-3">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="checkbox-signin"
-                                            checked>
-                                        <label class="custom-control-label" for="checkbox-signin">Remember me</label>
+                                        <input type="checkbox" class="custom-control-input" id="checkbox-signin" checked>
+                                        <label class="custom-control-label" for="checkbox-signin">Ingat Saya</label>
                                     </div>
                                 </div>
 
                                 <div class="form-group text-center">
                                     <button class="btn btn-primary btn-block" type="submit">
-                                        <i class="mdi mdi-login"></i>
-                                        Log In
+                                        <i class="mdi mdi-registrasi"></i>
+                                        Registrasi
                                     </button>
                                 </div>
 
                                 <p class="mt-3"><a href="pages-recoverpw.html" class="text-muted"><i
-                                            class="fa fa-lock mr-1"></i>Forgot your password?</a></p>
-                                {{-- cetak, panggil rute registrasi.index --}}
-                                <p class="mt-2"><a href="{{ route('registrasi.index') }}" class="text-muted"><i
-                                                class="fa fa-registered mr-1"></i>Belum registrasi? silahkan click</a></p>
+                                            class="fa fa-lock mr-1"></i>Anda lupa password?</a></p>
+                                {{-- cetak rute login.index --}}
+                                <p class="mt-2"><a href="{{ route('login.index') }}" class="text-muted"><i
+                                                class="fa fa-registered mr-1"></i>Sudah registrasi? silahkan click</a></p>
                             </form>
 
 
@@ -118,28 +130,28 @@
             // jika text pada #lihat_password sama dengan Lihat passsword maka
             if ($(this).text() === "Lihat password") {
                 // #password, attribute type nya, ubah ke text
-                $("#password").attr("type", "text");
+                $(".lihat_dan_sembunyikan_password").attr("type", "text");
                 // #lihat_password, ubah textnya ke Sembunyikan password
                 $(this).text("Sembunyikan password");
                 // lain jika #lihat_password, textnya sama dengan sembunyikan password maka
             } else if ($(this).text() === "Sembunyikan password") {
                 // #password, attribute type nya menjadi password
-                $("#password").attr("type", "password");
+                $(".lihat_dan_sembunyikan_password").attr("type", "password");
                 // #lihat_password, textnya menjadi lihat password
                 $(this).text("Lihat password");
             };
         });
 
-        // login
-        // jika #form_login di kirim maka jalankan fungsi berikut lalu ambil event atau acaranya  nya
-        $("#form_login").on("submit", function(event) {
+        // registrasi
+        // jika #form_registrasi di kirim maka jalankan fungsi berikut lalu ambil event atau acaranya  nya
+        $("#form_registrasi").on("submit", function(event) {
             // cegah bawaan yaitu reload
             // acara.cegahBawaan();
             event.preventDefault();
             //  lakukan ajax
             $.ajax({
-                // panggil route login.store
-                url: `{{ route('login.store') }}`,
+                // panggil route registrasi.store
+                url: `{{ route('registrasi.store') }}`,
                 // panggil route type POST
                 type: 'POST',
                 // data harus mengirimkan object
@@ -176,37 +188,22 @@
                         $(`.${key}_error`).text(value);
                     });
                 }
-                // jika email yang di input tidak ada di database
-                else if (response.message === 'Email belum terdaftar') {
-                    // panggil #email lalu tambah class is-invalid
-                    $('#email').addClass('is-invalid');
-                    // panggil .email_error lalu text nya diisi string berikut
-                    $('.email_error').text('Email belum terdaftar, silahkan registrasi.');
-                }
-                // jika email yang di input user ada di database tapi passwors nya salah
-                // lain jika value tanggapan.pesan sama dengan string berikut
-                else if (response.message === 'Password salah') {
-                    // panggil #password lalu tambah class is-invalid
-                    $('#password').addClass('is-invalid');
-                    // panggil .password_error lalu text nya diisi string berikut
-                    $('.password_error').text('password salah');
-                }
-                // lain jika berhasil login
+                // lain jika berhasil registrasi
                 else {
                     // tampilkan notifikasi menggunakan package sweetalert
                     Swal.fire({
                         icon: 'success',
-                        title: 'Bagus',
-                        text: 'Senang bertemu dengan anda',
+                        title: 'Silahkan Login',
+                        text: 'Silahkan login menggunakan email dan password barusan',
                     })
                     // kemudian hasilnya maka jalankan fungsi berikut dan ambil hasil nya
                     .then((result) => {
                         // jika aku click oke pada pop up sweetalert maka
                         // jika hasilnya dikonfirmasi maka
                         if (result.isConfirmed) {
-                            // pindahkan ke route dashboard.index
+                            // pindahkan ke route login.index
                             // jendela.lokasi.href
-                            location.href = `{{ route('dashboard.index') }}`;
+                            location.href = `{{ route('login.index') }}`;
                         };
                     });
                 }
