@@ -1,3 +1,4 @@
+{{-- Panggil model  --}}
 @php
     use App\Models\Pengaturan;
 
@@ -12,13 +13,14 @@
             <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <img src="{{ asset('storage/foto_profil') }}/{{ auth()->user()->gambar }}" alt="Foto Profile" class="rounded-circle foto_profil">
                 <span class="pro-user-name ml-1 nama_user">
+                    {{-- cetak value detail user yang login, column name --}}
                     {{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i>
                 </span>
             </a>
             <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
                 <!-- item-->
                 <div class="dropdown-header noti-title">
-                    <h6 class="text-overflow m-0">Welcome !</h6>
+                    <h6 class="text-overflow m-0">Welcome!</h6>
                 </div>
 
                 <!-- My Account-->
@@ -29,6 +31,16 @@
                     <i class="mdi mdi-account-edit"></i>
                     <span>Edit Profile</span>
                 </a>
+
+                {{-- jika Pembeli yang login --}}
+                {{-- jika yang login, value column is_admin nya adalah 2 maka --}}
+                @if (auth()->user()->is_admin === 2)
+                    {{-- jika permintaan adalah keranjang, * berarti apapun setelah itu maka aktifkan kan menu nya kalau bukan maka jangan aktifkan --}}
+                    <a href="{{ route('keranjang.index') }}" class="{{ Request()->is('keranjang*') ? 'adropdown-item' : 'dropdown-item' }} notify-item">
+                        <i class="mdi mdi-account-edit"></i>
+                        <span>Keranjang</span>
+                    </a>
+                @endif
 
                 {{-- jika admin yang login --}}
                 {{-- jika yang login, value column is_admin nya adalah 1 maka --}}
@@ -52,8 +64,6 @@
 
             </div>
         </li>
-
-
     </ul>
 
     <!-- LOGO paling sebelah kiri -->

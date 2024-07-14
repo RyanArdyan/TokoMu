@@ -46,14 +46,14 @@ class EditProfileController extends Controller
             $validasi_email = 'unique:users|required|email|max:255';
         };
 
-        // validasi semua input 
+        // validasi semua input
         $validator = Validator::make($request->all(), [
             // input attribute name yang berisi name harus menggunakan aturan dari $validasi_name
             'name' => $validasi_name,
             'email' => $validasi_email,
             'gambar' => 'image|max:600'
         ],
-        // Terjamahan validasi 
+        // Terjamahan validasi
         [
             'name.unique' => 'Orang lain sudah menggunakan nama itu.',
             'email.unique' => 'Orang lain sudah menggunakan email itu.'
@@ -65,7 +65,7 @@ class EditProfileController extends Controller
             return response()->json([
                 // key status berisi 0
                 'status' => 0,
-                // key error berisi semua value attribute name dan semua pesan errornya 
+                // key error berisi semua value attribute name dan semua pesan errornya
                 'errors' => $validator->errors()->toArray()
             ]);
         // jika validasi berhasil
@@ -78,10 +78,9 @@ class EditProfileController extends Controller
                     // lakukan upload gambar
                     // nama gambar baru
                     $nama_gambar_baru = time() . '_' . $request->id . '.' . $request->file('gambar')->extension();
-                    // upload gambar dan ganti nama gambar
-                    // argument pertama pada putFileAs adalah tempat atau folder gambar akan disimpan
-                    // argumen kedua adalah input name="gambar"
-                    // argument ketiga adalah nama file gambar nya
+                    // The first argument in putFileAs is the place or folder where the image will be saved.
+                    // the second argument is input name="image"
+                    // the third argument is the name of the image file
                     Storage::putFileAs('public/foto_profil/', $request->file('gambar'), $nama_gambar_baru);
                 // lain jika value pada detail)user_yang_login, column gambar tidak sma dengan 'gambar_default.png' maka
                 } else if ($detail_user_yang_login->gambar !== 'gambar_default.png') {
@@ -120,7 +119,7 @@ class EditProfileController extends Controller
 
     // Update Password
     // $request akan menangkap semua value attribute name
-    public function update_password(Request $request) 
+    public function update_password(Request $request)
     {
         // ambil detail user berdasarkan value user yang login
         $detail_user = auth()->user();
@@ -142,17 +141,17 @@ class EditProfileController extends Controller
                 'errors' => $validator->errors()->toArray()
             ]);
         // jika validasi berhasil
-        } else { 
+        } else {
             // jika input password lama sama dengan detail user column password maka
             if (Hash::check($request->password_lama, $detail_user->password)) {
                 // jika value input password baru sama dengan password lama maka tidak boleh
                 if (Hash::check($request->password_baru, $detail_user->password)) {
                     // kembalikan tangapan berupa json
                     return response()->json([
-                        // key pesan berisi value 
+                        // key pesan berisi value
                         'pesan' => 'Password baru tidak boleh sama dengan password lama'
                     ]);
-                } 
+                }
                 // jika value input password_baru tidak sama dengan password lama, maka update password berdasarkan password baru
                 else if (!Hash::check($request->password_baru, $detail_user->password)) {
                     // Perbarui password

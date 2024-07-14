@@ -76,8 +76,7 @@ class MemberController extends Controller
     // $reqeust berisi semua value element input
     public function store(Request $request)
     {
-        // buat validasi untuk semua input yang punya attribute name
-        // berisi validator buat semua permintaan
+        // create validation for all inputs that have a name attribute
         $validator = Validator::make($request->all(), [
             // input name="nama_member" harus mengikuti aturan berikut
             // unique berarti valuenya tidak boleh sama dengan value column nama yang sudah ada
@@ -93,14 +92,14 @@ class MemberController extends Controller
             'telepon_member.unique' => 'Telepon ini sudah digunakan orang lain.'
         ]);
 
-        // jika validasi gagal karena user tidak benar mengisi datanya
+        // If validation fails because the user has entered the data incorrectly
         if ($validator->fails()) {
             // kembalikkan tanggapan berupa json
             return response()->json([
                 // key status berisi value 0
                 'status' => 0,
                 'pesan' => 'Error',
-                // key errors berisi semua value attribute name yang error dan semua pesan errornya
+                // The errors key contains all error attribute name values ​​and all error messages.
                 'errors' => $validator->errors()
             ]);
         // lain jika validasi berhasil
@@ -148,12 +147,11 @@ class MemberController extends Controller
 
             };
 
-            // Simpan member
-            // member buat
+            // Save member data
             Member::create([
                 // panggil column kode_member milik table member diisi dengan "M-" digabung dengan misalnya 00001 maka akan menjadi "M-00001"
                 'kode_member' => 'M-' . $kode_member,
-                // panggil column nama_member milik table member diisi dengan value attribute name="nama_member"
+                // call the member_name column of the member table filled with the attribute value name="member_name"
                 'nama_member' => $request->nama_member,
                 'telepon_member' => $request->telepon_member,
                 'alamat_member' => $request->alamat_member

@@ -94,8 +94,61 @@ class ProdukController extends Controller
             // jika $request tidak memiliki ajax maka kembalikan ke tampilan produk.index
             return view('produk.index');
         }
-        // lain jika autentikasi pengguna, value column is_admin nya adalah 2 maka
+        // lain jika autentikasi pengguna, value column is_admin nya adalah 2 berarti dia adalah pembeli maka
         elseif (auth()->user()->is_admin === 2) {
+            // jika yang login adalah pembeli maka
+            // jika $permintaan memiliki ajax
+            if ($request->ajax()) {
+                // syntax punya laravel
+                // Bersemangat memuat banyak hubungan dengan kategori, ini wajib jika relasi nya adalah belongsTo atau miliki
+                // produk berelasi dengan kategori d ambil semuanya datanya, urutannya dari Z sampai A.
+                $data_produk = Produk::with(['kategori'])->latest()->get();
+                // syntax punya yajra
+                // kembalikkan datatables dari $data_produk
+                return DataTables::of($data_produk)
+                    // untuk membuat pengulangan nomor
+                    // tambah index column
+                    ->addIndexColumn()
+                    // relasi table produk ke table kategori
+                    // berdasarkan addColumn('nama_kategori')
+                    // tambah column nama_kategori, jalankan fungsi berikut dan lakukan pengulangan terhadap detail produk
+                    ->addColumn('nama_kategori', function (Produk $produk) {
+                        // panggil semua value column nama_kategori milik table kategori yang berelasi dengan table produk
+                        // panggil Models/Produk, method kategori
+                        return $produk->kategori->nama_kategori;
+                    })
+                    ->addColumn('harga_jual', function (Produk $produk) {
+                        // kembalikkan panggil helper rupiah_bentuk untuk membuat format rupiah lalu kirimkan value column harga_jual dari detail produk
+                        return rupiah_bentuk($produk->harga_jual);
+                    })
+                    ->addColumn('diskon', function (Produk $produk) {
+                        // kembalikkan value detail produk, column diskon lalu gabungkan dengan string persen
+                        return $produk->diskon . "%";
+                    })
+                    ->addColumn('stok', function (Produk $produk) {
+                        // kembalikkan panggil helper angka_bentuk lalu kirimkan value detail produk, column stok
+                        return angka_bentuk($produk->stok);
+                    })
+                    // buat tombol edit
+                    ->addColumn('action', function (Produk $produk) {
+                        // jika ingin membuat attribute maka gunakan attribute data-nama-attribute-yg-diinginkan
+                        $btn = '
+                            <button data-produk-id="' . $produk->produk_id . '" data-user-id="' . auth()->user()->user_id . '" class="tombol_edit btn btn-success btn-sm mb-1 tombol_keranjang">
+                                <i class="mdi mdi-cart-plus"></i>
+                            </button>
+                            <button data-id="' . $produk->produk_id . '" class="tombol_edit btn btn-purple btn-sm">
+                                <i class="mdi mdi-cash"></i>
+                            </button>
+                        ';
+                        // jika menggunakan variable maka aku bisa gabungkan sintax maka ini bagus
+                        return $btn;
+                    })
+                    // jika column berisi elemnt html, relasi antar table, memanggil helpers dan melakukan concatenation
+                    ->rawColumns(['nama_kategori', 'harga_jual', 'diskon', 'stok', 'action'])
+                    // buat nyata
+                    ->make(true);
+            };
+
             // kembalikkan ke tampilan pembeli.produk.index
             return view('pembeli.produk.index');
         }

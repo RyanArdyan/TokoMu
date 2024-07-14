@@ -109,11 +109,11 @@ class PembelianDetailController extends Controller
 	// 		// anggaplah total_harga berisi 0 lalu di tambah (100.000 * 2)
 	// 		$total_harga += $pembelian_detail->harga * $pembelian_detail->jumlah;
 	// 		// anggaplah total_barang berisi 0 lalu di tambah 5 berarti jadi 5
-	// 		$total_barang += $pembelian_detail->jumlah; 
+	// 		$total_barang += $pembelian_detail->jumlah;
 	// 	};
 
 	// 	// tambahkan array di dalam array
-	// 	$data[] = [		
+	// 	$data[] = [
 	// 		'nama_produk' => '',
 	// 		'harga' => '',
 	// 		// simpan total_barang misalnya 10 di column jumlah
@@ -199,7 +199,7 @@ class PembelianDetailController extends Controller
     //     // Simpan Data Ke table pembelian_detail
 	// 	// PembelianDetail buat
 	// 	PembelianDetail::create([
-	// 		// panggil column nama_produk di table pembelian_detail lalu diisi dengan 
+	// 		// panggil column nama_produk di table pembelian_detail lalu diisi dengan
 	// 		'nama_produk' => $detail_produk->nama_produk,
 	// 		// column pembelian_id diisi value $request->pembelian_id
 	// 		'pembelian_id' => $request->pembelian_id,
@@ -227,7 +227,7 @@ class PembelianDetailController extends Controller
         // $semua_produk_id = $permintaan->semua_produk_id
         $semua_produk_id = $request->semua_produk_id;
         $semua_kode_produk = $request->semua_kode_produk;
-        $semua_nama_produk = $request->semua_nama_produk;
+        $semua_nama_produk = $requkoest->semua_nama_produk;
         $semua_harga_jual = $request->semua_harga_jual;
         $semua_jumlah = $request->semua_jumlah;
         $semua_subtotal = $request->semua_subtotal;
@@ -353,7 +353,7 @@ class PembelianDetailController extends Controller
 			'total_harga' => $total_harga,
 			// anggaplah berisi Rp 300.000
 			'bayar_rp' => rupiah_bentuk($total_harga),
-			// anggaplah berisi Senilai tiga ratus ribu rupiah 
+			// anggaplah berisi Senilai tiga ratus ribu rupiah
 			'terbilang' => ucwords(terbilang($total_harga)),
 		]);
 	}

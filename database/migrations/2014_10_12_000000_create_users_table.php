@@ -19,6 +19,7 @@ return new class extends Migration
             $table->tinyInteger('is_admin')->default(0);
             // tipe data text karena kemungkinan nama gambar nya panjang
             $table->text('gambar')->nullable();
+            // tipe varchar, column name, valuenya tidak boleh sama
             $table->string('name')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

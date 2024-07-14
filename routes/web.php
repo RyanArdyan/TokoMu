@@ -19,6 +19,7 @@ use App\Http\Controllers\PenjualanDetailController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UjiController;
 use App\Http\Controllers\Pembeli\RegistrasiController;
+use App\Http\Controllers\Pembeli\KeranjangController;
 
 
 // hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
@@ -143,6 +144,7 @@ Route::middleware(['can:is_admin_dan_is_pembeli', 'auth'])->group(function() {
     Route::delete('/kategori/destroy', [KategoriController::class, 'destroy'])->name('kategori.destroy');
 
     // produk
+    // rute tipe dapatkan, jika user diarahkan ke url /produk, maka arahkan ke ProdukController, method index, name nya adalah produk.index
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     // route tipe kirim, ke url /produk, ke ProdukController, ke method store, namenya adalah produk.store
     Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
@@ -256,6 +258,12 @@ Route::middleware(['can:is_admin_dan_is_pembeli', 'auth'])->group(function() {
     Route::get('/laporan/ubah-periode', [LaporanController::class, 'ubah_periode'])->name('laporan.ubah_periode');
     // route tipe dapatkan, jika user diarahkan ke url berikut maka tangkap dan kirimkan value tanggal_awal dan tanggal_hari_ini, lalu ke LaporanController, method cetak_pdf, name nya laporan.cetak_pdf
     Route::get('/laporan/cetak-pdf/{tanggal_awal}/{tanggal_hari_ini}', [LaporanController::class, 'cetak_pdf'])->name('laporan.cetak_pdf');
+
+    // keranjang
+    // rute tipe dapatkan, jika user diarahkan ke url /keranjang, maka arahkan ke KeranjangController, method index, name nya adalah keranjang.index
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    // rute tipe kirim, jika user diarahkan ke url /keranjang, maka arahkan ke KeranjangController, method store, name nya adalah keranjang.store
+    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
 });
 
 Route::get('/uji', [UjiController::class, 'index']);

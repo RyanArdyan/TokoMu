@@ -1,3 +1,6 @@
+Aku ingin belajar mengambil data API prakiraan cuaca di kota kalimantan barat, kota pontianak. akses link dibawah ini:
+https://github.com/renomureza/cuaca-gempa-rest-api
+
 ########### PENTING ###########
 Aku ingin buat fitur pembayaran.
 Pembeli membeli barang ku lewat online menggunakan payment gateway lalu nanti dikirim menggunakan kurir yg menggunakan API.
@@ -10,19 +13,3 @@ Berfungsi untuk menampilkan produk pakai table saja dan ada tombol masukkan kera
 
 
 
-
-mari rancang tampilan table produk untuk pembeli:
-1. Nomor
-2. Nama Produk
-3. Kategori
-4. Merk
-5. Harga
-6. Diskon
-7. Stok
-8. Action (Masukkkan ke keranjang & Beli)
-
-
-
-
-
-Jika yg login adalah pembeli yg value column is_admin nya sama dengan 2 maka arahkan pindah rute lagi di DashboardController

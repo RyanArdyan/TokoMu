@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // buat table produk
         Schema::create('produk', function (Blueprint $table) {
-            // buat tipe data big integer yang auto increment dan primary key atau kunci utama
+            // create big integer data type that auto increment and primary key
             $table->bigIncrements('produk_id');
             // foreign key atau kunci asing, relasinya adalah 1 produk milik 1 kategori dan 1 kategori memiliki banyak produk
             // buat foreign key

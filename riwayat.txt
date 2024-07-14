@@ -1,13 +1,4 @@
-File: PenjualanDetailController
-baris: 226
+jika user di url /keranjang maka ambil semua data dari table keranjang. ambil berdasarkan user_id/ oke ini bakal mahal sih.
 
 
-
-Kan sudah ada $jam_masuk_karyawan jadi tinggal digabung dengan tanggal hari ini misalnya 23-02-2024 08:00:00
-
-
-https://docs.laravel-excel.com/3.1/exports/from-view.html
-BAGIAN: From View
-
-Setelah baca dokumentasi diatas maka sudah selesai baca dokumentasi nya dan langsung kerjakan project. yaitu:
-FILE: excel_tutup_laporan.blade.php
+aku click tombol kan lalu panggil value input nya lalu ditambah 1 lalu setel ke layar lalu jika di click lagi maka tambah 1 lagi lalu setel ke layar.

@@ -143,10 +143,32 @@
                     <li>
                         {{-- ke route laporan.index --}}
                         {{-- jika permintaan adalah laporan dan apapun stelah itu maka aktifkan, kalau bukan kasi string kosong --}}
-                        <a href="{{ route('laporan.index') }}"
-                            class="{{ Request()->is('laporan*') ? 'active' : '' }}">
+                        <a href="{{ route('laporan.index') }}" class="{{ Request()->is('laporan*') ? 'active' : '' }}">
                             <i class="mdi mdi-file-pdf-box"></i>
                             <span>Laporan</span>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- jika pembeli yang login --}}
+                {{-- jika yang login, value column is_admin nya adalah 2 maka  --}}
+                @if (auth()->user()->is_admin === 2)
+                    {{-- Produk --}}
+                    <li>
+                        {{-- ke rute produk.index --}}
+                        {{-- Jika permintaan adalah produk dan apapun setelah itu maka aktifkan, kalau bukan kasi string kosong --}}
+                        <a href="{{ route('produk.index') }}" class="{{ Request()->is('produk*') ? 'active' : '' }}">
+                            <i class="mdi mdi-bag-personal"></i>
+                            <span>Produk</span>
+                        </a>
+                    </li>
+                    {{-- Keranjang --}}
+                    <li>
+                        {{-- ke rute keranjang.index --}}
+                        {{-- Jika permintaan adalah keranjang dan apapun setelah itu maka aktifkan, kalau bukan kasi string kosong --}}
+                        <a href="{{ route('keranjang.index') }}" class="{{ Request()->is('keranjang*') ? 'active' : '' }}">
+                            <i class="mdi mdi-cart"></i>
+                            <span>Keranjang</span>
                         </a>
                     </li>
                 @endif
