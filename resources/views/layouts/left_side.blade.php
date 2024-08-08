@@ -148,6 +148,13 @@
                             <span>Laporan</span>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="{{ route('siswa.index') }}" class="{{ Request()->is('siswa*') ? 'active' : '' }}">
+                            <i class="mdi mdi-account-group"></i>
+                            <span>Siswa</span>
+                        </a>
+                    </li>
                 @endif
 
                 {{-- jika pembeli yang login --}}

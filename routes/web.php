@@ -20,7 +20,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UjiController;
 use App\Http\Controllers\Pembeli\RegistrasiController;
 use App\Http\Controllers\Pembeli\KeranjangController;
-
+use App\Http\Controllers\SiswaController;
 
 // hanya tamu atau user yang belum login atau auth yang bisa mengakses url berikut
 // middleware untuk guest, guest di dapatkan dari App/Http/Kernel.php
@@ -264,6 +264,22 @@ Route::middleware(['can:is_admin_dan_is_pembeli', 'auth'])->group(function() {
     Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
     // rute tipe kirim, jika user diarahkan ke url /keranjang, maka arahkan ke KeranjangController, method store, name nya adalah keranjang.store
     Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
+
+    Route::put('/siswa/{siswa_id}', [SiswaController::class, 'update'])->name('siswa.update');
+    Route::get('/siswa/create', [SiswaController::class, 'create'])->name('siswa.create');
+    // route tipe dapatkan, ke url siswa, ke SiswaController, ke method index
+    // namenya siswa.index
+    Route::get('/siswa', [SiswaController::class, 'index'])->name('siswa.index');
+    // route tipe dapatkan, ke url /siswa/read, ke SiswaController, ke method read, name nya adalah siswa.read
+    Route::get('/siswa/read', [SiswaController::class, 'read'])->name('siswa.read');
+    // route tipe kirim, ke url siswa, ke SiswaController, method store, namenya siswa.store
+    Route::post('/siswa', [SiswaController::class, 'store'])->name('siswa.store');
+    // route tipe dapatkan, url /siswa/dapat dan kirim siswa_id ke SiswaController, method show
+    Route::get('/siswa/{siswa_id}', [SiswaController::class, 'show'])->name('siswa.show');
+    // route tipe letakkan, ke url /siswa lalu ambil dan kirim siswa_id, ke SiswaController, method update, namenya adalah siswa.update
+
+    // route tipe kirim, ke url /siswa/hapus-terpilih, ke SiswaController, ke method destroy, namenya adalah destroy
+    Route::post('/siswa/destroy', [SiswaController::class, 'destroy'])->name('siswa.destroy');
 });
 
 Route::get('/uji', [UjiController::class, 'index']);
